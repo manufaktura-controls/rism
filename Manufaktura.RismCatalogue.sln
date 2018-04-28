@@ -5,7 +5,11 @@ VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Manufaktura.RismCatalogue", "Manufaktura.RismCatalogue\Manufaktura.RismCatalogue.csproj", "{A4CFE6C8-DE87-4DEC-872C-B0D1187B9E52}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Manufaktura.RismCatalogue.Model", "Manufaktura.RismCatalogue.Model\Manufaktura.RismCatalogue.Model.csproj", "{DDD696C0-AF56-4249-BFCC-77CFAE224785}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Manufaktura.RismCatalogue.Model", "Manufaktura.RismCatalogue.Model\Manufaktura.RismCatalogue.Model.csproj", "{DDD696C0-AF56-4249-BFCC-77CFAE224785}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Manufaktura.RismCatalogue.Migration", "Manufaktura.RismCatalogue.Migration\Manufaktura.RismCatalogue.Migration.csproj", "{43AE1E9D-44F6-4DA0-A0BF-61CF0CB8FBB3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Manufaktura.LibraryStandards", "Manufaktura.LibraryStandards\Manufaktura.LibraryStandards.csproj", "{A478A203-EEA1-42BE-A280-F3D7BA44B7EA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +25,14 @@ Global
 		{DDD696C0-AF56-4249-BFCC-77CFAE224785}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DDD696C0-AF56-4249-BFCC-77CFAE224785}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DDD696C0-AF56-4249-BFCC-77CFAE224785}.Release|Any CPU.Build.0 = Release|Any CPU
+		{43AE1E9D-44F6-4DA0-A0BF-61CF0CB8FBB3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{43AE1E9D-44F6-4DA0-A0BF-61CF0CB8FBB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{43AE1E9D-44F6-4DA0-A0BF-61CF0CB8FBB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{43AE1E9D-44F6-4DA0-A0BF-61CF0CB8FBB3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A478A203-EEA1-42BE-A280-F3D7BA44B7EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A478A203-EEA1-42BE-A280-F3D7BA44B7EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A478A203-EEA1-42BE-A280-F3D7BA44B7EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A478A203-EEA1-42BE-A280-F3D7BA44B7EA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
