@@ -21,7 +21,7 @@ namespace Manufaktura.RismCatalogue
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
-            services.AddDbContext<RismDbContext>(c => c.UseMySql("server=localhost;database=yourdb;uid=admin;pwd=123123"));
+            services.AddDbContext<RismDbContext>(c => c.UseMySql("server=localhost;database=manufaktura-rism;uid=admin;pwd=123123"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
