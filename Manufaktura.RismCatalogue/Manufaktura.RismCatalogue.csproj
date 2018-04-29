@@ -28,9 +28,11 @@
   <ItemGroup>
     <Reference Include="Manufaktura.Controls">
       <HintPath>..\lib\Manufaktura.Controls.dll</HintPath>
+      <Private>true</Private>
     </Reference>
     <Reference Include="Manufaktura.Music">
       <HintPath>..\lib\Manufaktura.Music.dll</HintPath>
+      <Private>true</Private>
     </Reference>
   </ItemGroup>
 
