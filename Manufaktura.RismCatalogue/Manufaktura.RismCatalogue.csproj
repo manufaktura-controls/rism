@@ -25,6 +25,15 @@
     <ProjectReference Include="..\Manufaktura.RismCatalogue.Model\Manufaktura.RismCatalogue.Model.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="Manufaktura.Controls">
+      <HintPath>..\lib\Manufaktura.Controls.dll</HintPath>
+    </Reference>
+    <Reference Include="Manufaktura.Music">
+      <HintPath>..\lib\Manufaktura.Music.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
   <Target Name="DebugRunWebpack" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('wwwroot\dist') ">
     <!-- Ensure Node.js is installed -->
     <Exec Command="node --version" ContinueOnError="true">
