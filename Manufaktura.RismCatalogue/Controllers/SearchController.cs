@@ -22,7 +22,13 @@ namespace Manufaktura.RismCatalogue.Controllers
         [HttpGet("[action]")]
         public IEnumerable<SearchResultViewModel> Search(int skip, int take)
         {
-            return context.Incipits.OrderBy(i => i.Id).Skip(skip).Take(take).Select(i => new SearchResultViewModel(i, settingsService.RendererSettings)).ToArray();
+            var incipits = context.Incipits
+                .OrderBy(i => i.Id)
+                .Skip(skip)
+                .Take(take)
+                .Select(i => new SearchResultViewModel(i, settingsService.RendererSettings))
+                .ToArray();
+            return incipits;
         }
     }
 }

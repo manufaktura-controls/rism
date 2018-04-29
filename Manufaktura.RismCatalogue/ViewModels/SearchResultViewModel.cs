@@ -7,6 +7,8 @@ namespace Manufaktura.RismCatalogue.ViewModels
 {
     public class SearchResultViewModel
     {
+        private static int canvasIdCount;
+
         public SearchResultViewModel(Incipit incipit, HtmlScoreRendererSettings settings) //TODO: Will be constructed from MusicalSource
         {
             var score = new Score();
@@ -14,11 +16,9 @@ namespace Manufaktura.RismCatalogue.ViewModels
             score.FirstStaff.Add(ParseClef(incipit.Clef));
             score.FirstStaff.Add(ParseKey(incipit.KeySignature));
             score.FirstStaff.Add(ParseTimeSignature(incipit.TimeSignature));
-            FirstIncipit = score;
             IncipitSvg = RenderScore(score, settings);
         }
 
-        public Score FirstIncipit { get; set; }
         public string IncipitSvg { get; set; }
 
         private static Clef ParseClef(string peClef)
@@ -49,7 +49,7 @@ namespace Manufaktura.RismCatalogue.ViewModels
 
         private static Key ParseKey(string keySignature)
         {
-            keySignature = keySignature.Trim();
+            keySignature = keySignature?.Trim();
             if (string.IsNullOrWhiteSpace(keySignature) || keySignature.Length <= 1) return new Key(0);
             var modifier = keySignature.StartsWith("b") ? -1 : 1;
             return new Key(keySignature.Length * modifier);
@@ -57,7 +57,7 @@ namespace Manufaktura.RismCatalogue.ViewModels
 
         private static TimeSignature ParseTimeSignature(string peTimeSignature)
         {
-            peTimeSignature = peTimeSignature.Trim();
+            peTimeSignature = peTimeSignature?.Trim();
             if (peTimeSignature == "c") return TimeSignature.CommonTime;
             if (peTimeSignature == "c/") return TimeSignature.CutTime;
             var parts = peTimeSignature?.Split("/") ?? new string[0];
@@ -66,9 +66,6 @@ namespace Manufaktura.RismCatalogue.ViewModels
             if (!int.TryParse(parts[1], out int denominator)) return TimeSignature.CommonTime;
             return new TimeSignature(TimeSignatureType.Numbers, numerator, denominator);
         }
-
-        private static int canvasIdCount;
-
         private static string RenderScore(Score score, HtmlScoreRendererSettings settings)
         {
             IScore2HtmlBuilder builder;

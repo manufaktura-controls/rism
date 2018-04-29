@@ -1,9 +1,7 @@
-<h1>Weather forecast</h1>
-
-<p>This component demonstrates fetching data from the server.</p>
-
 <p *ngIf="!searchResults"><em>Loading...</em></p>
 
-<div class='table' *ngIf="searchResults">
-    <div [innerHTML]="incipitSvg"></div>
+<div *ngIf="searchResults">
+    <div *ngFor="let result of searchResults">
+        <div [innerHTML]="result.incipitSvg|safeHtml"></div>
+    </div>
 </div>

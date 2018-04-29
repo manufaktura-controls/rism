@@ -8,13 +8,15 @@ import { AppComponent } from './components/app/app.component';
 import { NavMenuComponent } from './components/navmenu/navmenu.component';
 import { HomeComponent } from './components/home/home.component';
 import { SearchResultsComponent } from './components/searchresults/searchresults.component';
+import { SafeHtml } from './pipes/safehtml.pipe';
 
 @NgModule({
     declarations: [
         AppComponent,
         NavMenuComponent,
         SearchResultsComponent,
-        HomeComponent
+        HomeComponent,
+        SafeHtml
     ],
     imports: [
         CommonModule,

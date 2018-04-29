@@ -19,7 +19,7 @@ namespace Manufaktura.RismCatalogue.Services
 
         private HtmlScoreRendererSettings CreateScoreRendererSettings(string musicFontName, string fontMetadataPath, params string[] musicFontUris)
         {
-            var fontMetadata = string.IsNullOrWhiteSpace(fontMetadataPath) ? null : File.ReadAllText(Path.Combine(environment.ContentRootPath, fontMetadataPath));
+            var fontMetadata = string.IsNullOrWhiteSpace(fontMetadataPath) ? null : File.ReadAllText(Path.Combine(environment.ContentRootPath, "wwwroot") + fontMetadataPath);
             var settings = new HtmlScoreRendererSettings();
             settings.RenderSurface = HtmlScoreRendererSettings.HtmlRenderSurface.Svg;
             if (musicFontName == "Polihymnia")

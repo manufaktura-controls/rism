@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Manufaktura.Controls" Version="1.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.3" />
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="2.0.1" />
   </ItemGroup>
@@ -22,18 +23,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="ClientApp\app\pipes\safehtml.pipe.ts" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Manufaktura.RismCatalogue.Model\Manufaktura.RismCatalogue.Model.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="Manufaktura.Controls">
-      <HintPath>..\lib\Manufaktura.Controls.dll</HintPath>
-      <Private>true</Private>
-    </Reference>
-    <Reference Include="Manufaktura.Music">
-      <HintPath>..\lib\Manufaktura.Music.dll</HintPath>
-      <Private>true</Private>
-    </Reference>
+    <TypeScriptCompile Include="ClientApp\app\pipes\safehtml.pipe.ts" />
   </ItemGroup>
 
   <Target Name="DebugRunWebpack" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('wwwroot\dist') ">
