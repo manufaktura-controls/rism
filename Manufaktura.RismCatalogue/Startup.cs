@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.SpaServices.Webpack;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 
 namespace Manufaktura.RismCatalogue
 {
@@ -25,7 +26,7 @@ namespace Manufaktura.RismCatalogue
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider serviceProvider)
         {
             if (env.IsDevelopment())
             {
@@ -52,6 +53,9 @@ namespace Manufaktura.RismCatalogue
                     name: "spa-fallback",
                     defaults: new { controller = "Home", action = "Index" });
             });
+
+            var db = serviceProvider.GetRequiredService<RismDbContext>();
+            db.Database.EnsureCreated();
         }
     }
 }

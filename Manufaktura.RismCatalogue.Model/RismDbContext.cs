@@ -7,5 +7,7 @@ namespace Manufaktura.RismCatalogue.Model
         public RismDbContext(DbContextOptions options) : base(options)
         {
         }
+
+        public DbSet<Incipit> Incipits { get; set; }
     }
 }
