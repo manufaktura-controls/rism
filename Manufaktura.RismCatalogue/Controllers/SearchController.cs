@@ -11,12 +11,14 @@ namespace Manufaktura.RismCatalogue.Controllers
     public class SearchController
     {
         private readonly RismDbContext context;
-        private readonly SettingsService settingsService;
+        private readonly PlaineAndEasieService plaineAndEasieService;
+        private readonly ScoreRendererService scoreRendererService;
 
-        public SearchController([FromServices] RismDbContext context, SettingsService settingsService)
+        public SearchController([FromServices] RismDbContext context, PlaineAndEasieService plaineAndEasieService, ScoreRendererService scoreRendererService)
         {
             this.context = context;
-            this.settingsService = settingsService;
+            this.scoreRendererService = scoreRendererService;
+            this.plaineAndEasieService = plaineAndEasieService;
         }
 
         [HttpGet("[action]")]
@@ -26,7 +28,7 @@ namespace Manufaktura.RismCatalogue.Controllers
                 .OrderBy(i => i.Id)
                 .Skip(skip)
                 .Take(take)
-                .Select(i => new SearchResultViewModel(i, settingsService.RendererSettings))
+                .Select(i => new SearchResultViewModel(scoreRendererService.RenderScore(plaineAndEasieService.Parse(i))))
                 .ToArray();
             return incipits;
         }
