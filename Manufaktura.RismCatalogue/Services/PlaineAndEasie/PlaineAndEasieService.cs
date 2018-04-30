@@ -1,6 +1,7 @@
 ﻿using Manufaktura.Controls.Model;
 using Manufaktura.RismCatalogue.Model;
 using Manufaktura.RismCatalogue.Services.PlaineAndEasie;
+using System.Text;
 
 namespace Manufaktura.RismCatalogue.Services
 {
@@ -8,27 +9,15 @@ namespace Manufaktura.RismCatalogue.Services
     {
         public Score Parse(Incipit incipit)
         {
-            var score = new Score();
-            score.Staves.Add(new Staff());
-            new PlaineAndEasie2ScoreClefParsingStrategy().Parse(incipit.Clef, score);
-            new PlaineAndEasie2ScoreKeyParsingStrategy().Parse(incipit.KeySignature, score);
-            score.FirstStaff.Add(ParseTimeSignature(incipit.TimeSignature));
+            var parser = new PlaineAndEasie2ScoreParser();
+            var sb = new StringBuilder();
+            if (!string.IsNullOrWhiteSpace(incipit.Clef)) sb.Append($"%{incipit.Clef}");
+            if (!string.IsNullOrWhiteSpace(incipit.KeySignature)) sb.Append($"${incipit.KeySignature}");
+            if (!string.IsNullOrWhiteSpace(incipit.TimeSignature)) sb.Append($"@{incipit.TimeSignature}");
+            sb.Append(incipit.MusicalNotation);
 
-            //TODO: Parse notes
-
+            var score = parser.Parse(sb.ToString());
             return score;
-        }
-
-        private static TimeSignature ParseTimeSignature(string peTimeSignature)
-        {
-            peTimeSignature = peTimeSignature?.Trim();
-            if (peTimeSignature == "c") return TimeSignature.CommonTime;
-            if (peTimeSignature == "c/") return TimeSignature.CutTime;
-            var parts = peTimeSignature?.Split("/") ?? new string[0];
-            if (parts.Length != 2) return TimeSignature.CommonTime;
-            if (!int.TryParse(parts[0], out int numerator)) return TimeSignature.CommonTime;
-            if (!int.TryParse(parts[1], out int denominator)) return TimeSignature.CommonTime;
-            return new TimeSignature(TimeSignatureType.Numbers, numerator, denominator);
         }
     }
 }

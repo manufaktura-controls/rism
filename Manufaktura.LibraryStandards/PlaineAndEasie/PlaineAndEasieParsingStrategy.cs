@@ -1,9 +1,11 @@
 ﻿namespace Manufaktura.LibraryStandards.PlaineAndEasie
 {
-    public abstract class PlaineAndEasieParsingStrategy<TOutput>
+    public abstract class PlaineAndEasieParsingStrategy
     {
         public abstract bool IsRelevant(string s);
 
-        public abstract int Parse(string s, TOutput output);
+        public abstract int Parse(PlaineAndEasieParser parser, string s);
+
+        public abstract int ControlSignLength { get; }
     }
 }
