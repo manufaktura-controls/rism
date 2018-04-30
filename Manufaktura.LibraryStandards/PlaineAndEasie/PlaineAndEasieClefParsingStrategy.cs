@@ -11,7 +11,8 @@
         public override int Parse(string s, TOutput output)
         {
             if (string.IsNullOrWhiteSpace(s)) return 0;
-            if (s.Length < 3) return s.Length;
+            if (s.StartsWith("%")) s = s.Substring(1);
+            if (s.Length < 3) return s.Length + 1; 
 
             var clefData = s.Substring(0, 3);
             var isMensural = clefData[1] == '+';
@@ -19,7 +20,7 @@
 
             ParseInternal(output, clefData[0], lineNumber, isMensural);
 
-            return 3;
+            return 4;
         }
 
         protected abstract void ParseInternal(TOutput output, char clefType, int lineNumber, bool isMensural);

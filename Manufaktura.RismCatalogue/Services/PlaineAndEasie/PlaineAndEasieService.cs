@@ -11,20 +11,12 @@ namespace Manufaktura.RismCatalogue.Services
             var score = new Score();
             score.Staves.Add(new Staff());
             new PlaineAndEasie2ScoreClefParsingStrategy().Parse(incipit.Clef, score);
-            score.FirstStaff.Add(ParseKey(incipit.KeySignature));
+            new PlaineAndEasie2ScoreKeyParsingStrategy().Parse(incipit.KeySignature, score);
             score.FirstStaff.Add(ParseTimeSignature(incipit.TimeSignature));
 
             //TODO: Parse notes
 
             return score;
-        }
-
-        private static Key ParseKey(string keySignature)
-        {
-            keySignature = keySignature?.Trim();
-            if (string.IsNullOrWhiteSpace(keySignature) || keySignature.Length <= 1) return new Key(0);
-            var modifier = keySignature.StartsWith("b") ? -1 : 1;
-            return new Key(keySignature.Length * modifier);
         }
 
         private static TimeSignature ParseTimeSignature(string peTimeSignature)
