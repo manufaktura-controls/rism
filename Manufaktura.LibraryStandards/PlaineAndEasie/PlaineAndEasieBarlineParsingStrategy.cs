@@ -22,7 +22,10 @@ namespace Manufaktura.LibraryStandards.PlaineAndEasie
 
         public override int Parse(PlaineAndEasieParser parser, string s)
         {
-            return 1;
+            var matchingKey = barlineTypes.Keys.OrderByDescending(k => k.Length).First(k => s.StartsWith(k));
+            parser.AddBarline(barlineTypes[matchingKey]);
+
+            return matchingKey.Length;
         }
     }
 }

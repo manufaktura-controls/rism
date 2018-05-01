@@ -12,10 +12,20 @@ namespace Manufaktura.LibraryStandards.PlaineAndEasie
         protected internal abstract void AddTimeSignature(string symbol, int numerator, int denominator);
 
         protected internal abstract void AddNote(char step, int alter);
+        protected internal abstract void AddRest();
+
+        protected internal abstract void AddWholeMeasureRests(int numberOfMeasures);
+
+        protected internal abstract void AddBarline(PlaineAndEasieBarlineTypes barlineType);
 
         protected internal int CurrentRhythmicLogValue { get; set; } = 2;
-        protected internal int CurrentBeamLevel { get; set; }
+        protected internal int CurrentNumberOfDots { get; set; }
+        protected internal bool IsBeamingEnabled { get; set; }
         protected internal int CurrentOctave { get; set; } = 4;
+
+        protected internal virtual void OnBeamingEnded()
+        {
+        }
     }
 
     public abstract class PlaineAndEasieParser<TOutput> : PlaineAndEasieParser
