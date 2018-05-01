@@ -1,5 +1,6 @@
 ﻿using Manufaktura.Controls.Model;
 using Manufaktura.LibraryStandards.PlaineAndEasie;
+using Manufaktura.Music.Model;
 
 namespace Manufaktura.RismCatalogue.Services.PlaineAndEasie
 {
@@ -10,6 +11,11 @@ namespace Manufaktura.RismCatalogue.Services.PlaineAndEasie
             var scoreClefType = ParseClefType(clefType);
             var octaveShift = clefType == 'g' ? -1 : 0;
             output.FirstStaff.Add(new Clef(scoreClefType, lineNumber, octaveShift));
+        }
+
+        protected override void AddNote(char step, int alter)
+        {
+            output.FirstStaff.AddNote(new Pitch(step.ToString(), alter, CurrentOctave), new RhythmicDuration(CurrentRhythmicLogValue));
         }
 
         protected override void AddKey(int numberOfFifths)

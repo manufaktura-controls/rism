@@ -10,6 +10,12 @@ namespace Manufaktura.LibraryStandards.PlaineAndEasie
         protected internal abstract void AddKey(int numberOfFifths);
 
         protected internal abstract void AddTimeSignature(string symbol, int numerator, int denominator);
+
+        protected internal abstract void AddNote(char step, int alter);
+
+        protected internal int CurrentRhythmicLogValue { get; set; } = 2;
+        protected internal int CurrentBeamLevel { get; set; }
+        protected internal int CurrentOctave { get; set; } = 4;
     }
 
     public abstract class PlaineAndEasieParser<TOutput> : PlaineAndEasieParser

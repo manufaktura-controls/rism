@@ -22,6 +22,10 @@ export class SearchResultsComponent {
             }
         }, error => console.error(error));
     }
+
+    onScroll() {
+        console.info('scrolled');
+    }
 }
 
 
