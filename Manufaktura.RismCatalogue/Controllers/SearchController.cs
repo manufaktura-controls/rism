@@ -28,9 +28,10 @@ namespace Manufaktura.RismCatalogue.Controllers
                 .OrderBy(i => i.Id)
                 .Skip(skip)
                 .Take(take)
-                .Select(i => new SearchResultViewModel(scoreRendererService.RenderScore(plaineAndEasieService.Parse(i))))
                 .ToArray();
-            return incipits;
+            var scores = incipits.Select(i => plaineAndEasieService.Parse(i)).ToArray();
+            var viewModels = scores.Select(s => new SearchResultViewModel(scoreRendererService.RenderScore(s))).ToArray();                
+            return viewModels;
         }
     }
 }
