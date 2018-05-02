@@ -36,14 +36,24 @@ namespace Manufaktura.RismCatalogue.Services.PlaineAndEasie
             output.FirstStaff.Add(new Key(numberOfFifths));
         }
 
-        protected override void AddNote(char step, int alter, bool hasNatural, bool hasFermata)
+        protected override void AddNote(char step, int alter, bool hasNatural, bool hasFermata, bool hasTrill, bool hasSlur)
         {
             var currentKey = output.FirstStaff.Elements.OfType<Key>().LastOrDefault();
             var keyAlter = currentKey?.StepToAlter(step.ToString()) ?? 0;
 
+            var lastNote = output.FirstStaff.Elements.OfType<Note>().LastOrDefault();
+
             var note = new Note(new Pitch(step.ToString(), alter == 0 ? keyAlter : alter, CurrentOctave),
                 new RhythmicDuration(CurrentRhythmicLogValue, CurrentNumberOfDots))
-            { HasNatural = hasNatural, HasFermataSign = hasFermata };
+            {
+                HasNatural = hasNatural,
+                HasFermataSign = hasFermata,
+                TrillMark = hasTrill ? NoteTrillMark.Above : NoteTrillMark.None,
+            };
+            if (lastNote != null && lastNote.Slurs.Any(s => s.Type == NoteSlurType.Start))
+                note.Slurs.Add(new Slur(NoteSlurType.Stop));
+            if (hasSlur)
+                note.Slurs.Add(new Slur(NoteSlurType.Start));
 
             output.FirstStaff.Add(note);
             if (IsBeamingEnabled) notesToRebeam.Add(note);

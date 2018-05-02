@@ -11,7 +11,7 @@ namespace Manufaktura.LibraryStandards.PlaineAndEasie
 
         protected internal abstract void AddTimeSignature(string symbol, int numerator, int denominator);
 
-        protected internal abstract void AddNote(char step, int alter, bool hasNatural, bool hasFermata);
+        protected internal abstract void AddNote(char step, int alter, bool hasNatural, bool hasFermata, bool hasTrill, bool hasSlur);
 
         protected internal abstract void AddRest();
 
