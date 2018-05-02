@@ -30,7 +30,7 @@ namespace Manufaktura.RismCatalogue.Controllers
                 .Take(take)
                 .ToArray();
             var scores = incipits.Select(i => plaineAndEasieService.Parse(i)).ToArray();
-            var viewModels = scores.Select(s => new SearchResultViewModel(scoreRendererService.RenderScore(s))).ToArray();                
+            var viewModels = scores.Select(s => new SearchResultViewModel(s == null ? null : scoreRendererService.RenderScore(s))).ToArray();
             return viewModels;
         }
     }

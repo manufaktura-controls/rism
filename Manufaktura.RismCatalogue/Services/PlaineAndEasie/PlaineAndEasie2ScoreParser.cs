@@ -56,7 +56,7 @@ namespace Manufaktura.RismCatalogue.Services.PlaineAndEasie
 
         protected override void AddWholeMeasureRests(int numberOfMeasures)
         {
-            
+            output.FirstStaff.Add(new Rest(RhythmicDuration.Whole) { MultiMeasure = numberOfMeasures });
         }
 
         protected override Score CreateOutputObject()
@@ -72,6 +72,7 @@ namespace Manufaktura.RismCatalogue.Services.PlaineAndEasie
             notesToRebeam.Rebeam(Controls.Formatting.RebeamMode.Simple);
             notesToRebeam.Clear();
         }
+
         private static ClefType ParseClefType(char peClefType)
         {
             switch (peClefType)

@@ -1,13 +1,24 @@
-﻿namespace Manufaktura.LibraryStandards.PlaineAndEasie
+﻿using System.Linq;
+
+namespace Manufaktura.LibraryStandards.PlaineAndEasie
 {
     public class PlaineAndEasieTimeSignatureParsingStrategy : PlaineAndEasieParsingStrategy
     {
+        private readonly string[] specialSignatures = new[] { "c", "c/" };
+
         public override int ControlSignLength => 1;
 
         public override bool IsRelevant(string s) => s[0] == '@';
 
         public override int Parse(PlaineAndEasieParser parser, string s)
         {
+            var matchingSignature = specialSignatures.OrderByDescending(ss => s.Length).FirstOrDefault(ss => s.StartsWith(ss));
+            if (matchingSignature != null)
+            {
+                parser.AddTimeSignature(matchingSignature, 0, 0);
+                return matchingSignature.Length;
+            }
+
             var length = DetermineLength(s);
             var substring = s.Substring(0, length);
             var parts = substring.Split('/') ?? new string[0];

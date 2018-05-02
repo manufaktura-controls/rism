@@ -9,6 +9,8 @@ namespace Manufaktura.RismCatalogue.Services
     {
         public Score Parse(Incipit incipit)
         {
+            if (string.IsNullOrWhiteSpace(incipit.MusicalNotation)) return null;
+
             var parser = new PlaineAndEasie2ScoreParser();
             var sb = new StringBuilder();
             if (!string.IsNullOrWhiteSpace(incipit.Clef)) sb.Append($"%{incipit.Clef}");
