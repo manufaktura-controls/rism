@@ -12,13 +12,7 @@ namespace Manufaktura.RismCatalogue.Services
             if (string.IsNullOrWhiteSpace(incipit.MusicalNotation)) return null;
 
             var parser = new PlaineAndEasie2ScoreParser();
-            var sb = new StringBuilder();
-            if (!string.IsNullOrWhiteSpace(incipit.Clef)) sb.Append($"%{incipit.Clef}");
-            if (!string.IsNullOrWhiteSpace(incipit.KeySignature)) sb.Append($"${incipit.KeySignature}");
-            if (!string.IsNullOrWhiteSpace(incipit.TimeSignature)) sb.Append($"@{incipit.TimeSignature}");
-            sb.Append(incipit.MusicalNotation);
-
-            var score = parser.Parse(sb.ToString());
+            var score = parser.Parse(incipit.Clef, incipit.KeySignature, incipit.TimeSignature, incipit.MusicalNotation);
             return score;
         }
     }

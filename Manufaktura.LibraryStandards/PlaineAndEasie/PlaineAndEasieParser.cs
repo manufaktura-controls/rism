@@ -11,7 +11,8 @@ namespace Manufaktura.LibraryStandards.PlaineAndEasie
 
         protected internal abstract void AddTimeSignature(string symbol, int numerator, int denominator);
 
-        protected internal abstract void AddNote(char step, int alter);
+        protected internal abstract void AddNote(char step, int alter, bool hasNatural, bool hasFermata);
+
         protected internal abstract void AddRest();
 
         protected internal abstract void AddWholeMeasureRests(int numberOfMeasures);
@@ -46,11 +47,19 @@ namespace Manufaktura.LibraryStandards.PlaineAndEasie
             output = CreateOutputObject();
         }
 
-        public TOutput Parse(string plaineAndEasie)
+        public TOutput Parse(string clef, string key, string timeSignature, string musicalNotation)
         {
-            for (var i = 0; i < plaineAndEasie.Length;)
+            if (!string.IsNullOrWhiteSpace(clef)) new PlaineAndEasieClefParsingStrategy().Parse(this, clef);
+            if (!string.IsNullOrWhiteSpace(key))
+                new PlaineAndEasieKeyParsingStrategy().Parse(this, key);
+            else
+                AddKey(0);
+
+            if (!string.IsNullOrWhiteSpace(timeSignature)) new PlaineAndEasieTimeSignatureParsingStrategy().Parse(this, timeSignature);
+
+            for (var i = 0; i < musicalNotation.Length;)
             {
-                var strategy = strategies.Value.FirstOrDefault(s => s.IsRelevant(plaineAndEasie.Substring(i)));
+                var strategy = strategies.Value.FirstOrDefault(s => s.IsRelevant(musicalNotation.Substring(i)));
                 if (strategy == null)
                 {
                     i++;
@@ -58,7 +67,7 @@ namespace Manufaktura.LibraryStandards.PlaineAndEasie
                 }
 
                 i += strategy.ControlSignLength;
-                i += strategy.Parse(this, plaineAndEasie.Substring(i));
+                i += strategy.Parse(this, musicalNotation.Substring(i));
             }
             return output;
         }

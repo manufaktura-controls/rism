@@ -3,6 +3,7 @@ using Manufaktura.Controls.Model;
 using Manufaktura.LibraryStandards.PlaineAndEasie;
 using Manufaktura.Music.Model;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Manufaktura.RismCatalogue.Services.PlaineAndEasie
 {
@@ -35,9 +36,15 @@ namespace Manufaktura.RismCatalogue.Services.PlaineAndEasie
             output.FirstStaff.Add(new Key(numberOfFifths));
         }
 
-        protected override void AddNote(char step, int alter)
+        protected override void AddNote(char step, int alter, bool hasNatural, bool hasFermata)
         {
-            var note = new Note(new Pitch(step.ToString(), alter, CurrentOctave), new RhythmicDuration(CurrentRhythmicLogValue));
+            var currentKey = output.FirstStaff.Elements.OfType<Key>().LastOrDefault();
+            var keyAlter = currentKey?.StepToAlter(step.ToString()) ?? 0;
+
+            var note = new Note(new Pitch(step.ToString(), alter == 0 ? keyAlter : alter, CurrentOctave),
+                new RhythmicDuration(CurrentRhythmicLogValue, CurrentNumberOfDots))
+            { HasNatural = hasNatural, HasFermataSign = hasFermata };
+
             output.FirstStaff.Add(note);
             if (IsBeamingEnabled) notesToRebeam.Add(note);
         }
@@ -69,6 +76,10 @@ namespace Manufaktura.RismCatalogue.Services.PlaineAndEasie
         protected override void OnBeamingEnded()
         {
             base.OnBeamingEnded();
+            if (!notesToRebeam.Any()) return;
+
+            var upDirectionRatio = notesToRebeam.Count(n => n.StemDirection == VerticalDirection.Up) / notesToRebeam.Count;
+            notesToRebeam.ApplyStemDirection(upDirectionRatio > 0.5 ? VerticalDirection.Up : VerticalDirection.Down);
             notesToRebeam.Rebeam(Controls.Formatting.RebeamMode.Simple);
             notesToRebeam.Clear();
         }
