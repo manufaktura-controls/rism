@@ -14,9 +14,7 @@ export class InfiniteScrollDirective {
     canTriggerAction: boolean = true;
 
     constructor(private element: ElementRef) {
-        console.info('InfiniteScrollDirective created');
         this.el = element.nativeElement;
-        this.viewport = this.getViewport(window);
     }
 
     @Input() infiniteScrollContext: InfiniteScrollContext = 'document';
@@ -31,8 +29,8 @@ export class InfiniteScrollDirective {
     }
 
     ngOnInit() {
+        this.viewport = this.getViewport(window);
         if (this.infiniteScrollContext === 'document') {
-           
             document.addEventListener('scroll', () => {
                 if (this.elementEndReachedInDocumentScrollbarContext(window, this.el) && this.canTriggerAction) {
                     console.info('Trigger action');
