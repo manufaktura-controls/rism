@@ -1,4 +1,4 @@
-﻿import { Directive, ElementRef, Input, HostListener, EventEmitter, Output } from "@angular/core";
+﻿import { Directive, ElementRef, Input, HostListener, EventEmitter, Output, NgZone } from "@angular/core";
 
 export type InfiniteScrollContext = 'self' | 'document';
 export interface Viewport {
@@ -13,7 +13,7 @@ export class InfiniteScrollDirective {
     viewport: Viewport;
     canTriggerAction: boolean = true;
 
-    constructor(private element: ElementRef) {
+    constructor(private element: ElementRef, private ngZone: NgZone) {
         this.el = element.nativeElement;
     }
 
@@ -31,14 +31,22 @@ export class InfiniteScrollDirective {
     ngOnInit() {
         this.viewport = this.getViewport(window);
         if (this.infiniteScrollContext === 'document') {
-            document.addEventListener('scroll', () => {
-                if (this.elementEndReachedInDocumentScrollbarContext(window, this.el) && this.canTriggerAction) {
-                    console.info('Trigger action');
-                    this.triggerAction();
-                }
+            this.ngZone.runOutsideAngular(() => {
+                document.addEventListener('scroll', this.scroll, true);
             });
         }
     }
+
+    ngOnDestroy() {
+        window.removeEventListener('scroll', this.scroll, true);
+    }
+
+    scroll = (): void => {
+        if (this.elementEndReachedInDocumentScrollbarContext(window, this.el) && this.canTriggerAction) {
+            console.info('Trigger action');
+            this.ngZone.run(() => { this.triggerAction(); });
+        }
+    };
 
     triggerAction() {
         this.canTriggerAction = false;

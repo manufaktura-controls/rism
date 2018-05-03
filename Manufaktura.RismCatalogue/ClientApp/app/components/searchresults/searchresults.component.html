@@ -1,4 +1,5 @@
 <div *ngIf="searchResults" infiniteScroll (infiniteScrollAction)="getMoreResults()">
+    <!---->
     <div *ngFor="let result of searchResults">
         <div [innerHTML]="result.incipitSvg|safeHtml"></div>
     </div>
