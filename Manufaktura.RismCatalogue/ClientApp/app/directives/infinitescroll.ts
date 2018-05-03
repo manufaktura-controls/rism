@@ -14,6 +14,7 @@ export class InfiniteScrollDirective {
     canTriggerAction: boolean = true;
 
     constructor(private element: ElementRef) {
+        console.info('InfiniteScrollDirective created');
         this.el = element.nativeElement;
         this.viewport = this.getViewport(window);
     }
@@ -34,6 +35,7 @@ export class InfiniteScrollDirective {
            
             document.addEventListener('scroll', () => {
                 if (this.elementEndReachedInDocumentScrollbarContext(window, this.el) && this.canTriggerAction) {
+                    console.info('Trigger action');
                     this.triggerAction();
                 }
             });
@@ -56,9 +58,7 @@ export class InfiniteScrollDirective {
 
     elementEndReachedInDocumentScrollbarContext(win: Window, el: any): boolean {
         const rect = el.getBoundingClientRect();
-        const elementTopRelativeToViewport = rect.top;
-        const elementTopRelativeToDocument = elementTopRelativeToViewport + win.pageYOffset;
-        const scrollableDistance = el.offsetHeight + elementTopRelativeToDocument;
+        const scrollableDistance = el.offsetHeight + rect.top + win.pageYOffset;
         const currentPos = win.pageYOffset + this.viewport.h;
 
         if (currentPos > scrollableDistance) {

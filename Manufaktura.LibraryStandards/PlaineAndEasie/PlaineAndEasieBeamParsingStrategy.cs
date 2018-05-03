@@ -12,7 +12,7 @@
             else
             {
                 parser.IsBeamingEnabled = false;
-                parser.OnBeamingEnded();
+                parser.RebeamGroup();
             }
             return 1;
         }

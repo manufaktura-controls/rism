@@ -24,7 +24,7 @@ export class SearchResultsComponent {
         this.http.get(this.baseUrl + 'api/Search/Search', {
             params: {
                 skip: this.searchResults ? this.searchResults.length : 0,
-                take: 20
+                take: 30
             }
         }).subscribe(result => {
             var resultsPage = result.json() as SearchResult[];

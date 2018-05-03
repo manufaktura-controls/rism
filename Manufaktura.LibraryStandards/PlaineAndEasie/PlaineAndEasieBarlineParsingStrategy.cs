@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Manufaktura.LibraryStandards.PlaineAndEasie
 {
@@ -24,6 +22,9 @@ namespace Manufaktura.LibraryStandards.PlaineAndEasie
         {
             var matchingKey = barlineTypes.Keys.OrderByDescending(k => k.Length).First(k => s.StartsWith(k));
             parser.AddBarline(barlineTypes[matchingKey]);
+            parser.PendingAlter = 0;
+            parser.PendingNatural = false;
+            parser.LastAddedStep = default(char);
 
             return matchingKey.Length;
         }

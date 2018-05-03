@@ -9,8 +9,8 @@ namespace Manufaktura.RismCatalogue.Services.PlaineAndEasie
 {
     public class PlaineAndEasie2ScoreParser : PlaineAndEasieParser<Score>
     {
+        private List<Note> notesToMakeTuple = new List<Note>();
         private List<Note> notesToRebeam = new List<Note>();
-
         protected override void AddBarline(PlaineAndEasieBarlineTypes barlineType)
         {
             var barlineStyle = barlineType != PlaineAndEasieBarlineTypes.Single ? BarlineStyle.LightHeavy : BarlineStyle.Regular;
@@ -31,12 +31,20 @@ namespace Manufaktura.RismCatalogue.Services.PlaineAndEasie
             output.FirstStaff.Add(new Clef(scoreClefType, lineNumber, octaveShift));
         }
 
+        protected override void AddFermata()
+        {
+            notesToMakeTuple.Clear();
+
+            var note = output.FirstStaff.Elements.OfType<Note>().LastOrDefault();
+            if (note != null) note.HasFermataSign = true;
+        }
+
         protected override void AddKey(int numberOfFifths)
         {
             output.FirstStaff.Add(new Key(numberOfFifths));
         }
 
-        protected override void AddNote(char step, int alter, bool hasNatural, bool hasFermata, bool hasTrill, bool hasSlur)
+        protected override void AddNote(char step, int alter, bool hasNatural, bool hasTrill, bool hasSlur)
         {
             var currentKey = output.FirstStaff.Elements.OfType<Key>().LastOrDefault();
             var keyAlter = currentKey?.StepToAlter(step.ToString()) ?? 0;
@@ -47,7 +55,6 @@ namespace Manufaktura.RismCatalogue.Services.PlaineAndEasie
                 new RhythmicDuration(CurrentRhythmicLogValue, CurrentNumberOfDots))
             {
                 HasNatural = hasNatural,
-                HasFermataSign = hasFermata,
                 TrillMark = hasTrill ? NoteTrillMark.Above : NoteTrillMark.None,
             };
             if (lastNote != null && lastNote.Slurs.Any(s => s.Type == NoteSlurType.Start))
@@ -57,6 +64,7 @@ namespace Manufaktura.RismCatalogue.Services.PlaineAndEasie
 
             output.FirstStaff.Add(note);
             if (IsBeamingEnabled) notesToRebeam.Add(note);
+            if (IsGroupingEnabled) notesToMakeTuple.Add(note);
         }
 
         protected override void AddRest()
@@ -83,9 +91,18 @@ namespace Manufaktura.RismCatalogue.Services.PlaineAndEasie
             return score;
         }
 
-        protected override void OnBeamingEnded()
+        protected override void MakeTuple()
         {
-            base.OnBeamingEnded();
+            if (notesToMakeTuple.Count < 2) return;
+
+            notesToMakeTuple.First().Tuplet = TupletType.Start;
+            notesToMakeTuple.Last().Tuplet = TupletType.Stop;
+
+            notesToMakeTuple.Clear();
+        }
+
+        protected override void RebeamGroup()
+        {
             if (!notesToRebeam.Any()) return;
 
             var upDirectionRatio = notesToRebeam.Count(n => n.StemDirection == VerticalDirection.Up) / notesToRebeam.Count;

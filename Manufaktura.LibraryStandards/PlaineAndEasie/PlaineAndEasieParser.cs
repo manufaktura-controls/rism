@@ -5,37 +5,47 @@ namespace Manufaktura.LibraryStandards.PlaineAndEasie
 {
     public abstract class PlaineAndEasieParser
     {
-        protected internal abstract void AddClef(char clefType, int lineNumber, bool isMensural);
+        protected internal int CurrentNumberOfDots { get; set; }
 
-        protected internal abstract void AddKey(int numberOfFifths);
+        protected internal int CurrentOctave { get; set; } = 4;
 
-        protected internal abstract void AddTimeSignature(string symbol, int numerator, int denominator);
+        protected internal int CurrentRhythmicLogValue { get; set; } = 2;
 
-        protected internal abstract void AddNote(char step, int alter, bool hasNatural, bool hasFermata, bool hasTrill, bool hasSlur);
+        protected internal int GroupSize { get; set; }
+        protected internal bool IsBeamingEnabled { get; set; }
 
-        protected internal abstract void AddRest();
+        protected internal bool IsGroupingEnabled { get; set; }
+        protected internal char LastAddedStep { get; set; }
 
-        protected internal abstract void AddWholeMeasureRests(int numberOfMeasures);
+        protected internal int PendingAlter { get; set; }
+
+        protected internal bool PendingNatural { get; set; }
 
         protected internal abstract void AddBarline(PlaineAndEasieBarlineTypes barlineType);
 
-        protected internal int CurrentRhythmicLogValue { get; set; } = 2;
-        protected internal int CurrentNumberOfDots { get; set; }
-        protected internal bool IsBeamingEnabled { get; set; }
-        protected internal int CurrentOctave { get; set; } = 4;
+        protected internal abstract void AddClef(char clefType, int lineNumber, bool isMensural);
 
-        protected internal virtual void OnBeamingEnded()
-        {
-        }
+        protected internal abstract void AddFermata();
+
+        protected internal abstract void AddKey(int numberOfFifths);
+
+        protected internal abstract void AddNote(char step, int alter, bool hasNatural, bool hasTrill, bool hasSlur);
+
+        protected internal abstract void AddRest();
+
+        protected internal abstract void AddTimeSignature(string symbol, int numerator, int denominator);
+
+        protected internal abstract void AddWholeMeasureRests(int numberOfMeasures);
+
+        protected internal abstract void MakeTuple();
+
+        protected internal abstract void RebeamGroup();
     }
 
     public abstract class PlaineAndEasieParser<TOutput> : PlaineAndEasieParser
     {
-        private static Lazy<PlaineAndEasieParsingStrategy[]> strategies;
-
-        protected abstract TOutput CreateOutputObject();
-
         protected readonly TOutput output;
+        private static Lazy<PlaineAndEasieParsingStrategy[]> strategies;
 
         protected PlaineAndEasieParser()
         {
@@ -71,5 +81,7 @@ namespace Manufaktura.LibraryStandards.PlaineAndEasie
             }
             return output;
         }
+
+        protected abstract TOutput CreateOutputObject();
     }
 }
