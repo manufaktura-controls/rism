@@ -1,7 +1,7 @@
 <p *ngIf="!searchResults"><em>Loading...</em></p>
 
 <div *ngIf="searchResults">
-    <div *ngFor="let result of searchResults" (scrolled)="onScroll()">
-        <div [innerHTML]="result.incipitSvg|safeHtml"></div>
+    <div *ngFor="let result of searchResults" (scroll)="onScroll()">
+        <div [innerHTML]="result.incipitSvg|safeHtml" infiniteScroll></div>
     </div>
 </div>

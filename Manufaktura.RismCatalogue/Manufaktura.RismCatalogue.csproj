@@ -23,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="ClientApp\app\directives\infinitescroll.ts" />
     <None Remove="ClientApp\app\pipes\safehtml.pipe.ts" />
   </ItemGroup>
 
@@ -31,6 +32,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <TypeScriptCompile Include="ClientApp\app\directives\infinitescroll.ts" />
     <TypeScriptCompile Include="ClientApp\app\pipes\safehtml.pipe.ts" />
   </ItemGroup>
 

@@ -29,7 +29,6 @@ export class SearchResultsComponent {
 }
 
 
-
 interface SearchResult {
     incipitSvg: string;
 }

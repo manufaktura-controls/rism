@@ -9,6 +9,7 @@ import { NavMenuComponent } from './components/navmenu/navmenu.component';
 import { HomeComponent } from './components/home/home.component';
 import { SearchResultsComponent } from './components/searchresults/searchresults.component';
 import { SafeHtml } from './pipes/safehtml.pipe';
+import { InfiniteScrollDirective } from './directives/infinitescroll';
 
 @NgModule({
     declarations: [
@@ -16,7 +17,8 @@ import { SafeHtml } from './pipes/safehtml.pipe';
         NavMenuComponent,
         SearchResultsComponent,
         HomeComponent,
-        SafeHtml
+        SafeHtml,
+        InfiniteScrollDirective
     ],
     imports: [
         CommonModule,
