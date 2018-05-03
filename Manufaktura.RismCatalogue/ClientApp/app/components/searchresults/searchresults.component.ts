@@ -4,14 +4,26 @@ import { Http } from '@angular/http';
 @Component({
     selector: 'search-results',
     templateUrl: './searchresults.component.html'
-})  
+})
 export class SearchResultsComponent {
     public searchResults: SearchResult[];
+    public isLoading: Boolean = false;
+    private http: Http;
+    private baseUrl: string;
 
     constructor(http: Http, @Inject('BASE_URL') baseUrl: string) {
-        http.get(baseUrl + 'api/Search/Search', {
+        this.http = http;
+        this.baseUrl = baseUrl;
+        this.getMoreResults();
+    }
+
+    getMoreResults() {
+        if (this.isLoading) return;
+        this.isLoading = true;
+
+        this.http.get(this.baseUrl + 'api/Search/Search', {
             params: {
-                skip: 0,
+                skip: this.searchResults ? this.searchResults.length : 0,
                 take: 20
             }
         }).subscribe(result => {
@@ -20,16 +32,14 @@ export class SearchResultsComponent {
             else {
                 for (var r in resultsPage) this.searchResults.push(resultsPage[r]);
             }
-        }, error => console.error(error));
-    }
-
-    onScroll() {
-        console.info('scrolled');
+            this.isLoading = false;
+        }, error => {
+            console.error(error);
+            this.isLoading = false;
+        });
     }
 }
-
 
 interface SearchResult {
     incipitSvg: string;
 }
-
