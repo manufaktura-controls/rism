@@ -32,7 +32,11 @@ namespace Manufaktura.RismCatalogue.Migration
 
         private static void Main(string[] args)
         {
-            var path = @"C:\Databases\rismAllMARCXMLexample\rism_130616_example.xml";
+            //var path = @"C:\Databases\rismAllMARCXMLexample\rism_130616_example.xml";
+            var path = @"C:\Databases\rismAllMARCXML\rism_170316.xml";
+            var maxRecords = 40000;
+            var counter = 0;
+
             using (var db = new RismDbContext(new DbContextOptionsBuilder().UseMySql("server=localhost;database=manufaktura-rism;uid=admin;pwd=123123").Options))
             {
                 using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read))
@@ -43,13 +47,14 @@ namespace Manufaktura.RismCatalogue.Migration
                         {
                             reader.MoveToContent();
                         }
-                        while (true)
+                        while (counter < maxRecords)
                         {
                             var record = reader.ReadOuterXml();
                             if (string.IsNullOrWhiteSpace(record)) break;
 
                             var recordElement = XElement.Parse(record);
                             ParseRecord(recordElement, db);
+                            counter++;
                         }
                     }
                 }
@@ -59,17 +64,17 @@ namespace Manufaktura.RismCatalogue.Migration
         private static void ParseRecord(XElement recordElement, RismDbContext dbContext)
         {
             var record = new MusicalSource();
-            foreach (var field in recordElement.Elements().Where(e => e.Name == "controlfield"))
+            foreach (var field in recordElement.Elements().Where(e => e.Name.LocalName == "controlfield"))
             {
-                var tag = field.Attributes().FirstOrDefault(a => a.Name == "tag")?.Value;
+                var tag = field.Attributes().FirstOrDefault(a => a.Name.LocalName == "tag")?.Value;
                 if (tag == null) continue;
 
                 if (tag == "001") record.Id = field.Value;
             }
 
-            foreach (var field in recordElement.Elements().Where(e => e.Name == "datafield"))
+            foreach (var field in recordElement.Elements().Where(e => e.Name.LocalName == "datafield"))
             {
-                var tag = field.Attributes().FirstOrDefault(a => a.Name == "tag")?.Value;
+                var tag = field.Attributes().FirstOrDefault(a => a.Name.LocalName == "tag")?.Value;
                 if (tag == null) continue;
                 if (!FieldFactories.ContainsKey(tag)) continue;
 
@@ -81,7 +86,7 @@ namespace Manufaktura.RismCatalogue.Migration
                     if (subfieldAttribute == null) continue;
 
                     var value = field.Elements()
-                        .FirstOrDefault(e => e.Attributes().FirstOrDefault(a => a.Name == "code")?.Value == subfieldAttribute.Code)?
+                        .FirstOrDefault(e => e.Attributes().FirstOrDefault(a => a.Name.LocalName == "code")?.Value == subfieldAttribute.Code)?
                         .Value;
                     property.SetValue(entity, value);   //TODO: Type conversion, converter types, etc.
                 }

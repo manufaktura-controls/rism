@@ -18,7 +18,7 @@ export class InfiniteScrollDirective {
     }
 
     @Input() infiniteScrollContext: InfiniteScrollContext = 'document';
-    @Input() infiniteScrollThreshold: number = 50;
+    @Input() infiniteScrollThreshold: number = 150;
     @Output() infiniteScrollAction: EventEmitter<any> = new EventEmitter();
     @HostListener('scroll', ['$event']) onElementScroll() {
         if (this.infiniteScrollContext === 'self') {
