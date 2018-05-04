@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Manufaktura.RismCatalogue.Model
+﻿namespace Manufaktura.RismCatalogue.Model
 {
-    class MusicalSource
+    public class MusicalSource
     {
+        public string Id { get; set; }
+
+        public string ComposerName { get; set; }
+        public string Title { get; set; }
     }
 }

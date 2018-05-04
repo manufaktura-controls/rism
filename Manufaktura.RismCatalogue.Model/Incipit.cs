@@ -4,7 +4,7 @@ namespace Manufaktura.RismCatalogue.Model
 {
     [MarcDatafield("031")]
     public class Incipit : Entity
-    {
+    { 
         [MarcSubfield("a")]
         public string NumberOfWork { get; set; }
 

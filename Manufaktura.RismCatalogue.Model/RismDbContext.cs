@@ -9,5 +9,7 @@ namespace Manufaktura.RismCatalogue.Model
         }
 
         public DbSet<Incipit> Incipits { get; set; }
+        public DbSet<Person> Persons { get; set; }
+        public DbSet<MusicalSource> MusicalSources { get; set; }
     }
 }

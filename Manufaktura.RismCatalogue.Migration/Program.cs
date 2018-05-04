@@ -58,6 +58,15 @@ namespace Manufaktura.RismCatalogue.Migration
 
         private static void ParseRecord(XElement recordElement, RismDbContext dbContext)
         {
+            var record = new MusicalSource();
+            foreach (var field in recordElement.Elements().Where(e => e.Name == "controlfield"))
+            {
+                var tag = field.Attributes().FirstOrDefault(a => a.Name == "tag")?.Value;
+                if (tag == null) continue;
+
+                if (tag == "001") record.Id = field.Value;
+            }
+
             foreach (var field in recordElement.Elements().Where(e => e.Name == "datafield"))
             {
                 var tag = field.Attributes().FirstOrDefault(a => a.Name == "tag")?.Value;
@@ -76,9 +85,14 @@ namespace Manufaktura.RismCatalogue.Migration
                         .Value;
                     property.SetValue(entity, value);   //TODO: Type conversion, converter types, etc.
                 }
+                entity.MusicalSource = record;
                 dbContext.Attach(entity);
-                dbContext.SaveChanges();    //TODO: Bulk insert
             }
+
+            dbContext.MusicalSources.Add(record);
+            dbContext.SaveChanges();    //TODO: Bulk insert
+
+            Console.WriteLine($"Record {record.Id} added.");
         }
     }
 }
