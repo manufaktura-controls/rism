@@ -47,4 +47,9 @@ export class SearchResultsComponent {
 
 interface SearchResult {
     incipitSvg: string;
+    textIncipit: string;
+    voice: string;
+    composerName: string;
+    title: string;
+    captionOrHeading: string;
 }

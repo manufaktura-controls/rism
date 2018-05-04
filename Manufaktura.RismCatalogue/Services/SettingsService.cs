@@ -22,6 +22,7 @@ namespace Manufaktura.RismCatalogue.Services
             var fontMetadata = string.IsNullOrWhiteSpace(fontMetadataPath) ? null : File.ReadAllText(Path.Combine(environment.ContentRootPath, "wwwroot") + fontMetadataPath);
             var settings = new HtmlScoreRendererSettings();
             settings.RenderSurface = HtmlScoreRendererSettings.HtmlRenderSurface.Svg;
+            settings.CustomElementPositionRatio = 1;
             if (musicFontName == "Polihymnia")
             {
                 settings.Fonts.Add(MusicFontStyles.MusicFont, new HtmlFontInfo(musicFontName, 22, musicFontUris));

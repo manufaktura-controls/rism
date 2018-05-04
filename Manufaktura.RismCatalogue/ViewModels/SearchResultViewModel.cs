@@ -2,11 +2,15 @@
 {
     public class SearchResultViewModel
     {
-        public SearchResultViewModel(string incipitSvg) //TODO: Will be constructed from MusicalSource
-        {
-            IncipitSvg = incipitSvg;
-        }
-
         public string IncipitSvg { get; set; }
+
+        public string TextIncipit { get; set; }
+
+        public string Voice { get; set; }
+
+        public string ComposerName { get; set; }
+
+        public string CaptionOrHeading { get; set; }
+        public string Title { get; set; }
     }
 }

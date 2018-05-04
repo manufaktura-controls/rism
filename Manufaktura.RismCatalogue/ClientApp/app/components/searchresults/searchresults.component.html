@@ -1,6 +1,7 @@
 <div *ngIf="searchResults" infiniteScroll (infiniteScrollAction)="getMoreResults()">
-    <div *ngFor="let result of searchResults">
+    <div *ngFor="let result of searchResults" class="highlight">
         <div [innerHTML]="result.incipitSvg|safeHtml"></div>
+        <div><span class="badge">{{result.voice}}</span> <span>{{result.captionOrHeading}}</span> <i>{{result.textIncipit}}</i></div>
     </div>
 </div>
 

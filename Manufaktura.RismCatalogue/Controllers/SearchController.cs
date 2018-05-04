@@ -29,8 +29,13 @@ namespace Manufaktura.RismCatalogue.Controllers
                 .Skip(skip)
                 .Take(take)
                 .ToArray();
-            var scores = incipits.Select(i => plaineAndEasieService.Parse(i)).ToArray();
-            var viewModels = scores.Select(s => new SearchResultViewModel(s == null ? null : scoreRendererService.RenderScore(s))).ToArray();
+            var viewModels = incipits.Select(i => new SearchResultViewModel
+            {
+                IncipitSvg = string.IsNullOrWhiteSpace(i.MusicalNotation) ? null : scoreRendererService.RenderScore(plaineAndEasieService.Parse(i)),
+                CaptionOrHeading = i.CaptionOrHeading,
+                TextIncipit = i.TextIncipit,
+                Voice = i.VoiceOrInstrument
+            }).ToArray();
             return viewModels;
         }
     }
