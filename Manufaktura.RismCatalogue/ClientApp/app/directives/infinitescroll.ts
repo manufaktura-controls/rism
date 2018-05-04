@@ -44,7 +44,7 @@ export class InfiniteScrollDirective {
     scroll = (): void => {
         if (this.elementEndReachedInDocumentScrollbarContext(window, this.el) && this.canTriggerAction) {
             console.info('Trigger action');
-            this.ngZone.run(() => { this.triggerAction(); });
+            this.triggerAction();
         }
     };
 
@@ -66,8 +66,9 @@ export class InfiniteScrollDirective {
         const rect = el.getBoundingClientRect();
         const scrollableDistance = el.offsetHeight + rect.top + win.pageYOffset;
         const currentPos = win.pageYOffset + this.viewport.h;
+        //console.info('CurrentPos: ' + currentPos + ' scrollableDistance: ' + scrollableDistance);
 
-        if (currentPos > scrollableDistance) {
+        if (currentPos > scrollableDistance - this.infiniteScrollThreshold) {
             this.canTriggerAction = true;
             return true;
         }
