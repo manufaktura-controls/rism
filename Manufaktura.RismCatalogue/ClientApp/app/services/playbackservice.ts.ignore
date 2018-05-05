@@ -1,0 +1,129 @@
+﻿import { Injectable } from '@angular/core';
+import * as $ from "jquery";
+
+export class NoteInfo {
+    delayTime: number;
+    pitch: number;
+    duration: number;
+    elements: HTMLElement[];
+    id: string;
+    repetition: number;
+}
+
+@Injectable()
+export class PlaybackService {
+    constructor() { }
+
+    isPlaying: boolean = false;
+    stopToken: number = 0;
+    currentMelodyId: string;
+    notes: NoteInfo[];
+    self: PlaybackService = this;
+
+    play(melodyId: string) {
+        var svg = $("#melody-" + melodyId + " svg");
+
+        this.currentMelodyId = melodyId;
+
+        this.isPlaying = true;
+        this.stopToken++;
+        var currentStopToken = this.stopToken;
+        var overalTime = 0;
+
+        function colorBlack(elements: HTMLElement[]) {
+            for (var i in elements) {
+                var e = elements[i];
+                if (e.tagName === "line" || e.tagName === "path") e.style.stroke = "#000";
+                else e.style.fill = "#000";
+            }
+        }
+        function colorRed(elements: HTMLElement[]) {
+            for (var i in elements) {
+                var e = elements[i];
+                if (e.tagName === "line" || e.tagName === "path") e.style.stroke = "#c34853";
+                else e.style.fill = "#c34853";
+            }
+        }
+
+        function getNoteForIdAndRepetition(noteCollection: NoteInfo[], id: string, repetition: number) {
+            if (noteCollection == null) return null;
+            for (var n in noteCollection) {
+                if (noteCollection[n].id === id && noteCollection[n].repetition === repetition) return noteCollection[n];
+            }
+            return null;
+        }
+
+        svg.children().each((i,e) => parseChildNode(this.notes,i,e));
+
+        function processChildNode(notes: NoteInfo[], i: number, e: any) {
+            var unparsedPlaybackStartAttribute = $(e).attr("data-playback-start");
+            if (unparsedPlaybackStartAttribute == null) return;
+
+            var delayTimes = unparsedPlaybackStartAttribute.split(" ");
+            if (delayTimes == null) return;
+
+            var pitchUnparsed = $(e).attr("data-midi-pitch");
+            var pitch = pitchUnparsed ? parseInt(pitchUnparsed) : null;
+            var durationUnparsed = $(e).attr("data-playback-duration");
+            if (durationUnparsed == null) return;
+            var duration = parseInt(durationUnparsed);
+            var elementId = $(e).attr("id") || "";
+
+            for (var repetitionNumber in delayTimes) {
+                var delayTime = parseInt(delayTimes[repetitionNumber]);
+
+                var existingNoteInfo = getNoteForIdAndRepetition(notes, elementId, Number('repetitionNumber'));
+                if (existingNoteInfo != null) {
+                    existingNoteInfo.elements.push(e);
+                }
+                else {
+                    var note = new NoteInfo{ delayTime: delayTime, pitch: pitch, duration: duration, elements: [], id: elementId, repetition: repetitionNumber };
+                    note.elements.push(e);
+                    notes.push(note);
+                    overalTime = delayTime + duration;
+                }
+            }
+        }
+
+        for (var i in this.notes) {
+            var noteInfo = this.notes[i];
+
+            setTimeout(function (note) {
+                return function () {
+                    if (self.stopToken !== currentStopToken) {
+                        colorBlack(note.elements);
+                        return;
+                    }
+
+                    if (note.pitch != null) {
+                        //console.info('Playing repetition ' + note.pitch + ' with ' + note.elements.length + ' elements.');
+                        MIDI.noteOn(0, note.pitch, 127, 0);
+                        MIDI.noteOff(0, note.pitch, note.duration * 0.001);
+                    }
+                    colorRed(note.elements);
+                };
+            }(noteInfo), noteInfo.delayTime);
+
+            setTimeout(function (note) {
+                return function () {
+                    colorBlack(note.elements);
+                };
+            }(noteInfo), noteInfo.delayTime + noteInfo.duration);
+        }
+
+        setTimeout(function () {
+            if (this.stopToken !== currentStopToken) return;
+            this.isPlaying = false;
+        }, overalTime);
+    }
+
+    stop() {
+        console.info('Stop');
+        if (this.currentMelodyId) {
+            $("#btnPlay-" + this.currentMelodyId).show();
+            $("#btnStop-" + this.currentMelodyId).hide();
+        }
+        this.stopToken++;
+        this.isPlaying = false;
+    }
+}
