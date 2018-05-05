@@ -1,5 +1,5 @@
+using Manufaktura.RismCatalogue.Common.Services;
 using Manufaktura.RismCatalogue.Model;
-using Manufaktura.RismCatalogue.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.Webpack;

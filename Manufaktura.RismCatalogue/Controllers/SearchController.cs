@@ -1,6 +1,6 @@
-﻿using Manufaktura.RismCatalogue.Model;
-using Manufaktura.RismCatalogue.Services;
-using Manufaktura.RismCatalogue.ViewModels;
+﻿using Manufaktura.RismCatalogue.Common.Services;
+using Manufaktura.RismCatalogue.Common.ViewModels;
+using Manufaktura.RismCatalogue.Model;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
