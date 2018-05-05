@@ -35,11 +35,11 @@ export class SearchResultsComponent {
     }
 
     playMidi(id: string) {
-        player.play(id);
+        this.ngZone.runOutsideAngular(() => player.play(id));
     }
 
     stopMidi() {
-        player.stop();
+        this.ngZone.runOutsideAngular(() => player.stop());
     }
 
     getMoreResults() {
