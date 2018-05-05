@@ -15,6 +15,24 @@
               asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
         <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
     </environment>
+
+    <script src="~/lib/midijs/Base64.js" type="text/javascript"></script>
+    <script src="~/lib/midijs/Base64binary.js" type="text/javascript"></script>
+    <script src="~/lib/midijs/WebAudioAPI.js" type="text/javascript"></script>
+    <script src="~/lib/midijs/audioDetect.js" type="text/javascript"></script>
+    <script src="~/lib/midijs/gm.js" type="text/javascript"></script>
+    <script src="~/lib/midijs/loader.js" type="text/javascript"></script>
+    <script src="~/lib/midijs/plugin.audiotag.js" type="text/javascript"></script>
+    <script src="~/lib/midijs/plugin.webaudio.js" type="text/javascript"></script>
+    <script src="~/lib/midijs/plugin.webmidi.js" type="text/javascript"></script>
+    <!-- utils -->
+    <script src="~/lib/midijs/dom_request_xhr.js" type="text/javascript"></script>
+    <script src="~/lib/midijs/dom_request_script.js" type="text/javascript"></script>
+    <script src="~/lib/midijs/jquery-3.1.1.min.js" type="text/javascript"></script>
+
+    <script src="~/lib/knockout/knockout.js"></script>
+    <script src="~/js/PlaybackManager.js"></script>
+    @RenderSection("Scripts", required: false)
 </head>
 <body>
     <nav class="navbar navbar-inverse navbar-fixed-top">
@@ -62,23 +80,8 @@
         </script>
     </environment>
 
-    <script src="~/lib/midijs/Base64.js" type="text/javascript"></script>
-    <script src="~/lib/midijs/Base64binary.js" type="text/javascript"></script>
-    <script src="~/lib/midijs/WebAudioAPI.js" type="text/javascript"></script>
-    <script src="~/lib/midijs/audioDetect.js" type="text/javascript"></script>
-    <script src="~/lib/midijs/gm.js" type="text/javascript"></script>
-    <script src="~/lib/midijs/loader.js" type="text/javascript"></script>
-    <script src="~/lib/midijs/plugin.audiotag.js" type="text/javascript"></script>
-    <script src="~/lib/midijs/plugin.webaudio.js" type="text/javascript"></script>
-    <script src="~/lib/midijs/plugin.webmidi.js" type="text/javascript"></script>
-    <!-- utils -->
-    <script src="~/lib/midijs/dom_request_xhr.js" type="text/javascript"></script>
-    <script src="~/lib/midijs/dom_request_script.js" type="text/javascript"></script>
-    <script src="~/lib/midijs/jquery-3.1.1.min.js" type="text/javascript"></script>
 
-    <script src="~/lib/knockout/knockout.js"></script>
-    <script src="~/js/PlaybackManager.js"></script>
 
-    @RenderSection("Scripts", required: false)
+
 </body>
 </html>

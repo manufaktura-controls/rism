@@ -1,8 +1,9 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
+
 @section scripts {
-    <script src="~/js/SearchViewModel.js"></script>
+    <script src="~/js/SearchViewModel.min.js"></script>
 }
 
 
@@ -46,8 +47,28 @@
     </div>
 </div>
 
+<div data-bind="foreach: results">
+    <div data-bind="html: incipitSvg, attr: {'id': 'melody-' + id}" ></div>
+    <a data-bind="attr: {'id': 'btnPlay-' + id}, click: function() { $parent.player.play(id);}" class="btn btn-primary">play</a>
+    <a class="btn btn-primary" data-bind="attr: {'id': 'btnStop-' + id}, click: $parent.player.stop" style="display:none"><i class="fa fa-stop-circle"></i> Stop</a>
+</div>
+<a class="btn btn-primary" data-bind="click: getMoreResults">Więcej</a>
 
 <script type="text/javascript">
     var vm = new SearchViewModel();
     ko.applyBindings(vm);
+    vm.getMoreResults();
+
+    window.onload = function (e) {
+        MIDI.loadPlugin({
+            soundfontUrl: "./soundfonts/",
+            instrument: "acoustic_grand_piano",
+            onprogress: function (state, progress) {
+                console.log(state, progress);
+            },
+            onsuccess: function () {
+                MIDI.setVolume(0, 127);
+            }
+        });
+    };
 </script>

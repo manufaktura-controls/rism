@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Manufaktura.RismCatalogue.Common.Services;
+using Manufaktura.RismCatalogue.Model;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -22,10 +25,14 @@ namespace Manufaktura.RismCatalogue.Knockout
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+            services.AddDbContext<RismDbContext>(c => c.UseMySql("server=localhost;database=manufaktura-rism;uid=admin;pwd=123123"));
+            services.AddSingleton<SettingsService>();
+            services.AddSingleton<PlaineAndEasieService>();
+            services.AddSingleton<ScoreRendererService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider serviceProvider)
         {
             if (env.IsDevelopment())
             {
@@ -45,6 +52,9 @@ namespace Manufaktura.RismCatalogue.Knockout
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+
+            var db = serviceProvider.GetRequiredService<RismDbContext>();
+            db.Database.EnsureCreated();
         }
     }
 }

@@ -116,7 +116,6 @@
     }
 }
 
-if (typeof player === 'undefined') player = new PlaybackManager();
 
 
 
