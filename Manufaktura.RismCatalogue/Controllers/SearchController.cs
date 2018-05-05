@@ -31,6 +31,7 @@ namespace Manufaktura.RismCatalogue.Controllers
                 .ToArray();
             var viewModels = incipits.Select(i => new SearchResultViewModel
             {
+                Id = i.Id.ToString(),
                 IncipitSvg = string.IsNullOrWhiteSpace(i.MusicalNotation) ? null : scoreRendererService.RenderScore(plaineAndEasieService.Parse(i)),
                 CaptionOrHeading = i.CaptionOrHeading,
                 TextIncipit = i.TextIncipit,

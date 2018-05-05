@@ -1,40 +1,13 @@
-<script src="~/scripts/midijs/Base64.js" type="text/javascript"></script>
-<script src="~/scripts/midijs/Base64binary.js" type="text/javascript"></script>
-<script src="~/scripts/midijs/WebAudioAPI.js" type="text/javascript"></script>
-<script src="/scripts/midijs/audioDetect.js" type="text/javascript"></script>
-<script src="/scripts/midijs/gm.js" type="text/javascript"></script>
-<script src="/scripts/midijs/loader.js" type="text/javascript"></script>
-<script src="/scripts/midijs/plugin.audiotag.js" type="text/javascript"></script>
-<script src="/scripts/midijs/plugin.webaudio.js" type="text/javascript"></script>
-<script src="/scripts/midijs/plugin.webmidi.js" type="text/javascript"></script>
-<!-- utils -->
-<script src="/scripts/midijs/dom_request_xhr.js" type="text/javascript"></script>
-<script src="/scripts/midijs/dom_request_script.js" type="text/javascript"></script>
 
-<script src="/scripts/PlaybackManager.js"></script>
 
 <div *ngIf="searchResults" infiniteScroll (infiniteScrollAction)="getMoreResults()">
     <div *ngFor="let result of searchResults" class="highlight">
-        <div [innerHTML]="result.incipitSvg|safeHtml" id="melody-{{result.Id}}"></div>
+        <div [innerHTML]="result.incipitSvg|safeHtml" id="melody-{{result.id}}"></div>
         <div><span class="badge">{{result.voice}}</span> <span>{{result.captionOrHeading}}</span> <i>{{result.textIncipit}}</i></div>
-        <a id="btnPlay-{{result.Id}}" class="btn btn-primary" (click)="window.player.play(result.Id)">play</a>
-        <a class="btn btn-primary" id="btnStop-{{result.Id}}" (click)="window.player.stop()" style="display:none"><i class="fa fa-stop-circle"></i> Stop</a>
+        <a id="btnPlay-{{result.id}}" class="btn btn-primary" (click)="playMidi(result.id)">play</a>
+        <a class="btn btn-primary" id="btnStop-{{result.id}}" (click)="stopMidi()" style="display:none"><i class="fa fa-stop-circle"></i> Stop</a>
     </div>
 </div>
 
 <p *ngIf="isLoading"><i class="fa fa-spinner fa-spin" style="font-size: 30px; margin: 10px 0px 10px 0px;"></i></p>
 
-<script type="text/javascript">
-    window.onload = function () {
-        MIDI.loadPlugin({
-            soundfontUrl: "./soundfont/",
-            instrument: "acoustic_grand_piano",
-            onprogress: function (state, progress) {
-                console.log(state, progress);
-            },
-            onsuccess: function () {
-                MIDI.setVolume(0, 127);
-            }
-        });
-    };
-</script>

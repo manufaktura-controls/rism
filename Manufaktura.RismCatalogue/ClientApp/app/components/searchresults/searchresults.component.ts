@@ -1,5 +1,7 @@
 import { Component, Inject, NgZone } from '@angular/core';
 import { Http } from '@angular/http';
+declare var MIDI: any;
+declare var player: any;
 
 @Component({
     selector: 'search-results',
@@ -17,6 +19,27 @@ export class SearchResultsComponent {
         this.http = http;
         this.baseUrl = baseUrl;
         this.getMoreResults();
+    }
+
+    ngOnInit() {
+        MIDI.loadPlugin({
+            soundfontUrl: "./soundfonts/",
+            instrument: "acoustic_grand_piano",
+            onprogress: function (state: any, progress: any) {
+                console.log(state, progress);
+            },
+            onsuccess: function () {
+                MIDI.setVolume(0, 127);
+            }
+        });
+    }
+
+    playMidi(id: string) {
+        player.play(id);
+    }
+
+    stopMidi() {
+        player.stop();
     }
 
     getMoreResults() {
@@ -46,6 +69,7 @@ export class SearchResultsComponent {
 }
 
 interface SearchResult {
+    id: string;
     incipitSvg: string;
     textIncipit: string;
     voice: string;

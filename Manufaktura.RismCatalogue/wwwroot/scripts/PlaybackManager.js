@@ -115,7 +115,8 @@
         self.isPlaying = false;
     }
 }
-window.player = new PlaybackManager();
+
+if (typeof player === 'undefined') player = new PlaybackManager();
 
 
 
