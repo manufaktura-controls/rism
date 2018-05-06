@@ -5,16 +5,10 @@
     this.player = new PlaybackManager();
     this.isLoading = ko.observable(false);
     this.hasMoreResults = true;
-    this.scrolled = function (data, event) {
-        if (self.isLoading()) return;
-        var elem = event.target;
-        console.info('Scrolltop: ' + elem.scrollTop + " Scrollheight: " + elem.scrollHeight + " Offset height: " + elem.offsetHeight);
-        if (elem.scrollTop > (elem.scrollHeight - elem.offsetHeight - 200)) {
-            self.getMoreResults();
-        }
-    };
 
     this.getMoreResults = function () {
+        if (self.isLoading()) return;
+
         self.isLoading(true);
         $.ajax({
             type: "GET",

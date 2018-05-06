@@ -26,5 +26,11 @@
     "inputFiles": [
       "wwwroot/js/SearchViewModel.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/js/InfiniteScrollManager.min.js",
+    "inputFiles": [
+      "wwwroot/js/InfiniteScrollManager.js"
+    ]
   }
 ]
