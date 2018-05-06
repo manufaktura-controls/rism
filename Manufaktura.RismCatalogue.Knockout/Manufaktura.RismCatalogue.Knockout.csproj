@@ -18,8 +18,4 @@
     <ProjectReference Include="..\Manufaktura.RismCatalogue.Model\Manufaktura.RismCatalogue.Model.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="wwwroot\lib\fontawesome\" />
-  </ItemGroup>
-
 </Project>

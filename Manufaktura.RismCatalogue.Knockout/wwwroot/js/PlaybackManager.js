@@ -1,19 +1,15 @@
 ﻿var PlaybackManager = function () {
     var self = this;
-    this.isPlaying = false;
+    this.isPlaying = ko.observable(false);
+    this.currentMelodyId = ko.observable();
     this.stopToken = 0;
 
     this.play = function (melodyId) {
         var svg = $("#melody-" + melodyId + " svg");
-        if (self.currentMelodyId) {
-            $("#btnPlay-" + self.currentMelodyId).show();
-            $("#btnStop-" + self.currentMelodyId).hide();
-        }
-        self.currentMelodyId = melodyId;
-        $("#btnPlay-" + melodyId).hide();
-        $("#btnStop-" + melodyId).show();
 
-        self.isPlaying = true;
+        self.currentMelodyId(melodyId);
+
+        self.isPlaying(true);
         self.stopToken++;
         var currentStopToken = self.stopToken;
         var overalTime = 0;
@@ -101,18 +97,13 @@
 
         setTimeout(function () {
             if (self.stopToken !== currentStopToken) return;
-            self.isPlaying = false;
+            self.isPlaying(false);
         }, overalTime);
     }
 
     this.stop = function () {
-        console.info('Stop');
-        if (self.currentMelodyId) {
-            $("#btnPlay-" + this.currentMelodyId).show();
-            $("#btnStop-" + this.currentMelodyId).hide();
-        }
         self.stopToken++;
-        self.isPlaying = false;
+        self.isPlaying(false);
     }
 }
 
