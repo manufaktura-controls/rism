@@ -1,5 +1,6 @@
 ﻿using Manufaktura.Controls.Model.Fonts;
 using Manufaktura.Controls.Rendering.Implementations;
+using Manufaktura.Controls.SMuFL;
 using Microsoft.AspNetCore.Hosting;
 using System.IO;
 
@@ -29,13 +30,15 @@ namespace Manufaktura.RismCatalogue.Common.Services
                 settings.Fonts.Add(MusicFontStyles.StaffFont, new HtmlFontInfo(musicFontName, 24, musicFontUris));
                 settings.Fonts.Add(MusicFontStyles.GraceNoteFont, new HtmlFontInfo(musicFontName, 12, musicFontUris));
                 settings.Fonts.Add(MusicFontStyles.TimeSignatureFont, new HtmlFontInfo("Open Sans", 12, "/fonts/OpenSans-Regular.ttf"));
+                settings.Fonts.Add(MusicFontStyles.LyricsFont, new HtmlFontInfo("Open Sans", 12, "/fonts/OpenSans-Regular.ttf"));
+                settings.Fonts.Add(MusicFontStyles.DirectionFont, new HtmlFontInfo("Open Sans", 14, "/fonts/OpenSans-Regular.ttf"));
             }
             else
             {
-                settings.LoadSMuFLFont(fontMetadata, musicFontName, 20, musicFontUris);
+                var profile = SMuFLMusicFont.CreateFromJsonString(fontMetadata);
+                settings.SetMusicFont(profile, musicFontName, musicFontUris);
             }
-            settings.Fonts.Add(MusicFontStyles.LyricsFont, new HtmlFontInfo("Open Sans", 12, "/fonts/OpenSans-Regular.ttf"));
-            settings.Fonts.Add(MusicFontStyles.DirectionFont, new HtmlFontInfo("Open Sans", 14, "/fonts/OpenSans-Regular.ttf"));
+
             settings.RenderingMode = Controls.Rendering.ScoreRenderingModes.AllPages;
             settings.IgnorePageMargins = true;
 
