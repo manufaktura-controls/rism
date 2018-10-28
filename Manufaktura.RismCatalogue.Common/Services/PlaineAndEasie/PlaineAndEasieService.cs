@@ -1,7 +1,6 @@
 ﻿using Manufaktura.Controls.Model;
-using Manufaktura.RismCatalogue.Model;
 using Manufaktura.RismCatalogue.Common.Services.PlaineAndEasie;
-using System.Text;
+using Manufaktura.RismCatalogue.Model;
 
 namespace Manufaktura.RismCatalogue.Common.Services
 {
