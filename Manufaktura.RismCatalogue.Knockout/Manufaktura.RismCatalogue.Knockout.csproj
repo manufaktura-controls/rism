@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Manufaktura.RismCatalogue.Blazor\Manufaktura.RismCatalogue.Blazor.csproj" />
     <ProjectReference Include="..\Manufaktura.RismCatalogue.Common\Manufaktura.RismCatalogue.Common.csproj" />
     <ProjectReference Include="..\Manufaktura.RismCatalogue.Model\Manufaktura.RismCatalogue.Model.csproj" />
   </ItemGroup>

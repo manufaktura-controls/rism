@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Manufaktura.RismCatalogue.Common.Services;
+﻿using Manufaktura.RismCatalogue.Common.Services;
 using Manufaktura.RismCatalogue.Model;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 
 namespace Manufaktura.RismCatalogue.Knockout
 {
@@ -52,6 +49,7 @@ namespace Manufaktura.RismCatalogue.Knockout
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+            app.UseBlazor<Blazor.Startup>();
 
             var db = serviceProvider.GetRequiredService<RismDbContext>();
             db.Database.EnsureCreated();
