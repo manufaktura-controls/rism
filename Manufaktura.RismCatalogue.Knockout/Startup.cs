@@ -1,4 +1,4 @@
-﻿using Manufaktura.RismCatalogue.Common.Services;
+﻿using Manufaktura.RismCatalogue.Shared.Services;
 using Manufaktura.RismCatalogue.Model;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;

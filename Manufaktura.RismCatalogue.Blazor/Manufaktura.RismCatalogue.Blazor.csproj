@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Manufaktura.Controls" Version="1.4.0" />
     <PackageReference Include="Manufaktura.Music" Version="1.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Blazor.Browser" Version="0.6.0" />
     <PackageReference Include="Microsoft.AspNetCore.Blazor.Build" Version="0.6.0" PrivateAssets="all" />
@@ -16,9 +17,17 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Manufaktura.RismCatalogue.Shared\Manufaktura.RismCatalogue.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Update="Shared\Keyboard.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Services\" />
   </ItemGroup>
 
 </Project>

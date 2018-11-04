@@ -1,8 +1,8 @@
 ﻿using Manufaktura.Controls.Model;
-using Manufaktura.RismCatalogue.Common.Services.PlaineAndEasie;
+using Manufaktura.RismCatalogue.Shared.Services.PlaineAndEasie;
 using Manufaktura.RismCatalogue.Model;
 
-namespace Manufaktura.RismCatalogue.Common.Services
+namespace Manufaktura.RismCatalogue.Shared.Services
 {
     public class PlaineAndEasieService
     {

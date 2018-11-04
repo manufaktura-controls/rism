@@ -5,7 +5,7 @@ using Manufaktura.Music.Model;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Manufaktura.RismCatalogue.Common.Services.PlaineAndEasie
+namespace Manufaktura.RismCatalogue.Shared.Services.PlaineAndEasie
 {
     public class PlaineAndEasie2ScoreParser : PlaineAndEasieParser<Score>
     {

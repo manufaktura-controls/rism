@@ -1,3 +1,11 @@
-﻿@page "/"
+﻿@using Manufaktura.Controls.Model
+@using Manufaktura.Music.Model.MajorAndMinor
 
-<Keyboard StartingMidiPitch="55" NumberOfKeys="39" WhiteKeyClass="btn-key btn-key-large" BlackKeyClass="btn-key btn-key-small" KeyGapClass="btn-key-none"  />
+@page "/"
+
+<NoteViewer Score=@score />
+<Keyboard StartingMidiPitch="55" NumberOfKeys="39" WhiteKeyClass="btn-key btn-key-large" BlackKeyClass="btn-key btn-key-small" KeyGapClass="btn-key-none" />
+
+@functions {
+    Score score = Score.CreateOneStaffScore(Clef.Treble, MajorScale.C);
+}

@@ -1,0 +1,16 @@
+﻿@using Manufaktura.Controls.Model
+@using Manufaktura.Controls.Rendering.Implementations
+@using Manufaktura.RismCatalogue.Shared.Services
+
+<!--inject ScoreRendererService scoreRendererService-->
+
+@((MarkupString)RenderScore())
+
+@functions {
+    [Parameter]
+    Score Score { get; set; }
+
+    private int canvasIdCount = 0;
+
+    public string RenderScore() => null;// scoreRendererService.RenderScore(Score);
+}

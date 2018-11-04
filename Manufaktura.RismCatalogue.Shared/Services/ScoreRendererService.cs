@@ -2,7 +2,7 @@
 using Manufaktura.Controls.Rendering.Implementations;
 using System;
 
-namespace Manufaktura.RismCatalogue.Common.Services
+namespace Manufaktura.RismCatalogue.Shared.Services
 {
     public class ScoreRendererService
     {

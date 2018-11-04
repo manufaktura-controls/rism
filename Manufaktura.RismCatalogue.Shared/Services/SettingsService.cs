@@ -1,18 +1,16 @@
 ﻿using Manufaktura.Controls.Model.Fonts;
 using Manufaktura.Controls.Rendering.Implementations;
 using Manufaktura.Controls.SMuFL;
-using Microsoft.AspNetCore.Hosting;
 using System.IO;
 
-namespace Manufaktura.RismCatalogue.Common.Services
+namespace Manufaktura.RismCatalogue.Shared.Services
 {
     public class SettingsService
     {
-        private readonly IHostingEnvironment environment;
 
-        public SettingsService(IHostingEnvironment environment)
+
+        public SettingsService()
         {
-            this.environment = environment;
             RendererSettings = CreateScoreRendererSettings("Bravura", "/fonts/bravura_metadata.json", "/fonts/Bravura.otf");
         }
 
@@ -20,7 +18,9 @@ namespace Manufaktura.RismCatalogue.Common.Services
 
         private HtmlScoreRendererSettings CreateScoreRendererSettings(string musicFontName, string fontMetadataPath, params string[] musicFontUris)
         {
-            var fontMetadata = string.IsNullOrWhiteSpace(fontMetadataPath) ? null : File.ReadAllText(Path.Combine(environment.ContentRootPath, "wwwroot") + fontMetadataPath);
+            var fontMetadata = string.IsNullOrWhiteSpace(fontMetadataPath) ? null : File.ReadAllText(
+                //Path.Combine(environment.ContentRootPath, "wwwroot") +
+                $"wwwroot/{fontMetadataPath}");
             var settings = new HtmlScoreRendererSettings();
             settings.RenderSurface = HtmlScoreRendererSettings.HtmlRenderSurface.Svg;
             settings.CustomElementPositionRatio = 1;

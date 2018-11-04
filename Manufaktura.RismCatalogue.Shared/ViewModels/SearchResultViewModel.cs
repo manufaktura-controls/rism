@@ -1,4 +1,4 @@
-﻿namespace Manufaktura.RismCatalogue.Common.ViewModels
+﻿namespace Manufaktura.RismCatalogue.Shared.ViewModels
 {
     public class SearchResultViewModel
     {
