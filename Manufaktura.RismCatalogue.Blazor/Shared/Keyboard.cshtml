@@ -17,6 +17,9 @@
     [Parameter]
     public string WhiteKeyClass { get; set; }
 
+    [Parameter]
+    public string KeyGapClass { get; set; }
+
     public string RenderKeyboard()
     {
         if (NumberOfKeys <= 0) throw new ArgumentException("Number of keys must be grater than 0.", nameof(NumberOfKeys));
@@ -40,7 +43,7 @@
         sb.Append($"<div style=\"width: 100%; position:absolute; left:{blackKeyShift.ToStringInvariant()}%;\">");
         foreach (var blackKey in blackKeys)
         {
-            if (blackKey == -1) sb.Append($"<span class=\"btn-key-none\" style=\"width: {blackKeyWidth.ToStringInvariant()}%; margin-right: {blackKeyWidth.ToStringInvariant()}%\"></span>");
+            if (blackKey == -1) sb.Append($"<span class=\"{KeyGapClass}\" style=\"width: {blackKeyWidth.ToStringInvariant()}%; margin-right: {blackKeyWidth.ToStringInvariant()}%\"></span>");
             else sb.Append($"<a class=\"{BlackKeyClass}\" midiPitch=\"{blackKey}\" style=\"width: {blackKeyWidth.ToStringInvariant()}%; margin-right: {blackKeyWidth.ToStringInvariant()}%\"></a>");
         }
         sb.Append("</div>");
