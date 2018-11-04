@@ -1,0 +1,56 @@
+@using Manufaktura.Music.Extensions
+@using Manufaktura.Music.Model
+@using System.Text
+
+@((MarkupString)RenderKeyboard())
+
+@functions {
+    [Parameter]
+    public int NumberOfKeys { get; set; }
+
+    [Parameter]
+    public int StartingMidiPitch { get; set; }
+
+    [Parameter]
+    public string BlackKeyClass { get; set; }
+
+    [Parameter]
+    public string WhiteKeyClass { get; set; }
+
+    public string RenderKeyboard()
+    {
+        if (NumberOfKeys <= 0) throw new ArgumentException("Number of keys must be grater than 0.", nameof(NumberOfKeys));
+
+        var whiteKeys = new List<int>();
+        var blackKeys = new List<int>();
+        for (var midiPitch = StartingMidiPitch; midiPitch < StartingMidiPitch + NumberOfKeys; midiPitch++)
+        {
+            var pitch = Pitch.FromMidiPitch(midiPitch, Pitch.MidiPitchTranslationMode.Auto);
+            if (pitch.Alter == 0) whiteKeys.Add(midiPitch);
+            else blackKeys.Add(midiPitch);
+
+            if (pitch.ToStep() == Step.E || pitch.ToStep() == Step.B) blackKeys.Add(-1);
+        }
+
+        var whiteKeyWidth = Math.Round(100d / whiteKeys.Count, 2);
+        var blackKeyWidth = Math.Round(whiteKeyWidth / 2, 2);
+        var blackKeyShift = Math.Round(whiteKeyWidth - blackKeyWidth / 2);
+
+        var sb = new StringBuilder("<div style=\"overflow: hidden; position: relative; width: 100%;\">");
+        sb.Append($"<div style=\"width: 100%; position:absolute; left:{blackKeyShift.ToStringInvariant()}%;\">");
+        foreach (var blackKey in blackKeys)
+        {
+            if (blackKey == -1) sb.Append($"<span class=\"btn-key-none\" style=\"width: {blackKeyWidth.ToStringInvariant()}%; margin-right: {blackKeyWidth.ToStringInvariant()}%\"></span>");
+            else sb.Append($"<a class=\"{BlackKeyClass}\" midiPitch=\"{blackKey}\" style=\"width: {blackKeyWidth.ToStringInvariant()}%; margin-right: {blackKeyWidth.ToStringInvariant()}%\"></a>");
+        }
+        sb.Append("</div>");
+
+        foreach (var whiteKey in whiteKeys)
+        {
+            sb.Append($"<a class=\"{WhiteKeyClass}\" midiPitch=\"{whiteKey}\" style=\"width: {whiteKeyWidth.ToStringInvariant()}%\"></a>");
+        }
+        sb.Append("</div>");
+
+        return sb.ToString();
+    }
+}
