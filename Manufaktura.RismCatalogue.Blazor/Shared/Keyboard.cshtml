@@ -2,9 +2,11 @@
 @using Manufaktura.Music.Model
 @using System.Text
 
-@((MarkupString)RenderKeyboard())
+@((MarkupString)KeyboardMarkup)
 
 @functions {
+    public string KeyboardMarkup { get; set; }
+
     [Parameter]
     public int NumberOfKeys { get; set; }
 
@@ -19,6 +21,36 @@
 
     [Parameter]
     public string KeyGapClass { get; set; }
+
+    [JSInvokable]
+    public void OnWindowResize(double size)
+    {
+        var numberOfKeys = DetermineNumberOfKeys(size);
+        if (numberOfKeys != NumberOfKeys)
+        {
+            NumberOfKeys = numberOfKeys;
+            KeyboardMarkup = RenderKeyboard();
+            StateHasChanged();
+        }
+    }
+
+    private int DetermineNumberOfKeys(double size)
+    {
+        return (int)(size / 12);
+    }
+
+    protected override void OnInit()
+    {
+        base.OnInit();
+        KeyboardMarkup = RenderKeyboard();
+    }
+
+    protected override void OnAfterRender()
+    {
+        base.OnAfterRender();
+
+        JSRuntime.Current.InvokeAsync<object>("registerKeyboard", new DotNetObjectRef(this));
+    }
 
     public string RenderKeyboard()
     {
@@ -39,8 +71,8 @@
         var blackKeyWidth = Math.Round(whiteKeyWidth / 2, 2);
         var blackKeyShift = Math.Round(whiteKeyWidth - blackKeyWidth / 2);
 
-        var sb = new StringBuilder("<div style=\"overflow: hidden; position: relative; width: 100%;\">");
-        sb.Append($"<div style=\"width: 100%; position:absolute; left:{blackKeyShift.ToStringInvariant()}%;\">");
+        var sb = new StringBuilder("<div style=\"overflow: hidden; white-space:nowrap; position: relative; height: 78px; width: 100%;\">");
+        sb.Append($"<div style=\"overflow: hidden; white-space:nowrap; width: 100%; position:absolute; left:{blackKeyShift.ToStringInvariant()}%;\">");
         foreach (var blackKey in blackKeys)
         {
             if (blackKey == -1) sb.Append($"<span class=\"{KeyGapClass}\" style=\"width: {blackKeyWidth.ToStringInvariant()}%; margin-right: {blackKeyWidth.ToStringInvariant()}%\"></span>");
