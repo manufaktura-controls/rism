@@ -14,6 +14,7 @@ namespace Manufaktura.RismCatalogue.Knockout.Services
 
         public ServerSideSettingsService(IHostingEnvironment hostingEnvironment)
         {
+            this.hostingEnvironment = hostingEnvironment;
             rendererSettings = CreateScoreRendererSettings("Bravura", "/fonts/bravura_metadata.json", "/fonts/Bravura.otf");
         }
 

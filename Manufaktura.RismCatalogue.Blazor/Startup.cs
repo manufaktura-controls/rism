@@ -1,3 +1,4 @@
+using Manufaktura.RismCatalogue.Blazor.Services;
 using Manufaktura.RismCatalogue.Shared.Services;
 using Microsoft.AspNetCore.Blazor.Builder;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,7 +9,7 @@ namespace Manufaktura.RismCatalogue.Blazor
     {
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<ServerSideSettingsService>();
+            services.AddSingleton<ISettingsService, ClientSideSettingsService>();
             services.AddSingleton<ScoreRendererService>();
         }
 

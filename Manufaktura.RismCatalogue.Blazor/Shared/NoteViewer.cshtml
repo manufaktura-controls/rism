@@ -2,7 +2,7 @@
 @using Manufaktura.Controls.Rendering.Implementations
 @using Manufaktura.RismCatalogue.Shared.Services
 
-<!--inject ScoreRendererService scoreRendererService-->
+<!--inject ScoreRendererService scoreRendererService;-->
 
 @((MarkupString)RenderScore())
 
@@ -12,5 +12,5 @@
 
     private int canvasIdCount = 0;
 
-    public string RenderScore() => null;// scoreRendererService.RenderScore(Score);
+    public string RenderScore() => null;// scoreRendererService.RenderScoreAsync(Score).Result;
 }

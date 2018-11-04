@@ -1,10 +1,9 @@
-﻿using Manufaktura.RismCatalogue.Shared.Services;
+﻿using Manufaktura.RismCatalogue.Model;
+using Manufaktura.RismCatalogue.Shared.Services;
 using Manufaktura.RismCatalogue.Shared.ViewModels;
-using Manufaktura.RismCatalogue.Model;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Manufaktura.RismCatalogue.Knockout.Controllers
 {
