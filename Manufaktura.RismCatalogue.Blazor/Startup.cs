@@ -8,7 +8,7 @@ namespace Manufaktura.RismCatalogue.Blazor
     {
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<SettingsService>();
+            services.AddSingleton<ServerSideSettingsService>();
             services.AddSingleton<ScoreRendererService>();
         }
 

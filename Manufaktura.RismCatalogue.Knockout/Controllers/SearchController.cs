@@ -4,6 +4,7 @@ using Manufaktura.RismCatalogue.Model;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Manufaktura.RismCatalogue.Knockout.Controllers
 {
@@ -32,7 +33,7 @@ namespace Manufaktura.RismCatalogue.Knockout.Controllers
             var viewModels = incipits.Select(i => new SearchResultViewModel
             {
                 Id = i.Id.ToString(),
-                IncipitSvg = string.IsNullOrWhiteSpace(i.MusicalNotation) ? null : scoreRendererService.RenderScore(plaineAndEasieService.Parse(i)),
+                IncipitSvg = string.IsNullOrWhiteSpace(i.MusicalNotation) ? null : scoreRendererService.RenderScoreAsync(plaineAndEasieService.Parse(i)).Result,
                 CaptionOrHeading = i.CaptionOrHeading,
                 TextIncipit = i.TextIncipit,
                 Voice = i.VoiceOrInstrument

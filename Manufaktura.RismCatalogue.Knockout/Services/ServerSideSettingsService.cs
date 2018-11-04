@@ -1,26 +1,33 @@
 ﻿using Manufaktura.Controls.Model.Fonts;
 using Manufaktura.Controls.Rendering.Implementations;
 using Manufaktura.Controls.SMuFL;
+using Manufaktura.RismCatalogue.Shared.Services;
+using Microsoft.AspNetCore.Hosting;
 using System.IO;
+using System.Threading.Tasks;
 
-namespace Manufaktura.RismCatalogue.Shared.Services
+namespace Manufaktura.RismCatalogue.Knockout.Services
 {
-    public class SettingsService
+    public class ServerSideSettingsService : ISettingsService
     {
+        private readonly IHostingEnvironment hostingEnvironment;
 
-
-        public SettingsService()
+        public ServerSideSettingsService(IHostingEnvironment hostingEnvironment)
         {
-            RendererSettings = CreateScoreRendererSettings("Bravura", "/fonts/bravura_metadata.json", "/fonts/Bravura.otf");
+            rendererSettings = CreateScoreRendererSettings("Bravura", "/fonts/bravura_metadata.json", "/fonts/Bravura.otf");
         }
 
-        public HtmlScoreRendererSettings RendererSettings { get; private set; }
+        private static HtmlScoreRendererSettings rendererSettings;
+
+        public Task<HtmlScoreRendererSettings> GetRendererSettingsAsync()
+        {
+            return Task.FromResult(rendererSettings);
+        }
 
         private HtmlScoreRendererSettings CreateScoreRendererSettings(string musicFontName, string fontMetadataPath, params string[] musicFontUris)
         {
             var fontMetadata = string.IsNullOrWhiteSpace(fontMetadataPath) ? null : File.ReadAllText(
-                //Path.Combine(environment.ContentRootPath, "wwwroot") +
-                $"wwwroot/{fontMetadataPath}");
+                Path.Combine(hostingEnvironment.ContentRootPath, "wwwroot") + fontMetadataPath);
             var settings = new HtmlScoreRendererSettings();
             settings.RenderSurface = HtmlScoreRendererSettings.HtmlRenderSurface.Svg;
             settings.CustomElementPositionRatio = 1;
