@@ -1,6 +1,8 @@
-﻿@using Manufaktura.Controls.Model
+﻿@using Manufaktura.Music.Model
+@using Manufaktura.Controls.Model
 @using Manufaktura.Controls.Rendering.Implementations
 @using Manufaktura.RismCatalogue.Shared.Services
+
 
 @inject ISettingsService settingsService;
 @inject ScoreRendererService scoreRendererService;
@@ -8,15 +10,31 @@
 @((MarkupString)RenderedScore)
 
 @functions {
-[Parameter]
-Score Score { get; set; }
+    [Parameter]
+    Score Score { get; set; }
 
-public string RenderedScore { get; set; }
+    public string RenderedScore { get; set; }
 
-protected override async Task OnInitAsync()
-{
-    //await settingsService.InitializeAsync();
-    RenderedScore = scoreRendererService.RenderScore(Score);
-}
+    [JSInvokable]
+    public void AddNote(int midiPitch)
+    {
+        var note = Note.FromMidiPitch(midiPitch, RhythmicDuration.Quarter);
+        Score.FirstStaff.Add(note);
+        RenderedScore = scoreRendererService.RenderScore(Score);
+        StateHasChanged();
+    }
+
+    protected override async Task OnInitAsync()
+    {
+        //await settingsService.InitializeAsync();
+        RenderedScore = scoreRendererService.RenderScore(Score);
+    }
+
+    protected override void OnAfterRender()
+    {
+        base.OnAfterRender();
+
+        JSRuntime.Current.InvokeAsync<object>("registerNoteViewer", new DotNetObjectRef(this));
+    }
 
 }
