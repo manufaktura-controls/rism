@@ -1,7 +1,6 @@
 ﻿using Manufaktura.Controls.Model;
 using Manufaktura.Controls.Rendering.Implementations;
 using System;
-using System.Threading.Tasks;
 
 namespace Manufaktura.RismCatalogue.Shared.Services
 {
@@ -16,9 +15,9 @@ namespace Manufaktura.RismCatalogue.Shared.Services
 
         private static int canvasIdCount;
 
-        public async Task<string> RenderScoreAsync(Score score)
+        public string RenderScore(Score score)
         {
-            var settings = await settingsService.GetRendererSettingsAsync();
+            var settings = settingsService.GetRendererSettings();
 
             IScore2HtmlBuilder builder;
             if (settings.RenderSurface == HtmlScoreRendererSettings.HtmlRenderSurface.Canvas)

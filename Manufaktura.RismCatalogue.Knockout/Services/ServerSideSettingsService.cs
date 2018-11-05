@@ -10,6 +10,7 @@ namespace Manufaktura.RismCatalogue.Knockout.Services
 {
     public class ServerSideSettingsService : ISettingsService
     {
+        private static HtmlScoreRendererSettings rendererSettings;
         private readonly IHostingEnvironment hostingEnvironment;
 
         public ServerSideSettingsService(IHostingEnvironment hostingEnvironment)
@@ -18,11 +19,18 @@ namespace Manufaktura.RismCatalogue.Knockout.Services
             rendererSettings = CreateScoreRendererSettings("Bravura", "/fonts/bravura_metadata.json", "/fonts/Bravura.otf");
         }
 
-        private static HtmlScoreRendererSettings rendererSettings;
+        public bool IsInitialized => true;
+
+        public HtmlScoreRendererSettings GetRendererSettings() => rendererSettings;
 
         public Task<HtmlScoreRendererSettings> GetRendererSettingsAsync()
         {
             return Task.FromResult(rendererSettings);
+        }
+
+        public async Task InitializeAsync()
+        {
+            await Task.CompletedTask;
         }
 
         private HtmlScoreRendererSettings CreateScoreRendererSettings(string musicFontName, string fontMetadataPath, params string[] musicFontUris)

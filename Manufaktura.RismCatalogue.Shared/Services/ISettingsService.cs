@@ -5,6 +5,10 @@ namespace Manufaktura.RismCatalogue.Shared.Services
 {
     public interface ISettingsService
     {
-        Task<HtmlScoreRendererSettings> GetRendererSettingsAsync();
+        Task InitializeAsync();
+
+        HtmlScoreRendererSettings GetRendererSettings();
+
+        bool IsInitialized { get; }
     }
 }

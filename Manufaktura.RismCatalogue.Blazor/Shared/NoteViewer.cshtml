@@ -2,15 +2,21 @@
 @using Manufaktura.Controls.Rendering.Implementations
 @using Manufaktura.RismCatalogue.Shared.Services
 
-<!--inject ScoreRendererService scoreRendererService;-->
+@inject ISettingsService settingsService;
+@inject ScoreRendererService scoreRendererService;
 
-@((MarkupString)RenderScore())
+@((MarkupString)RenderedScore)
 
 @functions {
-    [Parameter]
-    Score Score { get; set; }
+[Parameter]
+Score Score { get; set; }
 
-    private int canvasIdCount = 0;
+public string RenderedScore { get; set; }
 
-    public string RenderScore() => null;// scoreRendererService.RenderScoreAsync(Score).Result;
+protected override async Task OnInitAsync()
+{
+    //await settingsService.InitializeAsync();
+    RenderedScore = scoreRendererService.RenderScore(Score);
+}
+
 }
