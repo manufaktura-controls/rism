@@ -13,12 +13,15 @@
     [Parameter]
     Score Score { get; set; }
 
+    [Parameter]
+    RhythmicDuration CurrentRhythmicDuration { get; set; } = RhythmicDuration.Quarter;
+
     public string RenderedScore { get; set; }
 
     [JSInvokable]
     public void AddNote(int midiPitch)
     {
-        var note = Note.FromMidiPitch(midiPitch, RhythmicDuration.Quarter);
+        var note = Note.FromMidiPitch(midiPitch, CurrentRhythmicDuration);
         Score.FirstStaff.Add(note);
         RenderedScore = scoreRendererService.RenderScore(Score);
         StateHasChanged();
@@ -28,13 +31,8 @@
     {
         //await settingsService.InitializeAsync();
         RenderedScore = scoreRendererService.RenderScore(Score);
-    }
 
-    protected override void OnAfterRender()
-    {
-        base.OnAfterRender();
-
-        JSRuntime.Current.InvokeAsync<object>("registerNoteViewer", new DotNetObjectRef(this));
+        await JSRuntime.Current.InvokeAsync<object>("registerNoteViewer", new DotNetObjectRef(this));
     }
 
 }

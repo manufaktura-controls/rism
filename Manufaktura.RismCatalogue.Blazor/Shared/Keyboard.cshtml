@@ -1,91 +1,116 @@
-@using Manufaktura.Music.Extensions
+﻿@using Manufaktura.Music.Extensions
 @using Manufaktura.Music.Model
 @using System.Text
 
-@((MarkupString)KeyboardMarkup)
+<div>
+    @((MarkupString)KeyboardMarkup)
+</div>
+<div class="btn-toolbar">
+    <div class="btn-group">
+        <a class="btn btn-default btn-note" note="w" onclick=@(() => RhythmicDurationChanged?.Invoke(RhythmicDuration.Whole))><span class="note">w</span></a>
+        <a class="btn btn-default btn-note" note="h" onclick=@(() => RhythmicDurationChanged?.Invoke(RhythmicDuration.Half))><span class="note">h</span></a>
+        <a class="btn btn-default btn-note" note="q" onclick=@(() => RhythmicDurationChanged?.Invoke(RhythmicDuration.Quarter))><span class="note">q</span></a>
+        <a class="btn btn-default btn-note" note="e" onclick=@(() => RhythmicDurationChanged?.Invoke(RhythmicDuration.Eighth))><span class="note">e</span></a>
+        <a class="btn btn-default btn-note" note="s" onclick=@(() => RhythmicDurationChanged?.Invoke(RhythmicDuration.Sixteenth))><span class="note">s</span></a>
+        <a class="btn btn-default btn-note" note="|"><span class="note">|</span></a>
+        <a class="btn btn-default btn-note" note="."><span class="note">.</span></a>
+    </div>
+    <div class="btn-group">
+        <a class="btn btn-default btn-note" note="W"><span class="note">W</span></a>
+        <a class="btn btn-default btn-note" note="H"><span class="note">H</span></a>
+        <a class="btn btn-default btn-note" note="Q"><span class="note">Q</span></a>
+        <a class="btn btn-default btn-note" note="E"><span class="note">E</span></a>
+        <a class="btn btn-default btn-note" note="S"><span class="note">S</span></a>
+        <a class="btn btn-default btn-remove" data-bind="click: removeNote">Usuń</a>
+    </div>
+</div>
 
 @functions {
-public string KeyboardMarkup { get; set; }
+    public string KeyboardMarkup { get; set; }
 
-[Parameter]
-private int NumberOfKeys { get; set; }
+    [Parameter]
+    Action<RhythmicDuration> RhythmicDurationChanged { get; set; }
 
-[Parameter]
-private int StartingMidiPitch { get; set; }
+    [Parameter]
+    private int NumberOfKeys { get; set; }
 
-[Parameter]
-private string BlackKeyClass { get; set; }
+    [Parameter]
+    private int StartingMidiPitch { get; set; }
 
-[Parameter]
-private string WhiteKeyClass { get; set; }
+    [Parameter]
+    private string BlackKeyClass { get; set; }
 
-[Parameter]
-private string KeyGapClass { get; set; }
+    [Parameter]
+    private string WhiteKeyClass { get; set; }
 
-[JSInvokable]
-public void OnWindowResize(double size)
-{
-    var numberOfKeys = DetermineNumberOfKeys(size);
-    if (numberOfKeys != NumberOfKeys)
+    [Parameter]
+    private string KeyGapClass { get; set; }
+
+    [JSInvokable]
+    public void OnWindowResize(double size)
     {
-        NumberOfKeys = numberOfKeys;
+        var numberOfKeys = DetermineNumberOfKeys(size);
+        if (numberOfKeys != NumberOfKeys)
+        {
+            NumberOfKeys = numberOfKeys < 4 ? 3 : numberOfKeys;
+            KeyboardMarkup = RenderKeyboard();
+            StateHasChanged();
+        }
+    }
+
+    private int DetermineNumberOfKeys(double size)
+    {
+        return (int)(size / 12);
+    }
+
+    protected override void OnInit()
+    {
+        base.OnInit();
         KeyboardMarkup = RenderKeyboard();
-        StateHasChanged();
     }
-}
 
-private int DetermineNumberOfKeys(double size)
-{
-    return (int)(size / 12);
-}
 
-protected override void OnInit()
-{
-    base.OnInit();
-    KeyboardMarkup = RenderKeyboard();
-}
-
-protected override void OnAfterRender()
-{
-    base.OnAfterRender();
-
-    JSRuntime.Current.InvokeAsync<object>("registerKeyboard", new DotNetObjectRef(this));
-}
-
-public string RenderKeyboard()
-{
-    if (NumberOfKeys <= 0) throw new ArgumentException("Number of keys must be grater than 0.", nameof(NumberOfKeys));
-
-    var whiteKeys = new List<int>();
-    var blackKeys = new List<int>();
-    for (var midiPitch = StartingMidiPitch; midiPitch < StartingMidiPitch + NumberOfKeys; midiPitch++)
+    private bool isInitialized = false;
+    protected override async Task OnAfterRenderAsync()
     {
-        var pitch = Pitch.FromMidiPitch(midiPitch, Pitch.MidiPitchTranslationMode.Auto);
-        if (pitch.Alter == 0) whiteKeys.Add(midiPitch);
-        else blackKeys.Add(midiPitch);
-
-        if (pitch.ToStep() == Step.E || pitch.ToStep() == Step.B) blackKeys.Add(-1);
+        if (!isInitialized) await JSRuntime.Current.InvokeAsync<object>("registerKeyboard", new DotNetObjectRef(this));
+        isInitialized = true;
     }
 
-    var whiteKeyWidth = Math.Round(100d / whiteKeys.Count, 2);
-    var blackKeyWidth = Math.Round(whiteKeyWidth / 2, 2);
-    var blackKeyShift = Math.Round(whiteKeyWidth - blackKeyWidth / 2);
-
-    var sb = new StringBuilder("<div style=\"overflow: hidden; white-space:nowrap; position: relative; height: 78px; width: 100%;\">");
-    sb.Append($"<div style=\"overflow: hidden; white-space:nowrap; width: 100%; position:absolute; left:{blackKeyShift.ToStringInvariant()}%;\">");
-    foreach (var blackKey in blackKeys)
+    public string RenderKeyboard()
     {
-        if (blackKey == -1) sb.Append($"<span class=\"{KeyGapClass}\" style=\"width: {blackKeyWidth.ToStringInvariant()}%; margin-right: {blackKeyWidth.ToStringInvariant()}%\"></span>");
-        else sb.Append($"<a class=\"{BlackKeyClass}\" midiPitch=\"{blackKey}\" style=\"width: {blackKeyWidth.ToStringInvariant()}%; margin-right: {blackKeyWidth.ToStringInvariant()}%\"></a>");
-    }
-    sb.Append("</div>");
+        if (NumberOfKeys <= 0) throw new ArgumentException("Number of keys must be grater than 0.", nameof(NumberOfKeys));
 
-    foreach (var whiteKey in whiteKeys)
-    {
-        sb.Append($"<a class=\"{WhiteKeyClass}\" midiPitch=\"{whiteKey}\" style=\"width: {whiteKeyWidth.ToStringInvariant()}%\"></a>");
-    }
-    sb.Append("</div>");
+        var whiteKeys = new List<int>();
+        var blackKeys = new List<int>();
+        for (var midiPitch = StartingMidiPitch; midiPitch < StartingMidiPitch + NumberOfKeys; midiPitch++)
+        {
+            var pitch = Pitch.FromMidiPitch(midiPitch, Pitch.MidiPitchTranslationMode.Auto);
+            if (pitch.Alter == 0) whiteKeys.Add(midiPitch);
+            else blackKeys.Add(midiPitch);
 
-    return sb.ToString();
-}
+            if (pitch.ToStep() == Step.E || pitch.ToStep() == Step.B) blackKeys.Add(-1);
+        }
+
+        var whiteKeyWidth = Math.Round(100d / whiteKeys.Count, 2);
+        var blackKeyWidth = Math.Round(whiteKeyWidth / 2, 2);
+        var blackKeyShift = Math.Round(whiteKeyWidth - blackKeyWidth / 2);
+
+        var sb = new StringBuilder("<div style=\"overflow: hidden; white-space:nowrap; position: relative; height: 78px; width: 100%;\">");
+        sb.Append($"<div style=\"overflow: hidden; white-space:nowrap; width: 100%; position:absolute; left:{blackKeyShift.ToStringInvariant()}%;\">");
+        foreach (var blackKey in blackKeys)
+        {
+            if (blackKey == -1) sb.Append($"<span class=\"{KeyGapClass}\" style=\"width: {blackKeyWidth.ToStringInvariant()}%; margin-right: {blackKeyWidth.ToStringInvariant()}%\"></span>");
+            else sb.Append($"<a class=\"{BlackKeyClass}\" midiPitch=\"{blackKey}\" style=\"width: {blackKeyWidth.ToStringInvariant()}%; margin-right: {blackKeyWidth.ToStringInvariant()}%\"></a>");
+        }
+        sb.Append("</div>");
+
+        foreach (var whiteKey in whiteKeys)
+        {
+            sb.Append($"<a class=\"{WhiteKeyClass}\" midiPitch=\"{whiteKey}\" style=\"width: {whiteKeyWidth.ToStringInvariant()}%\"></a>");
+        }
+        sb.Append("</div>");
+
+        return sb.ToString();
+    }
 }

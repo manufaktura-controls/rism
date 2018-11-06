@@ -1,4 +1,9 @@
-﻿body {
+﻿@font-face {
+    font-family: 'Polihymnia';
+    src: url('/fonts/Polihymnia.ttf') format('truetype');
+}
+
+body {
     padding-top: 50px;
     padding-bottom: 20px;
 }
@@ -154,4 +159,22 @@ li.link-active a:focus {
     margin: 0px;
     padding: 0px;
     margin-right: 10px;
+}
+
+
+
+
+.note {
+    font-family: Polihymnia;
+    font-size: 22px;
+    text-transform: none;
+}
+
+.btn-note {
+    width: 14.2%!important;
+}
+
+.note-selected {
+    width: 14.2%;
+    background-color: #fa8420 !important;
 }

@@ -1,11 +1,16 @@
 ﻿@using Manufaktura.Controls.Model
+@using Manufaktura.Music.Model
 @using Manufaktura.Music.Model.MajorAndMinor
 
 @page "/"
 
-<NoteViewer Score=@score />
-<Keyboard StartingMidiPitch="55" NumberOfKeys="39" WhiteKeyClass="btn-key btn-key-large" BlackKeyClass="btn-key btn-key-small" KeyGapClass="btn-key-none" />
+<NoteViewer Score=@score CurrentRhythmicDuration=@CurrentRhythmicDuration />
+<Keyboard StartingMidiPitch="55" NumberOfKeys="39" WhiteKeyClass="btn-key btn-key-large" BlackKeyClass="btn-key btn-key-small" KeyGapClass="btn-key-none"  
+          RhythmicDurationChanged="@(d => { CurrentRhythmicDuration = d; System.Diagnostics.Debug.WriteLine(d); })" />
 
 @functions {
-    Score score = Score.CreateOneStaffScore(Clef.Treble, MajorScale.C);
+public RhythmicDuration CurrentRhythmicDuration { get; private set; } = RhythmicDuration.Quarter;
+
+Score score = Score.CreateOneStaffScore(Clef.Treble, MajorScale.C);
+
 }
