@@ -7,7 +7,7 @@
 @inject ISettingsService settingsService;
 @inject ScoreRendererService scoreRendererService;
 
-@((MarkupString)RenderedScore)
+@((MarkupString)RenderScore())
 
 @functions {
     [Parameter]
@@ -16,22 +16,20 @@
     [Parameter]
     RhythmicDuration CurrentRhythmicDuration { get; set; } = RhythmicDuration.Quarter;
 
-    public string RenderedScore { get; set; }
 
     [JSInvokable]
     public void AddNote(int midiPitch)
     {
         var note = Note.FromMidiPitch(midiPitch, CurrentRhythmicDuration);
         Score.FirstStaff.Add(note);
-        RenderedScore = scoreRendererService.RenderScore(Score);
         StateHasChanged();
     }
 
+    public string RenderScore() => scoreRendererService.RenderScore(Score);
+
+
     protected override async Task OnInitAsync()
     {
-        //await settingsService.InitializeAsync();
-        RenderedScore = scoreRendererService.RenderScore(Score);
-
         await JSRuntime.Current.InvokeAsync<object>("registerNoteViewer", new DotNetObjectRef(this));
     }
 

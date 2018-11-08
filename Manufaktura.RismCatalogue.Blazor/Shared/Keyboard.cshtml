@@ -16,12 +16,12 @@
         <a class="btn btn-default btn-note" note="."><span class="note">.</span></a>
     </div>
     <div class="btn-group">
-        <a class="btn btn-default btn-note" note="W"><span class="note">W</span></a>
-        <a class="btn btn-default btn-note" note="H"><span class="note">H</span></a>
-        <a class="btn btn-default btn-note" note="Q"><span class="note">Q</span></a>
-        <a class="btn btn-default btn-note" note="E"><span class="note">E</span></a>
-        <a class="btn btn-default btn-note" note="S"><span class="note">S</span></a>
-        <a class="btn btn-default btn-remove" data-bind="click: removeNote">Usuń</a>
+        <a class="btn btn-default btn-note" note="W" onclick=@(() => AddRest?.Invoke(RhythmicDuration.Whole))><span class="note">W</span></a>
+        <a class="btn btn-default btn-note" note="H" onclick=@(() => AddRest?.Invoke(RhythmicDuration.Half))><span class="note">H</span></a>
+        <a class="btn btn-default btn-note" note="Q" onclick=@(() => AddRest?.Invoke(RhythmicDuration.Quarter))><span class="note">Q</span></a>
+        <a class="btn btn-default btn-note" note="E" onclick=@(() => AddRest?.Invoke(RhythmicDuration.Eighth))><span class="note">E</span></a>
+        <a class="btn btn-default btn-note" note="S" onclick=@(() => AddRest?.Invoke(RhythmicDuration.Sixteenth))><span class="note">S</span></a>
+        <a class="btn btn-default btn-remove">Usuń</a>
     </div>
 </div>
 
@@ -30,6 +30,19 @@
 
     [Parameter]
     Action<RhythmicDuration> RhythmicDurationChanged { get; set; }
+
+
+    [Parameter]
+    Action<RhythmicDuration> AddRest { get; set; }
+
+    [Parameter]
+    Action AddBarline { get; set; }
+
+    [Parameter]
+    Action AddDot { get; set; }
+
+    [Parameter]
+    Action RemoveSymbol { get; set; }
 
     [Parameter]
     private int NumberOfKeys { get; set; }

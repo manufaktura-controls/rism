@@ -6,12 +6,20 @@
 
 <NoteViewer Score=@score CurrentRhythmicDuration=@CurrentRhythmicDuration />
 <Keyboard StartingMidiPitch="55" NumberOfKeys="39" WhiteKeyClass="btn-key btn-key-large" BlackKeyClass="btn-key btn-key-small" KeyGapClass="btn-key-none"  
-          RhythmicDurationChanged="@(d => { CurrentRhythmicDuration = d; System.Diagnostics.Debug.WriteLine(d.GetType().Name); StateHasChanged(); })" />
+          RhythmicDurationChanged="@(d => { CurrentRhythmicDuration = d; StateHasChanged(); })"
+          AddRest="@AddRest"
+          />
 
 @functions {
 
     [Parameter]
     RhythmicDuration CurrentRhythmicDuration { get; set; } = RhythmicDuration.Quarter;
+
+    public void AddRest(RhythmicDuration duration)
+    {
+        score.FirstStaff.Add(new Rest(duration));
+        StateHasChanged();
+    }
 
     Score score = Score.CreateOneStaffScore(Clef.Treble, MajorScale.C);
 
