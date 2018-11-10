@@ -8,7 +8,9 @@
 <Keyboard StartingMidiPitch="55" NumberOfKeys="39" WhiteKeyClass="btn-key btn-key-large" BlackKeyClass="btn-key btn-key-small" KeyGapClass="btn-key-none"  
           RhythmicDurationChanged="@(d => { CurrentRhythmicDuration = d; StateHasChanged(); })"
           CurrentRhythmicDuration=@CurrentRhythmicDuration
+          NumberOfKeys=@NumberOfKeys
           AddRest="@AddRest"
+          RemoveSymbol="@RemoveLastSymbol"
           />
 
 @functions {
@@ -16,10 +18,23 @@
     [Parameter]
     RhythmicDuration CurrentRhythmicDuration { get; set; } = RhythmicDuration.Quarter;
 
+    [Parameter]
+    int NumberOfKeys { get; set; } = 20;
+
     public void AddRest(RhythmicDuration duration)
     {
         score.FirstStaff.Add(new Rest(duration));
         StateHasChanged();
+    }
+
+    public void RemoveLastSymbol()
+    {
+        var lastSymbol = score.FirstStaff.Elements.LastOrDefault(e => !(e is Key) && !(e is Clef) && !(e is TimeSignature));
+        if (lastSymbol != null)
+        {
+            score.FirstStaff.Elements.Remove(lastSymbol);
+            StateHasChanged();
+        }
     }
 
     Score score = Score.CreateOneStaffScore(Clef.Treble, MajorScale.C);

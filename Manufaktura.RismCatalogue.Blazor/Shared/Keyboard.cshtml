@@ -21,7 +21,7 @@
         <a class="btn btn-default btn-note" note="Q" onclick=@(() => AddRest?.Invoke(RhythmicDuration.Quarter))><span class="note">Q</span></a>
         <a class="btn btn-default btn-note" note="E" onclick=@(() => AddRest?.Invoke(RhythmicDuration.Eighth))><span class="note">E</span></a>
         <a class="btn btn-default btn-note" note="S" onclick=@(() => AddRest?.Invoke(RhythmicDuration.Sixteenth))><span class="note">S</span></a>
-        <a class="btn btn-default btn-remove">Usuń</a>
+        <a class="btn btn-default btn-remove" onclick=@(() => RemoveSymbol?.Invoke())>Usuń</a>
     </div>
 </div>
 

@@ -1,11 +1,14 @@
-﻿
-function registerKeyboard(keyboard) {
-    if (window.incipitKeyboard) return;
+﻿function registerKeyboard(keyboard) {
     window.incipitKeyboard = keyboard;
 
-    $(".btn-key").click(function (event) {
-        var pitch = $(event.currentTarget).attr("midiPitch");
-        window.noteViewer.invokeMethod('AddNote', pitch);
+    $(".btn-key").each(function (i, element) {
+        if ($(element).attr("initialized")) return;
+
+        $(element).click(function (event) {
+            var pitch = $(event.currentTarget).attr("midiPitch");
+            window.noteViewer.invokeMethod('AddNote', pitch);
+        });
+        $(element).attr("initialized", true);
     });
 }
 

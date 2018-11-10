@@ -128,6 +128,7 @@ li.link-active a:focus {
     height: 78px;
     margin: 0px;
     padding: 0px;
+    z-index: 1;
 }
 
     .btn-key-large:hover {
@@ -145,6 +146,7 @@ li.link-active a:focus {
     margin: 0px;
     padding: 0px;
     margin-right: 10px;
+    z-index: 2;
 }
 
     .btn-key-small:hover {
@@ -159,10 +161,14 @@ li.link-active a:focus {
     margin: 0px;
     padding: 0px;
     margin-right: 10px;
+    z-index: 0;
 }
 
 
-
+.noteViewer {
+    width: 100%;
+    overflow: hidden;
+}
 
 .note {
     font-family: Polihymnia;

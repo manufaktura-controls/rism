@@ -3,11 +3,12 @@
 @using Manufaktura.Controls.Rendering.Implementations
 @using Manufaktura.RismCatalogue.Shared.Services
 
-
 @inject ISettingsService settingsService;
 @inject ScoreRendererService scoreRendererService;
 
-@((MarkupString)RenderScore())
+<div class="noteViewer">
+    @((MarkupString)RenderScore())
+</div>
 
 @functions {
     [Parameter]
