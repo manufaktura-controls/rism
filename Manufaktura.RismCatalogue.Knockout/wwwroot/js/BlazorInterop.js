@@ -1,5 +1,6 @@
 ﻿
 function registerKeyboard(keyboard) {
+    if (window.incipitKeyboard) return;
     window.incipitKeyboard = keyboard;
 
     $(".btn-key").click(function (event) {
@@ -9,6 +10,7 @@ function registerKeyboard(keyboard) {
 }
 
 function registerNoteViewer(noteViewer) {
+    if (window.noteViewer) return;
     window.noteViewer = noteViewer;
 }
 

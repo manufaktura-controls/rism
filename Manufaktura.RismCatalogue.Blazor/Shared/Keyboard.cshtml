@@ -3,15 +3,15 @@
 @using System.Text
 
 <div>
-    @((MarkupString)KeyboardMarkup)
+    @((MarkupString)RenderKeyboard())
 </div>
 <div class="btn-toolbar">
     <div class="btn-group">
-        <a class="btn btn-default btn-note" note="w" onclick=@(() => RhythmicDurationChanged?.Invoke(RhythmicDuration.Whole))><span class="note">w</span></a>
-        <a class="btn btn-default btn-note" note="h" onclick=@(() => RhythmicDurationChanged?.Invoke(RhythmicDuration.Half))><span class="note">h</span></a>
-        <a class="btn btn-default btn-note" note="q" onclick=@(() => RhythmicDurationChanged?.Invoke(RhythmicDuration.Quarter))><span class="note">q</span></a>
-        <a class="btn btn-default btn-note" note="e" onclick=@(() => RhythmicDurationChanged?.Invoke(RhythmicDuration.Eighth))><span class="note">e</span></a>
-        <a class="btn btn-default btn-note" note="s" onclick=@(() => RhythmicDurationChanged?.Invoke(RhythmicDuration.Sixteenth))><span class="note">s</span></a>
+        <a class="btn btn-default btn-note @(CurrentRhythmicDuration == RhythmicDuration.Whole ? "note-selected" : "")" note="w" onclick=@(() => RhythmicDurationChanged?.Invoke(RhythmicDuration.Whole))><span class="note">w</span></a>
+        <a class="btn btn-default btn-note @(CurrentRhythmicDuration == RhythmicDuration.Half ? "note-selected" : "")" note="h" onclick=@(() => RhythmicDurationChanged?.Invoke(RhythmicDuration.Half))><span class="note">h</span></a>
+        <a class="btn btn-default btn-note @(CurrentRhythmicDuration == RhythmicDuration.Quarter ? "note-selected" : "")" note="q" onclick=@(() => RhythmicDurationChanged?.Invoke(RhythmicDuration.Quarter))><span class="note">q</span></a>
+        <a class="btn btn-default btn-note @(CurrentRhythmicDuration == RhythmicDuration.Eighth ? "note-selected" : "")" note="e" onclick=@(() => RhythmicDurationChanged?.Invoke(RhythmicDuration.Eighth))><span class="note">e</span></a>
+        <a class="btn btn-default btn-note @(CurrentRhythmicDuration == RhythmicDuration.Sixteenth ? "note-selected" : "")" note="s" onclick=@(() => RhythmicDurationChanged?.Invoke(RhythmicDuration.Sixteenth))><span class="note">s</span></a>
         <a class="btn btn-default btn-note" note="|"><span class="note">|</span></a>
         <a class="btn btn-default btn-note" note="."><span class="note">.</span></a>
     </div>
@@ -26,11 +26,12 @@
 </div>
 
 @functions {
-    public string KeyboardMarkup { get; set; }
 
     [Parameter]
     Action<RhythmicDuration> RhythmicDurationChanged { get; set; }
 
+    [Parameter]
+    RhythmicDuration CurrentRhythmicDuration { get; set; }
 
     [Parameter]
     Action<RhythmicDuration> AddRest { get; set; }
@@ -45,19 +46,19 @@
     Action RemoveSymbol { get; set; }
 
     [Parameter]
-    private int NumberOfKeys { get; set; }
+    int NumberOfKeys { get; set; }
 
     [Parameter]
-    private int StartingMidiPitch { get; set; }
+    int StartingMidiPitch { get; set; }
 
     [Parameter]
-    private string BlackKeyClass { get; set; }
+    string BlackKeyClass { get; set; }
 
     [Parameter]
-    private string WhiteKeyClass { get; set; }
+    string WhiteKeyClass { get; set; }
 
     [Parameter]
-    private string KeyGapClass { get; set; }
+    string KeyGapClass { get; set; }
 
     [JSInvokable]
     public void OnWindowResize(double size)
@@ -66,7 +67,6 @@
         if (numberOfKeys != NumberOfKeys)
         {
             NumberOfKeys = numberOfKeys < 4 ? 3 : numberOfKeys;
-            KeyboardMarkup = RenderKeyboard();
             StateHasChanged();
         }
     }
@@ -76,22 +76,16 @@
         return (int)(size / 12);
     }
 
-    protected override void OnInit()
-    {
-        base.OnInit();
-        KeyboardMarkup = RenderKeyboard();
-    }
 
-
-    private bool isInitialized = false;
     protected override async Task OnAfterRenderAsync()
     {
-        if (!isInitialized) await JSRuntime.Current.InvokeAsync<object>("registerKeyboard", new DotNetObjectRef(this));
-        isInitialized = true;
+        await JSRuntime.Current.InvokeAsync<object>("registerKeyboard", new DotNetObjectRef(this));
     }
 
     public string RenderKeyboard()
     {
+        System.Diagnostics.Debug.WriteLine($"Number of keys: {NumberOfKeys}");
+
         if (NumberOfKeys <= 0) throw new ArgumentException("Number of keys must be grater than 0.", nameof(NumberOfKeys));
 
         var whiteKeys = new List<int>();
