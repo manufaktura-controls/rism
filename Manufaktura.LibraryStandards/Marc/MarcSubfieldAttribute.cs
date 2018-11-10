@@ -2,6 +2,9 @@
 
 namespace Manufaktura.LibraryStandards.Marc
 {
+    /// <summary>
+    /// For reference: https://www.loc.gov/marc/bibliographic/
+    /// </summary>
     public class MarcSubfieldAttribute : Attribute
 
     {

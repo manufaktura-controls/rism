@@ -24,20 +24,24 @@ namespace Manufaktura.RismCatalogue.Knockout.Controllers
         [HttpGet("[action]")]
         public IEnumerable<SearchResultViewModel> Search(int skip, int take)
         {
-            var incipits = context.Incipits
-                .OrderBy(i => i.Id)
+            var incipits =
+                (from i in context.Incipits orderby i.Id
+                join ms in context.MusicalSources on i.MusicalSourceId equals ms.Id
+                select new SearchResultViewModel
+                {
+                    Id = i.Id.ToString(),
+                    IncipitSvg = string.IsNullOrWhiteSpace(i.MusicalNotation) ? null : scoreRendererService.RenderScore(plaineAndEasieService.Parse(i)),
+                    CaptionOrHeading = i.CaptionOrHeading,
+                    TextIncipit = i.TextIncipit,
+                    Voice = i.VoiceOrInstrument,
+                    Title = ms.Title,
+                    ComposerName = ms.ComposerName
+                })
                 .Skip(skip)
                 .Take(take)
                 .ToArray();
-            var viewModels = incipits.Select(i => new SearchResultViewModel
-            {
-                Id = i.Id.ToString(),
-                IncipitSvg = string.IsNullOrWhiteSpace(i.MusicalNotation) ? null : scoreRendererService.RenderScore(plaineAndEasieService.Parse(i)),
-                CaptionOrHeading = i.CaptionOrHeading,
-                TextIncipit = i.TextIncipit,
-                Voice = i.VoiceOrInstrument
-            }).ToArray();
-            return viewModels;
+
+            return incipits;
         }
     }
 }

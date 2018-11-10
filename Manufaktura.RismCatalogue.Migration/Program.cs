@@ -91,13 +91,34 @@ namespace Manufaktura.RismCatalogue.Migration
                     property.SetValue(entity, value);   //TODO: Type conversion, converter types, etc.
                 }
                 entity.MusicalSource = record;
+                ExtractDataFromSubfields(record, entity);
+
                 dbContext.Attach(entity);
             }
 
             dbContext.MusicalSources.Add(record);
             dbContext.SaveChanges();    //TODO: Bulk insert
 
-            Console.WriteLine($"Record {record.Id} added.");
+            Console.WriteLine($"Record {record.Id} ({record.Title} - {record.ComposerName}) added.");
+        }
+
+        private static void ExtractDataFromSubfields(MusicalSource record, Entity entity)
+        {
+            var composer = entity as Person;
+            if (composer != null)
+            {
+                record.ComposerName = composer.PersonalName;
+                record.ComposerDates = composer.Dates;
+            }
+
+            var uniformTitle = entity as UniformTitle;
+            if (uniformTitle != null)
+            {
+                record.Title = uniformTitle.Title;
+                record.FormSubheading = uniformTitle.FormSubheading;
+                record.MediumOfPerformance = uniformTitle.MediumOfPerformance;
+                record.PartOrSectionNumber = uniformTitle.PartOrSectionNumber;
+            }
         }
     }
 }
