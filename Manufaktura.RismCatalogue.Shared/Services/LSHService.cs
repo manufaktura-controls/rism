@@ -1,105 +1,31 @@
-﻿using Manufaktura.RismCatalogue.Model;
-using System;
+﻿using Manufaktura.Controls.Linq;
+using Manufaktura.Controls.Model;
+using Manufaktura.RismCatalogue.Model;
+using Manufaktura.RismCatalogue.Shared.Algorithms;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 
 namespace Manufaktura.RismCatalogue.Shared.Services
 {
-    /*public class LSHService
+    public class LSHService
     {
-        private readonly RismDbContext dbContext;
-
-        public LSHService(RismDbContext dbContext)
+        public LSHAlgorithm[] GeneratePlaneGroups(int numberOfGroups, int numberOfPlanes)
         {
-            this.dbContext = dbContext;
+            return Enumerable.Range(0, numberOfGroups).Select(i => new LSHAlgorithm(12, numberOfPlanes, -12, 12)).ToArray();
         }
 
-        public void GenerateHashees( int numberOfGroups, int numberOfPlanes)
+        public IEnumerable<SpatialHash> GenerateHashes(Score score, LSHAlgorithm[] planeGroups)
         {
-            try
+            int groupIndex = 0;
+            foreach (var planeGroup in planeGroups)
             {
-                var count = dbContext.Melodies.Count(m => !dbContext.SpatialHashes.Any(h => h.MelodyId == m.Id)) * numberOfGroups;
-                var progress = new ProgressCounter(count);
-                var pageSize = 500;
-
-                foreach (var groupNumber in Enumerable.Range(1, numberOfGroups))
+                var intervals = score.ToIntervals();
+                yield return new SpatialHash
                 {
-                    progressService.ReportProgressMessage(operationId, $"Geerowanie hashy grupy {groupNumber}...", SeverityLevel.Info);
-                    var lshAlgorithm = GetPlane(groupNumber, numberOfPlanes);
-
-                    while (true)
-                    {
-                        var melodiesWithoutHashes = GetMelodyBatch(pageSize, groupNumber);
-                        if (!melodiesWithoutHashes.Any()) break;
-
-                        foreach (var melody in melodiesWithoutHashes)
-                        {
-                            var position = GetMelodyVector(melody);
-                            dbContext.SpatialHashes.Add(new SpatialHash
-                            {
-                                Id = Guid.NewGuid(),
-                                GroupNumber = groupNumber,
-                                Hash = lshAlgorithm.ComputeHash(position),
-                                MelodyId = melody.Id
-                            });
-                        }
-                        dbContext.SaveChanges();
-
-                        progressService.ReportProgress(operationId, progress += melodiesWithoutHashes.Length);
-                    }
-                }
-                progressService.ReportProgress(operationId, 100);
-            }
-            catch (Exception ex)
-            {
-                progressService.ReportProgressMessage(operationId, ex.Message, SeverityLevel.Error);
-            }
-            finally
-            {
-                dbContext.AutoDetectChangesEnabled = true;
+                    PlaneGroupNumber = groupIndex++,
+                    Hash = planeGroup.ComputeHash(new Vector<double>(intervals.Cast<double>()))
+                };
             }
         }
-
-        private Melody[] GetMelodyBatch(int take, int groupNumber)
-        {
-            return dbContext.Melodies.Where(m => !dbContext.SpatialHashes.Any(h => h.GroupNumber == groupNumber && h.MelodyId == m.Id))
-                .OrderBy(m => m.UploadDate).Take(take).ToArray();
-        }
-
-        private Vector<double> GetMelodyVector(Melody melody)
-        {
-            return new Vector<double>(new int[] {melody.MelodyContour1 ?? 0, melody.MelodyContour2 ?? 0, melody.MelodyContour3 ?? 0, melody.MelodyContour4 ?? 0,
-                melody.MelodyContour5 ?? 0, melody.MelodyContour6 ?? 0, melody.MelodyContour7 ?? 0, melody.MelodyContour8 ?? 0}.Select(i => (double)i));
-        }
-
-        private LSHAlgorithm GetPlane(int groupNumber, int numberOfPlanes)
-        {
-            LSHAlgorithm lshAlgorithm;
-            var planes = dbContext.Planes.Where(p => p.GroupNumber == groupNumber).ToArray();
-            if (!planes.Any())
-            {
-                lshAlgorithm = new LSHAlgorithm(8, numberOfPlanes, -12, 12);
-                foreach (var plane in lshAlgorithm.Planes)
-                {
-                    dbContext.Planes.Add(new Plane
-                    {
-                        Id = Guid.NewGuid(),
-                        GroupNumber = groupNumber,
-                        Coordinate1 = plane[0],
-                        Coordinate2 = plane[1],
-                        Coordinate3 = plane[2],
-                        Coordinate4 = plane[3],
-                        Coordinate5 = plane[4],
-                        Coordinate6 = plane[5],
-                        Coordinate7 = plane[6],
-                        Coordinate8 = plane[7],
-                    });
-                    dbContext.SaveChanges();
-                }
-            }
-            else lshAlgorithm = new LSHAlgorithm(planes.Select(p => new Vector<double>(p.Coordinate1, p.Coordinate2, p.Coordinate3, p.Coordinate4, p.Coordinate5, p.Coordinate6, p.Coordinate7, p.Coordinate8)).ToArray());
-
-            return lshAlgorithm;
-        }
-    }*/
+    }
 }

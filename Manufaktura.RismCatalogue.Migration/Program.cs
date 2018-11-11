@@ -92,6 +92,8 @@ namespace Manufaktura.RismCatalogue.Migration
                 }
                 entity.MusicalSource = record;
                 ExtractDataFromSubfields(record, entity);
+                var incipit = entity as Incipit;
+                if (incipit != null) ComputeHashesForIncipit(incipit);
 
                 dbContext.Attach(entity);
             }
@@ -101,6 +103,12 @@ namespace Manufaktura.RismCatalogue.Migration
 
             Console.WriteLine($"Record {record.Id} ({record.Title} - {record.ComposerName}) added.");
         }
+
+        private static void ComputeHashesForIncipit (Incipit incipit)
+        {
+
+        }
+
 
         private static void ExtractDataFromSubfields(MusicalSource record, Entity entity)
         {
