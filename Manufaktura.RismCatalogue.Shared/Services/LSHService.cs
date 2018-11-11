@@ -9,21 +9,23 @@ namespace Manufaktura.RismCatalogue.Shared.Services
 {
     public class LSHService
     {
-        public LSHAlgorithm[] GeneratePlaneGroups(int numberOfGroups, int numberOfPlanes)
+        public LSHAlgorithm[] GeneratePlaneGroups(int numberOfGroups, int numberOfPlanes, int numberOfDimensions)
         {
-            return Enumerable.Range(0, numberOfGroups).Select(i => new LSHAlgorithm(12, numberOfPlanes, -12, 12)).ToArray();
+            return Enumerable.Range(0, numberOfGroups).Select(i => new LSHAlgorithm(numberOfDimensions, numberOfPlanes, -12, 12)).ToArray();
         }
 
-        public IEnumerable<SpatialHash> GenerateHashes(Score score, LSHAlgorithm[] planeGroups)
+        public IEnumerable<SpatialHash> GenerateHashes(Score score, LSHAlgorithm[] planeGroups, int numberOfDimensions)
         {
             int groupIndex = 0;
             foreach (var planeGroup in planeGroups)
             {
-                var intervals = score.ToIntervals();
+                var intervals = score.ToIntervals().Take(planeGroup.Planes.Length).Select(i => (double)i).ToList();
+                while (intervals.Count < numberOfDimensions) intervals.Add(0d);
+
                 yield return new SpatialHash
                 {
                     PlaneGroupNumber = groupIndex++,
-                    Hash = planeGroup.ComputeHash(new Vector<double>(intervals.Cast<double>()))
+                    Hash = planeGroup.ComputeHash(new Vector<double>(intervals))
                 };
             }
         }

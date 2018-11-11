@@ -1,10 +1,10 @@
-﻿using Manufaktura.RismCatalogue.Model;
+﻿using Manufaktura.RismCatalogue.Migration.Services;
+using Manufaktura.RismCatalogue.Model;
+using Manufaktura.RismCatalogue.Shared.Services;
 using Microsoft.EntityFrameworkCore;
 using Ninject;
 using Ninject.Modules;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Manufaktura.RismCatalogue.Migration
 {
@@ -22,6 +22,9 @@ namespace Manufaktura.RismCatalogue.Migration
         public override void Load()
         {
             Bind<RismDbContext>().ToMethod(a => new RismDbContext(new DbContextOptionsBuilder().UseMySql("server=localhost;database=manufaktura-rism;uid=admin;pwd=123123").Options));
+            Bind<MigrationService>().ToSelf().InSingletonScope();
+            Bind<PlaineAndEasieService>().ToSelf().InSingletonScope();
+            Bind<LSHService>().ToSelf().InSingletonScope();
         }
     }
 }

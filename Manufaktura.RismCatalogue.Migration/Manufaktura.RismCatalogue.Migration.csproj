@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Manufaktura.RismCatalogue.Model\Manufaktura.RismCatalogue.Model.csproj" />
+    <ProjectReference Include="..\Manufaktura.RismCatalogue.Shared\Manufaktura.RismCatalogue.Shared.csproj" />
   </ItemGroup>
 
 </Project>
