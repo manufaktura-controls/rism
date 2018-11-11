@@ -12,5 +12,7 @@ namespace Manufaktura.RismCatalogue.Model
         public DbSet<MusicalSource> MusicalSources { get; set; }
         public DbSet<Person> Persons { get; set; }
         public DbSet<UniformTitle> UniformTitles { get; set; }
+
+        public DbSet<SpatialHash> SpatialHashes { get; set; }
     }
 }
