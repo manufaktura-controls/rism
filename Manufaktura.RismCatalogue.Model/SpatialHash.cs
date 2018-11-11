@@ -1,11 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
-namespace Manufaktura.RismCatalogue.Model
+﻿namespace Manufaktura.RismCatalogue.Model
 {
-    public class SpatialHash
+    public class SpatialHash : Entity
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public long Id { get; set; }
         public long IncipitId { get; set; }
         public long Hash { get; set; }
 

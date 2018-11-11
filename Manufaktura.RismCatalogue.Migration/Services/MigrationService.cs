@@ -1,7 +1,5 @@
 ﻿using Manufaktura.LibraryStandards.Marc;
 using Manufaktura.RismCatalogue.Model;
-using Manufaktura.RismCatalogue.Shared.Algorithms;
-using Manufaktura.RismCatalogue.Shared.Services;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,40 +14,33 @@ namespace Manufaktura.RismCatalogue.Migration.Services
     public class MigrationService
     {
         private readonly RismDbContext dbContext;
-        private readonly PlaineAndEasieService plaineAndEasieService;
-        private readonly LSHService lshService;
-        private readonly LSHAlgorithm[] planeGroups;
-        private const int numberOfDimensions = 12;
 
-        public MigrationService(RismDbContext dbContext, PlaineAndEasieService plaineAndEasieService, LSHService lshService)
+        public MigrationService(RismDbContext dbContext)
         {
             this.dbContext = dbContext;
-            this.plaineAndEasieService = plaineAndEasieService;
-            this.lshService = lshService;
-            planeGroups = lshService.GeneratePlaneGroups(10, 10, numberOfDimensions);
         }
 
-        private static readonly Lazy<Dictionary<string, Func<Entity>>> fieldFactories = new Lazy<Dictionary<string, Func<Entity>>>(() =>
+        private static readonly Lazy<Dictionary<string, Func<MusicalSourceField>>> fieldFactories = new Lazy<Dictionary<string, Func<MusicalSourceField>>>(() =>
         {
-            var dict = new Dictionary<string, Func<Entity>>();
-            foreach (var type in typeof(Entity).Assembly.GetTypes())
+            var dict = new Dictionary<string, Func<MusicalSourceField>>();
+            foreach (var type in typeof(MusicalSourceField).Assembly.GetTypes())
             {
                 var dataFieldAttribute = type.GetCustomAttribute<MarcDatafieldAttribute>();
                 if (dataFieldAttribute == null) continue;
 
-                var factoryMethod = Expression.Lambda(Expression.New(type)).Compile() as Func<Entity>;
+                var factoryMethod = Expression.Lambda(Expression.New(type)).Compile() as Func<MusicalSourceField>;
                 dict.Add(dataFieldAttribute.Tag, factoryMethod);
             }
             return dict;
         });
 
-        public static Dictionary<string, Func<Entity>> FieldFactories => fieldFactories.Value;
+        public static Dictionary<string, Func<MusicalSourceField>> FieldFactories => fieldFactories.Value;
 
         public void Migrate()
         {
             //var path = @"C:\Databases\rismAllMARCXMLexample\rism_130616_example.xml";
             var path = @"C:\Databases\rismAllMARCXML\rism_170316.xml";
-            var maxRecords = 40000;
+            var maxRecords = 1000;
             var counter = 0;
 
             using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read))
@@ -66,14 +57,15 @@ namespace Manufaktura.RismCatalogue.Migration.Services
                         if (string.IsNullOrWhiteSpace(record)) break;
 
                         var recordElement = XElement.Parse(record);
-                        ParseRecord(recordElement);
+                        var dbRecord = ParseRecord(recordElement);
                         counter++;
+                        Console.WriteLine($"Record {counter} ({dbRecord.Title} - {dbRecord.ComposerName}) added.");
                     }
                 }
             }
         }
 
-        private void ParseRecord(XElement recordElement)
+        private MusicalSource ParseRecord(XElement recordElement)
         {
             var record = new MusicalSource();
             foreach (var field in recordElement.Elements().Where(e => e.Name.LocalName == "controlfield"))
@@ -104,30 +96,16 @@ namespace Manufaktura.RismCatalogue.Migration.Services
                 }
                 entity.MusicalSource = record;
                 ExtractDataFromSubfields(record, entity);
-                var incipit = entity as Incipit;
-                if (incipit != null) ComputeHashesForIncipit(incipit);
 
                 dbContext.Attach(entity);
             }
 
             dbContext.MusicalSources.Add(record);
             dbContext.SaveChanges();    //TODO: Bulk insert
-
-            Console.WriteLine($"Record {record.Id} ({record.Title} - {record.ComposerName}) added.");
+            return record;
         }
 
-        private void ComputeHashesForIncipit(Incipit incipit)
-        {
-            var score = plaineAndEasieService.Parse(incipit);
-            var hashes = lshService.GenerateHashes(score, planeGroups, numberOfDimensions).ToArray();
-            foreach (var hash in hashes)
-            {
-                hash.Incipit = incipit;
-                dbContext.SpatialHashes.Add(hash);
-            }
-        }
-
-        private static void ExtractDataFromSubfields(MusicalSource record, Entity entity)
+        private static void ExtractDataFromSubfields(MusicalSource record, MusicalSourceField entity)
         {
             var composer = entity as Person;
             if (composer != null)

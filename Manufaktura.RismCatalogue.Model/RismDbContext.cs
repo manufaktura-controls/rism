@@ -14,5 +14,7 @@ namespace Manufaktura.RismCatalogue.Model
         public DbSet<UniformTitle> UniformTitles { get; set; }
 
         public DbSet<SpatialHash> SpatialHashes { get; set; }
+
+        public DbSet<Plane> Planes { get; set; }
     }
 }

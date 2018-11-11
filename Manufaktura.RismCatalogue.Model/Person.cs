@@ -3,7 +3,7 @@
 namespace Manufaktura.RismCatalogue.Model
 {
     [MarcDatafield("100")]
-    public class Person : Entity
+    public class Person : MusicalSourceField
     {
         [MarcSubfield("a")]
         public string PersonalName { get; set; }
