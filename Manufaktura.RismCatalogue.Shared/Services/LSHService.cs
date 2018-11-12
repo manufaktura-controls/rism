@@ -1,6 +1,7 @@
 ﻿using Manufaktura.Controls.Linq;
 using Manufaktura.RismCatalogue.Model;
 using Manufaktura.RismCatalogue.Shared.Algorithms;
+using System;
 using System.Linq;
 
 namespace Manufaktura.RismCatalogue.Shared.Services
@@ -9,7 +10,7 @@ namespace Manufaktura.RismCatalogue.Shared.Services
     {
         private readonly RismDbContext dbContext;
         private readonly PlaineAndEasieService plaineAndEasieService;
-        private const int NumberOfDimensions = 12;
+        private const int MaxNumberOfDimensions = 12;
 
         public LSHService(RismDbContext dbContext, PlaineAndEasieService plaineAndEasieService)
         {
@@ -22,76 +23,89 @@ namespace Manufaktura.RismCatalogue.Shared.Services
             var count = dbContext.Incipits.Count(i => !dbContext.SpatialHashes.Any(h => h.IncipitId == i.Id) && i.MusicalNotation != null) * numberOfGroups;
             var pageSize = 500;
 
-            foreach (var groupNumber in Enumerable.Range(1, numberOfGroups))
+            for (var numberOfDimensions = 1; numberOfDimensions <= MaxNumberOfDimensions; numberOfDimensions++)
             {
-                var lshAlgorithm = GetPlane(groupNumber, numberOfPlanes);
-
-                while (true)
+                foreach (var groupNumber in Enumerable.Range(1, numberOfGroups))
                 {
-                    var melodiesWithoutHashes = GetIncipitsBatch(pageSize, groupNumber);
-                    if (!melodiesWithoutHashes.Any()) break;
+                    Console.WriteLine($"Processing {numberOfDimensions}-dimensional hashes in group {groupNumber}.");
+                    var lshAlgorithm = GetPlaneGroup(groupNumber, numberOfPlanes, numberOfDimensions);
 
-                    foreach (var melody in melodiesWithoutHashes)
+                    while (true)
                     {
-                        var position = GetIncipitVector(melody);
-                        dbContext.SpatialHashes.Add(new SpatialHash
+                        var melodiesWithoutHashes = GetIncipitsBatch(pageSize, groupNumber, numberOfDimensions);
+                        if (!melodiesWithoutHashes.Any()) break;
+
+                        foreach (var melody in melodiesWithoutHashes)
                         {
-                            PlaneGroupNumber = groupNumber,
-                            Hash = lshAlgorithm.ComputeHash(position),
-                            IncipitId = melody.Id
-                        });
+                            var position = GetIncipitVector(melody, numberOfDimensions);
+                            dbContext.SpatialHashes.Add(new SpatialHash
+                            {
+                                PlaneGroupNumber = groupNumber,
+                                NumberOfDimensions = numberOfDimensions,
+                                Hash = lshAlgorithm.ComputeHash(position),
+                                IncipitId = melody.Id
+                            });
+                        }
+                        dbContext.SaveChanges();
                     }
-                    dbContext.SaveChanges();
                 }
             }
         }
 
-        private Incipit[] GetIncipitsBatch(int take, int groupNumber)
+        private Incipit[] GetIncipitsBatch(int take, int groupNumber, int numberOfDimensions)
         {
-            return dbContext.Incipits.Where(m => m.MusicalNotation != null && !dbContext.SpatialHashes.Any(h => h.PlaneGroupNumber == groupNumber && h.IncipitId == m.Id))
+            return dbContext.Incipits.Where(m => m.MusicalNotation != null &&
+            !dbContext.SpatialHashes.Any(h => h.PlaneGroupNumber == groupNumber && h.NumberOfDimensions == numberOfDimensions && h.IncipitId == m.Id))
                 .OrderBy(m => m.Id).Take(take).ToArray();
         }
 
-        private Vector<double> GetIncipitVector(Incipit incipit)
+        private Vector<double> GetIncipitVector(Incipit incipit, int numberOfDimensions)
         {
-            var intervals = plaineAndEasieService.Parse(incipit).ToIntervals().Take(NumberOfDimensions).Select(i => (double)i).ToList();
-            while (intervals.Count < NumberOfDimensions) intervals.Add(0d);
+            var intervals = plaineAndEasieService.Parse(incipit).ToIntervals().Take(numberOfDimensions).Select(i => (double)i).ToList();
+            while (intervals.Count < numberOfDimensions) intervals.Add(0d);
 
             return new Vector<double>(intervals);
         }
 
-        private LSHAlgorithm GetPlane(int groupNumber, int numberOfPlanes)
+        private static double TryGetPlaneCoordinate(Vector<double> plane, int index)
+        {
+            if (plane.Length < index + 1) return 0;
+            return plane[index];
+        }
+
+        private LSHAlgorithm GetPlaneGroup(int groupNumber, int numberOfPlanes, int numberOfDimensions)
         {
             LSHAlgorithm lshAlgorithm;
-            var planes = dbContext.Planes.Where(p => p.GroupNumber == groupNumber).ToArray();
+            var planes = dbContext.Planes.Where(p => p.GroupNumber == groupNumber && p.NumberOfDimensions == numberOfDimensions).ToArray();
             if (!planes.Any())
             {
-                lshAlgorithm = new LSHAlgorithm(NumberOfDimensions, numberOfPlanes, -12, 12);
+                lshAlgorithm = new LSHAlgorithm(numberOfDimensions, numberOfPlanes, -12, 12);
                 foreach (var plane in lshAlgorithm.Planes)
                 {
                     dbContext.Planes.Add(new Plane
                     {
                         GroupNumber = groupNumber,
-                        Coordinate1 = plane[0],
-                        Coordinate2 = plane[1],
-                        Coordinate3 = plane[2],
-                        Coordinate4 = plane[3],
-                        Coordinate5 = plane[4],
-                        Coordinate6 = plane[5],
-                        Coordinate7 = plane[6],
-                        Coordinate8 = plane[7],
-                        Coordinate9 = plane[8],
-                        Coordinate10 = plane[9],
-                        Coordinate11 = plane[10],
-                        Coordinate12 = plane[11],
+                        NumberOfDimensions = numberOfDimensions,
+                        Coordinate1 = TryGetPlaneCoordinate(plane, 0),
+                        Coordinate2 = TryGetPlaneCoordinate(plane, 1),
+                        Coordinate3 = TryGetPlaneCoordinate(plane, 2),
+                        Coordinate4 = TryGetPlaneCoordinate(plane, 3),
+                        Coordinate5 = TryGetPlaneCoordinate(plane, 4),
+                        Coordinate6 = TryGetPlaneCoordinate(plane, 5),
+                        Coordinate7 = TryGetPlaneCoordinate(plane, 6),
+                        Coordinate8 = TryGetPlaneCoordinate(plane, 7),
+                        Coordinate9 = TryGetPlaneCoordinate(plane, 8),
+                        Coordinate10 = TryGetPlaneCoordinate(plane, 9),
+                        Coordinate11 = TryGetPlaneCoordinate(plane, 10),
+                        Coordinate12 = TryGetPlaneCoordinate(plane, 11)
                     });
                     dbContext.SaveChanges();
                 }
             }
-            else lshAlgorithm = new LSHAlgorithm(planes.Select(p => new Vector<double>(
+            else lshAlgorithm = new LSHAlgorithm(planes.Select(p => new Vector<double>(new double[] {
                 p.Coordinate1, p.Coordinate2, p.Coordinate3, p.Coordinate4,
                 p.Coordinate5, p.Coordinate6, p.Coordinate7, p.Coordinate8,
-                p.Coordinate9, p.Coordinate10, p.Coordinate11, p.Coordinate12)).ToArray());
+                p.Coordinate9, p.Coordinate10, p.Coordinate11, p.Coordinate12 }.Take(numberOfDimensions))).ToArray());
 
             return lshAlgorithm;
         }

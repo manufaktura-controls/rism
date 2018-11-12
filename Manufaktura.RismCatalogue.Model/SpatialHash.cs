@@ -7,6 +7,8 @@
 
         public int PlaneGroupNumber { get; set; }
 
+        public int NumberOfDimensions { get; set; }
+
         public Incipit Incipit { get; set; }
     }
 }

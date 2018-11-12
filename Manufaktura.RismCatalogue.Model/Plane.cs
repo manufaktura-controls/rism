@@ -4,6 +4,8 @@
     {
         public int GroupNumber { get; set; }
 
+        public int NumberOfDimensions { get; set; }
+
         public double Coordinate1 { get; set; }
 
         public double Coordinate2 { get; set; }
