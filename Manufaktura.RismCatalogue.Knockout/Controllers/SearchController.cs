@@ -28,14 +28,12 @@ namespace Manufaktura.RismCatalogue.Knockout.Controllers
             this.plaineAndEasieService = plaineAndEasieService;
         }
 
-        private const int MaxNumberOfDimensions = 12;
-
         [HttpGet("[action]")]
         public IEnumerable<SearchResultViewModel> Search(int skip, int take)
         {
             var testQuery = Score.CreateOneStaffScore(Clef.Treble, MajorScale.C);
             testQuery.FirstStaff.AddRange(StaffBuilder.FromPitches(Pitch.C4, Pitch.E4, Pitch.G4, Pitch.C5, Pitch.A4).AddUniformRhythm(RhythmicDuration.Quarter));
-            var intervals = testQuery.ToIntervals().Take(MaxNumberOfDimensions).Select(i => (double)i).ToList();
+            var intervals = testQuery.ToIntervals().Take(Constants.MaxNumberOfDimensions).Select(i => (double)i).ToList();
             var numberOfDimensions = intervals.Count;
 
             var queryDictionary = new Dictionary<int, int>();

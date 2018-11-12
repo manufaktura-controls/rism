@@ -40,7 +40,7 @@ namespace Manufaktura.RismCatalogue.Migration.Services
         {
             //var path = @"C:\Databases\rismAllMARCXMLexample\rism_130616_example.xml";
             var path = @"C:\Databases\rismAllMARCXML\rism_170316.xml";
-            var maxRecords = 1000;
+            var maxRecords = 4000;
             var counter = 0;
 
             using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read))
@@ -60,7 +60,9 @@ namespace Manufaktura.RismCatalogue.Migration.Services
                         var dbRecord = ParseRecord(recordElement);
                         counter++;
                         Console.WriteLine($"Record {counter} ({dbRecord.Title} - {dbRecord.ComposerName}) added.");
+                        if (counter % 100 == 0) dbContext.SaveChanges();
                     }
+                    dbContext.SaveChanges();
                 }
             }
         }
@@ -101,7 +103,7 @@ namespace Manufaktura.RismCatalogue.Migration.Services
             }
 
             dbContext.MusicalSources.Add(record);
-            dbContext.SaveChanges();    //TODO: Bulk insert
+
             return record;
         }
 

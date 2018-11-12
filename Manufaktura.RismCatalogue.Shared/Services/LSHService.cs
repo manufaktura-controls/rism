@@ -2,6 +2,7 @@
 using Manufaktura.RismCatalogue.Model;
 using Manufaktura.RismCatalogue.Shared.Algorithms;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Manufaktura.RismCatalogue.Shared.Services
@@ -10,7 +11,6 @@ namespace Manufaktura.RismCatalogue.Shared.Services
     {
         private readonly RismDbContext dbContext;
         private readonly PlaineAndEasieService plaineAndEasieService;
-        private const int MaxNumberOfDimensions = 12;
 
         public LSHService(RismDbContext dbContext, PlaineAndEasieService plaineAndEasieService)
         {
@@ -22,20 +22,18 @@ namespace Manufaktura.RismCatalogue.Shared.Services
         {
             var count = dbContext.Incipits.Count(i => !dbContext.SpatialHashes.Any(h => h.IncipitId == i.Id) && i.MusicalNotation != null) * numberOfGroups;
             var pageSize = 500;
-
-            for (var numberOfDimensions = 1; numberOfDimensions <= MaxNumberOfDimensions; numberOfDimensions++)
+            var skip = 0;
+            while (true)
             {
-                foreach (var groupNumber in Enumerable.Range(1, numberOfGroups))
+                var incipits = GetIncipitsBatch(skip, pageSize);
+
+                for (var numberOfDimensions = 1; numberOfDimensions <= Constants.MaxNumberOfDimensions; numberOfDimensions++)
                 {
-                    Console.WriteLine($"Processing {numberOfDimensions}-dimensional hashes in group {groupNumber}.");
-                    var lshAlgorithm = GetPlaneGroup(groupNumber, numberOfPlanes, numberOfDimensions);
-
-                    while (true)
+                    foreach (var groupNumber in Enumerable.Range(1, numberOfGroups))
                     {
-                        var melodiesWithoutHashes = GetIncipitsBatch(pageSize, groupNumber, numberOfDimensions);
-                        if (!melodiesWithoutHashes.Any()) break;
-
-                        foreach (var melody in melodiesWithoutHashes)
+                        Console.WriteLine($"Processing {numberOfDimensions}-dimensional hashes in group {groupNumber} for incipits {skip}-{skip+pageSize}.");
+                        var lshAlgorithm = GetPlaneGroup(groupNumber, numberOfPlanes, numberOfDimensions);
+                        foreach (var melody in incipits)
                         {
                             var position = GetIncipitVector(melody, numberOfDimensions);
                             dbContext.SpatialHashes.Add(new SpatialHash
@@ -49,14 +47,15 @@ namespace Manufaktura.RismCatalogue.Shared.Services
                         dbContext.SaveChanges();
                     }
                 }
+
+                skip += incipits.Length;
+                if (incipits.Length < pageSize) break;
             }
         }
 
-        private Incipit[] GetIncipitsBatch(int take, int groupNumber, int numberOfDimensions)
+        private Incipit[] GetIncipitsBatch(int skip, int take)
         {
-            return dbContext.Incipits.Where(m => m.MusicalNotation != null &&
-            !dbContext.SpatialHashes.Any(h => h.PlaneGroupNumber == groupNumber && h.NumberOfDimensions == numberOfDimensions && h.IncipitId == m.Id))
-                .OrderBy(m => m.Id).Take(take).ToArray();
+            return dbContext.Incipits.Where(m => m.MusicalNotation != null).OrderBy(m => m.Id).Skip(skip).Take(take).ToArray();
         }
 
         private Vector<double> GetIncipitVector(Incipit incipit, int numberOfDimensions)
@@ -73,16 +72,21 @@ namespace Manufaktura.RismCatalogue.Shared.Services
             return plane[index];
         }
 
+        private List<Plane> planesCache = new List<Plane>(); 
+
         private LSHAlgorithm GetPlaneGroup(int groupNumber, int numberOfPlanes, int numberOfDimensions)
         {
             LSHAlgorithm lshAlgorithm;
-            var planes = dbContext.Planes.Where(p => p.GroupNumber == groupNumber && p.NumberOfDimensions == numberOfDimensions).ToArray();
+            var planes = planesCache.Where(p => p.GroupNumber == groupNumber && p.NumberOfDimensions == numberOfDimensions).ToArray();
+            if (!planes.Any())
+                planes = dbContext.Planes.Where(p => p.GroupNumber == groupNumber && p.NumberOfDimensions == numberOfDimensions).ToArray();
+
             if (!planes.Any())
             {
                 lshAlgorithm = new LSHAlgorithm(numberOfDimensions, numberOfPlanes, -12, 12);
                 foreach (var plane in lshAlgorithm.Planes)
                 {
-                    dbContext.Planes.Add(new Plane
+                    var newPlane = new Plane
                     {
                         GroupNumber = groupNumber,
                         NumberOfDimensions = numberOfDimensions,
@@ -98,7 +102,9 @@ namespace Manufaktura.RismCatalogue.Shared.Services
                         Coordinate10 = TryGetPlaneCoordinate(plane, 9),
                         Coordinate11 = TryGetPlaneCoordinate(plane, 10),
                         Coordinate12 = TryGetPlaneCoordinate(plane, 11)
-                    });
+                    };
+                    dbContext.Planes.Add(newPlane);
+                    planesCache.Add(newPlane);
                     dbContext.SaveChanges();
                 }
             }
