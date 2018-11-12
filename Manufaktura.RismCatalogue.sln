@@ -15,7 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Manufaktura.RismCatalogue.K
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Manufaktura.RismCatalogue.Blazor", "Manufaktura.RismCatalogue.Blazor\Manufaktura.RismCatalogue.Blazor.csproj", "{BDE761F0-54D0-47FF-81B9-093EA3331F75}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Manufaktura.RismCatalogue.Shared", "Manufaktura.RismCatalogue.Shared\Manufaktura.RismCatalogue.Shared.csproj", "{AE690AD6-2955-4A2B-87BA-8CB549B94B69}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Manufaktura.RismCatalogue.Shared", "Manufaktura.RismCatalogue.Shared\Manufaktura.RismCatalogue.Shared.csproj", "{AE690AD6-2955-4A2B-87BA-8CB549B94B69}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Manufaktura.Rism.Tests", "Manufaktura.Rism.Tests\Manufaktura.Rism.Tests.csproj", "{81DA5156-33E1-43EF-9B05-94BE0A59A7E9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +53,10 @@ Global
 		{AE690AD6-2955-4A2B-87BA-8CB549B94B69}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AE690AD6-2955-4A2B-87BA-8CB549B94B69}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AE690AD6-2955-4A2B-87BA-8CB549B94B69}.Release|Any CPU.Build.0 = Release|Any CPU
+		{81DA5156-33E1-43EF-9B05-94BE0A59A7E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81DA5156-33E1-43EF-9B05-94BE0A59A7E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81DA5156-33E1-43EF-9B05-94BE0A59A7E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81DA5156-33E1-43EF-9B05-94BE0A59A7E9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

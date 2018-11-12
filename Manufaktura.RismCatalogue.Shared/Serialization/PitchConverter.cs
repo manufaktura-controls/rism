@@ -1,9 +1,7 @@
 ﻿using Manufaktura.Music.Model;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Manufaktura.RismCatalogue.Shared.Serialization
 {
@@ -13,8 +11,14 @@ namespace Manufaktura.RismCatalogue.Shared.Serialization
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            var array = JArray.Parse((string)reader.Value);
-            return null;
+            var pitches = new List<Pitch>();
+            while (reader.TokenType != JsonToken.EndArray)
+            {
+                var midiPitch = reader.ReadAsInt32();
+                if (!midiPitch.HasValue) continue;
+                pitches.Add(Pitch.FromMidiPitch(midiPitch.Value, Pitch.MidiPitchTranslationMode.Auto));
+            }
+            return pitches.ToArray();
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)

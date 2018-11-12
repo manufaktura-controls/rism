@@ -1,14 +1,11 @@
-﻿using Manufaktura.Music.Model;
-using Manufaktura.RismCatalogue.Shared.Serialization;
-using Newtonsoft.Json;
-
-namespace Manufaktura.RismCatalogue.Shared.ViewModels
+﻿namespace Manufaktura.RismCatalogue.Shared.ViewModels
 {
     public class SearchQuery
     {
-        [JsonConverter(typeof(PitchConverter))]
-        public Pitch[] Pitches { get; set; }
+        public int[] Intervals { get; set; } = new int[0];
 
-        public RhythmicDuration[] RhythmicDurations { get; set; }
+        public int Skip { get; set; }
+
+        public int Take { get; set; } = 30;
     }
 }

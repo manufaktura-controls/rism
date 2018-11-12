@@ -28,13 +28,11 @@ namespace Manufaktura.RismCatalogue.Knockout.Controllers
             this.plaineAndEasieService = plaineAndEasieService;
         }
 
-        [HttpGet("[action]")]
-        public IEnumerable<SearchResultViewModel> Search(int skip, int take)
+        [HttpPost("[action]")]
+        public IEnumerable<SearchResultViewModel> Search([FromBody] SearchQuery searchQuery)
         {
-            var testQuery = Score.CreateOneStaffScore(Clef.Treble, MajorScale.C);
-            testQuery.FirstStaff.AddRange(StaffBuilder.FromPitches(Pitch.C4, Pitch.E4, Pitch.G4, Pitch.C5, Pitch.A4).AddUniformRhythm(RhythmicDuration.Quarter));
-            var intervals = testQuery.ToIntervals().Take(Constants.MaxNumberOfDimensions).Select(i => (double)i).ToList();
-            var numberOfDimensions = intervals.Count;
+            var intervals = searchQuery.Intervals.Take(Constants.MaxNumberOfDimensions).Select(i => (double)i).ToArray();
+            var numberOfDimensions = intervals.Length;
 
             var queryDictionary = new Dictionary<int, int>();
             for (var i = 1; i< 11; i++)
@@ -85,8 +83,8 @@ namespace Manufaktura.RismCatalogue.Knockout.Controllers
                                  }).OrderByDescending(rm => rm.Relevance);
             var sql = query.ToSql();
             var incipits = query
-                .Skip(skip)
-                .Take(take)
+                .Skip(searchQuery.Skip)
+                .Take(searchQuery.Take)
                 .ToArray();
 
             return incipits;

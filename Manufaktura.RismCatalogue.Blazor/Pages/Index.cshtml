@@ -1,17 +1,30 @@
 ﻿@using Manufaktura.Controls.Model
 @using Manufaktura.Music.Model
 @using Manufaktura.Music.Model.MajorAndMinor
+@using Manufaktura.Controls.Linq;
+@using Manufaktura.RismCatalogue.Shared.ViewModels;
 
 @page "/"
 
 <NoteViewer Score=@score CurrentRhythmicDuration=@CurrentRhythmicDuration />
-<Keyboard StartingMidiPitch="55" NumberOfKeys="39" WhiteKeyClass="btn-key btn-key-large" BlackKeyClass="btn-key btn-key-small" KeyGapClass="btn-key-none"  
+<Keyboard StartingMidiPitch="55" NumberOfKeys="39" WhiteKeyClass="btn-key btn-key-large" BlackKeyClass="btn-key btn-key-small" KeyGapClass="btn-key-none"
           RhythmicDurationChanged="@(d => { CurrentRhythmicDuration = d; StateHasChanged(); })"
           CurrentRhythmicDuration=@CurrentRhythmicDuration
           NumberOfKeys=@NumberOfKeys
           AddRest="@AddRest"
-          RemoveSymbol="@RemoveLastSymbol"
-          />
+          RemoveSymbol="@RemoveLastSymbol" />
+<div>
+    <div>
+        <label><input type="checkbox" />Include intervals</label>
+    </div>
+    <div>
+        <label><input type="checkbox" />Include rhythm</label>
+    </div>
+    <div>
+        <button class="btn btn-primary" onclick="@Search">Search</button>
+    </div>
+</div>
+
 
 @functions {
 
@@ -20,6 +33,12 @@
 
     [Parameter]
     int NumberOfKeys { get; set; } = 20;
+
+    public void Search ()
+    {
+        var intervals = score.ToIntervals();
+        JSRuntime.Current.InvokeAsync<object>("startNewSearch", new SearchQuery { Intervals = intervals });
+    }
 
     public void AddRest(RhythmicDuration duration)
     {

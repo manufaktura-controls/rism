@@ -18,7 +18,7 @@ function registerNoteViewer(noteViewer) {
 }
 
 function startNewSearch(searchQuery) {
-
+    window.viewModel.startNewSearch(searchQuery);
 }
 
 $(window).resize(function () {
