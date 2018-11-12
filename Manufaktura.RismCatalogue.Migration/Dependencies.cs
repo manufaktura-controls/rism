@@ -21,7 +21,12 @@ namespace Manufaktura.RismCatalogue.Migration
 
         public override void Load()
         {
-            Bind<RismDbContext>().ToMethod(a => new RismDbContext(new DbContextOptionsBuilder().UseMySql("server=localhost;database=manufaktura-rism;uid=admin;pwd=123123").Options));
+            Bind<RismDbContext>().ToMethod(a =>
+            {
+                var context = new RismDbContext(new DbContextOptionsBuilder().UseMySql("server=localhost;database=manufaktura-rism;uid=admin;pwd=123123").Options);
+                context.ChangeTracker.AutoDetectChangesEnabled = false;
+                return context;
+            });
             Bind<MigrationService>().ToSelf().InSingletonScope();
             Bind<PlaineAndEasieService>().ToSelf().InSingletonScope();
             Bind<LSHService>().ToSelf().InSingletonScope();

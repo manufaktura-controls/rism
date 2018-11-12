@@ -17,6 +17,10 @@ function registerNoteViewer(noteViewer) {
     window.noteViewer = noteViewer;
 }
 
+function startNewSearch(searchQuery) {
+
+}
+
 $(window).resize(function () {
     if (!window.incipitKeyboard) return;
     window.incipitKeyboard.invokeMethod('OnWindowResize', $("#searchPanel").width());

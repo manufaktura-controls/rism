@@ -78,7 +78,7 @@
         ko.applyBindings(vm);
         vm.getMoreResults();
         new InfiniteScrollManager(document.getElementById("resultList"), 200, vm.getMoreResults);
-
+        window.viewModel = vm;
 
         MIDI.loadPlugin({
             soundfontUrl: "./soundfonts/",

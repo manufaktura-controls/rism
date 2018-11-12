@@ -20,7 +20,6 @@ namespace Manufaktura.RismCatalogue.Shared.Services
 
         public void GenerateHashes(int numberOfGroups, int numberOfPlanes)
         {
-            var count = dbContext.Incipits.Count(i => !dbContext.SpatialHashes.Any(h => h.IncipitId == i.Id) && i.MusicalNotation != null) * numberOfGroups;
             var pageSize = 500;
             var skip = 0;
             while (true)
@@ -31,7 +30,7 @@ namespace Manufaktura.RismCatalogue.Shared.Services
                 {
                     foreach (var groupNumber in Enumerable.Range(1, numberOfGroups))
                     {
-                        Console.WriteLine($"Processing {numberOfDimensions}-dimensional hashes in group {groupNumber} for incipits {skip}-{skip+pageSize}.");
+                        Console.WriteLine($"Processing {numberOfDimensions}-dimensional hashes in group {groupNumber} for incipits {skip}-{skip + pageSize}.");
                         var lshAlgorithm = GetPlaneGroup(groupNumber, numberOfPlanes, numberOfDimensions);
                         foreach (var melody in incipits)
                         {
@@ -72,14 +71,18 @@ namespace Manufaktura.RismCatalogue.Shared.Services
             return plane[index];
         }
 
-        private List<Plane> planesCache = new List<Plane>(); 
+        private List<Plane> planesCache = new List<Plane>();
 
         private LSHAlgorithm GetPlaneGroup(int groupNumber, int numberOfPlanes, int numberOfDimensions)
         {
             LSHAlgorithm lshAlgorithm;
+
             var planes = planesCache.Where(p => p.GroupNumber == groupNumber && p.NumberOfDimensions == numberOfDimensions).ToArray();
             if (!planes.Any())
+            {
                 planes = dbContext.Planes.Where(p => p.GroupNumber == groupNumber && p.NumberOfDimensions == numberOfDimensions).ToArray();
+                planesCache.AddRange(planes);
+            }
 
             if (!planes.Any())
             {
@@ -105,8 +108,9 @@ namespace Manufaktura.RismCatalogue.Shared.Services
                     };
                     dbContext.Planes.Add(newPlane);
                     planesCache.Add(newPlane);
-                    dbContext.SaveChanges();
                 }
+                Console.WriteLine($"Planes created for group {groupNumber} in {numberOfDimensions} dimensions.");
+                dbContext.SaveChanges();
             }
             else lshAlgorithm = new LSHAlgorithm(planes.Select(p => new Vector<double>(new double[] {
                 p.Coordinate1, p.Coordinate2, p.Coordinate3, p.Coordinate4,
