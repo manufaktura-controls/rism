@@ -27,11 +27,14 @@
             data: JSON.stringify(self.currentQuery)
         }).done(function (response) {
             self.isLoading(false);
-            self.hasMoreResults = response.length == self.pageSize;
-            for (var i in response) {
-                var result = response[i];
+            self.hasMoreResults = response.results.length == self.pageSize;
+            
+            for (var i in response.results) {
+                var result = response.results[i];
                 self.results.push(result);
             }
+            self.currentQuery.skip = self.results().length;
+            console.info('Query finished in ' + response.queryTime + ' ms.');
         });
     }
 }
