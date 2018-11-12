@@ -1,5 +1,4 @@
-﻿using Manufaktura.RismCatalogue.Knockout.Extensions;
-using Manufaktura.RismCatalogue.Model;
+﻿using Manufaktura.RismCatalogue.Model;
 using Manufaktura.RismCatalogue.Shared.Algorithms;
 using Manufaktura.RismCatalogue.Shared.Services;
 using Manufaktura.RismCatalogue.Shared.ViewModels;
@@ -33,18 +32,37 @@ namespace Manufaktura.RismCatalogue.Knockout.Controllers
             var intervals = searchQuery.Intervals.Take(Constants.MaxNumberOfDimensions).Select(i => (double)i).ToArray();
             var numberOfDimensions = intervals.Length;
 
-            var queryDictionary = new Dictionary<int, int>();
-            for (var i = 1; i < 11; i++)
+            IOrderedQueryable<SearchResultViewModel> query;
+            if (numberOfDimensions == 0)
             {
-                var planes = context.Planes.Where(p => p.GroupNumber == i && p.NumberOfDimensions == numberOfDimensions).ToArray();
-                var lshAlgorithm = new LSHAlgorithm(planes.Select(p => new Vector<double>(new double[] {
+                query = (from i in context.Incipits
+                         join ms in context.MusicalSources on i.MusicalSourceId equals ms.Id
+                         select new SearchResultViewModel
+                         {
+                             Id = i.Id.ToString(),
+                             IncipitSvg = string.IsNullOrWhiteSpace(i.MusicalNotation) ? null : scoreRendererService.RenderScore(plaineAndEasieService.Parse(i)),
+                             CaptionOrHeading = i.CaptionOrHeading,
+                             TextIncipit = i.TextIncipit,
+                             Voice = i.VoiceOrInstrument,
+                             Title = ms.Title,
+                             ComposerName = ms.ComposerName,
+                             Relevance = 1
+                         }).OrderBy(rm => rm.ComposerName);
+            }
+            else
+            {
+                var queryDictionary = new Dictionary<int, int>();
+                for (var i = 1; i < 11; i++)
+                {
+                    var planes = context.Planes.Where(p => p.GroupNumber == i && p.NumberOfDimensions == numberOfDimensions).ToArray();
+                    var lshAlgorithm = new LSHAlgorithm(planes.Select(p => new Vector<double>(new double[] {
                     p.Coordinate1, p.Coordinate2, p.Coordinate3, p.Coordinate4,
                     p.Coordinate5, p.Coordinate6, p.Coordinate7, p.Coordinate8,
                     p.Coordinate9, p.Coordinate10, p.Coordinate11, p.Coordinate12}.Take(numberOfDimensions))).ToArray());
-                queryDictionary.Add(i, lshAlgorithm.ComputeHash(new Vector<double>(intervals)));
-            }
+                    queryDictionary.Add(i, lshAlgorithm.ComputeHash(new Vector<double>(intervals)));
+                }
 
-            var query = (from i in context.Incipits
+                query = (from i in context.Incipits
                          join ms in context.MusicalSources on i.MusicalSourceId equals ms.Id
                          where context.SpatialHashes.Any(sh => sh.IncipitId == i.Id && sh.NumberOfDimensions == numberOfDimensions && (
                          (sh.PlaneGroupNumber == 1 && sh.Hash == queryDictionary[1]) ||
@@ -78,8 +96,10 @@ namespace Manufaktura.RismCatalogue.Knockout.Controllers
                                  (sh.PlaneGroupNumber == 8 && sh.Hash == queryDictionary[8]) ||
                                  (sh.PlaneGroupNumber == 9 && sh.Hash == queryDictionary[9]) ||
                                  (sh.PlaneGroupNumber == 10 && sh.Hash == queryDictionary[10])
-                                 )) / (double)context.SpatialHashes.Count(sh => sh.IncipitId == i.Id && sh.NumberOfDimensions == numberOfDimensions)
+                                 )) / 10//(double)context.SpatialHashes.Count(sh => sh.IncipitId == i.Id && sh.NumberOfDimensions == numberOfDimensions)
                          }).OrderByDescending(rm => rm.Relevance);
+            }
+
             //var sql = query.ToSql();
             var incipits = query
                 .Skip(searchQuery.Skip)
