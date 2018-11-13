@@ -1,4 +1,5 @@
-﻿using Manufaktura.RismCatalogue.Model;
+﻿using Manufaktura.RismCatalogue.Knockout.Extensions;
+using Manufaktura.RismCatalogue.Model;
 using Manufaktura.RismCatalogue.Shared.Algorithms;
 using Manufaktura.RismCatalogue.Shared.Services;
 using Manufaktura.RismCatalogue.Shared.ViewModels;
@@ -32,10 +33,19 @@ namespace Manufaktura.RismCatalogue.Knockout.Controllers
             var intervals = searchQuery.Intervals.Take(Constants.MaxNumberOfDimensions).Select(i => (double)i).ToArray();
             var numberOfDimensions = intervals.Length;
 
+            var basicQuery = context.Incipits.AsQueryable();
+            if (!string.IsNullOrWhiteSpace(searchQuery.Rhythm))
+            {
+                if (searchQuery.IsRhythmRelative)
+                    basicQuery = basicQuery.Where(i => i.RhythmRelativeDigest.StartsWith(searchQuery.Rhythm));
+                else
+                    basicQuery = basicQuery.Where(i => i.RhythmDigest.StartsWith(searchQuery.Rhythm));
+            }
+
             IOrderedQueryable<SearchResultViewModel> query;
             if (numberOfDimensions == 0)
             {
-                query = (from i in context.Incipits
+                query = (from i in basicQuery
                          join ms in context.MusicalSources on i.MusicalSourceId equals ms.Id
                          select new SearchResultViewModel
                          {
@@ -62,7 +72,7 @@ namespace Manufaktura.RismCatalogue.Knockout.Controllers
                     queryDictionary.Add(i, lshAlgorithm.ComputeHash(new Vector<double>(intervals)));
                 }
 
-                query = (from i in context.Incipits
+                query = (from i in basicQuery
                          join ms in context.MusicalSources on i.MusicalSourceId equals ms.Id
                          where context.SpatialHashes.Any(sh => sh.IncipitId == i.Id && sh.NumberOfDimensions == numberOfDimensions && (
                          (sh.PlaneGroupNumber == 1 && sh.Hash == queryDictionary[1]) ||
@@ -102,7 +112,7 @@ namespace Manufaktura.RismCatalogue.Knockout.Controllers
 
 
 
-            //var sql = query.ToSql();
+            var sql = query.ToSql();
             var incipits = query
                 .Skip(searchQuery.Skip)
                 .Take(searchQuery.Take)

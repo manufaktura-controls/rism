@@ -4,19 +4,20 @@
     this.results = ko.observableArray([]);
     this.player = new PlaybackManager();
     this.isLoading = ko.observable(false);
-    this.hasMoreResults = true;
+    this.mayHaveMoreResults = true;
     this.currentQuery = { intervals: [], skip: 0, take: self.pageSize };
 
     this.startNewSearch = function (query) {
         if (self.isLoading()) return;
 
+        self.mayHaveMoreResults = true;
         self.currentQuery = query;
         self.results([]);
         self.getMoreResults();
     }
 
     this.getMoreResults = function () {
-        if (self.isLoading()) return;
+        if (self.isLoading() || !self.mayHaveMoreResults) return;
 
         self.isLoading(true);
         $.ajax({
@@ -27,7 +28,7 @@
             data: JSON.stringify(self.currentQuery)
         }).done(function (response) {
             self.isLoading(false);
-            self.hasMoreResults = response.results.length == self.pageSize;
+            self.mayHaveMoreResults = response.results.length == self.pageSize;
             
             for (var i in response.results) {
                 var result = response.results[i];
