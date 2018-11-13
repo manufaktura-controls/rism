@@ -100,6 +100,8 @@ namespace Manufaktura.RismCatalogue.Knockout.Controllers
                          }).OrderByDescending(rm => rm.Relevance);
             }
 
+
+
             //var sql = query.ToSql();
             var incipits = query
                 .Skip(searchQuery.Skip)

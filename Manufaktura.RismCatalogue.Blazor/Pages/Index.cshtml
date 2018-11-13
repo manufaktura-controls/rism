@@ -1,4 +1,6 @@
 ﻿@using Manufaktura.Controls.Model
+@using Manufaktura.Controls.Parser
+@using Manufaktura.Controls.Parser.Digest
 @using Manufaktura.Music.Model
 @using Manufaktura.Music.Model.MajorAndMinor
 @using Manufaktura.Controls.Linq;
@@ -15,10 +17,13 @@
           RemoveSymbol="@RemoveLastSymbol" />
 <div>
     <div>
-        <label><input type="checkbox" />Include intervals</label>
+        <label><input type="checkbox" bind="@includeIntervals" />Include intervals</label>
     </div>
     <div>
-        <label><input type="checkbox" />Include rhythm</label>
+        <label><input type="checkbox" bind="@includeRhythm" />Include rhythm</label>
+    </div>
+    <div>
+        <label><input type="checkbox" bind="@isRhythmRelative" />Include augmentations and diminutions</label>
     </div>
     <div>
         <button class="btn btn-primary" onclick="@Search">Search</button>
@@ -34,10 +39,25 @@
     [Parameter]
     int NumberOfKeys { get; set; } = 20;
 
-    public void Search ()
+    private bool includeRhythm = true;
+    private bool isRhythmRelative;
+    private bool includeIntervals = true;
+
+    public void Search()
     {
         var intervals = score.ToIntervals();
-        JSRuntime.Current.InvokeAsync<object>("startNewSearch", new SearchQuery { Intervals = intervals });
+        var searchQuery = new SearchQuery
+        {
+            Intervals = includeIntervals ? intervals : new int[0]
+        };
+        if (includeRhythm)
+        {
+            var rhythmParser = isRhythmRelative ? (ScoreParser<string>)new RhythmRelativeDigestParser() : new RhythmDigestParser();
+            searchQuery.Rhythm = rhythmParser.ParseBack(score);
+            searchQuery.IsRhythmRelative = isRhythmRelative;
+        }
+
+        JSRuntime.Current.InvokeAsync<object>("startNewSearch", searchQuery);
     }
 
     public void AddRest(RhythmicDuration duration)
