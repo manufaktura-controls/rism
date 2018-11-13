@@ -1,4 +1,5 @@
 ﻿using Manufaktura.Controls.Linq;
+using Manufaktura.Controls.Model;
 using Manufaktura.RismCatalogue.Model;
 using Manufaktura.RismCatalogue.Shared.Algorithms;
 using System;
@@ -11,6 +12,8 @@ namespace Manufaktura.RismCatalogue.Shared.Services
     {
         private readonly RismDbContext dbContext;
         private readonly PlaineAndEasieService plaineAndEasieService;
+
+        private List<Plane> planesCache = new List<Plane>();
 
         public LSHService(RismDbContext dbContext, PlaineAndEasieService plaineAndEasieService)
         {
@@ -32,15 +35,17 @@ namespace Manufaktura.RismCatalogue.Shared.Services
                     {
                         Console.WriteLine($"Processing {numberOfDimensions}-dimensional hashes in group {groupNumber} for incipits {skip}-{skip + pageSize}.");
                         var lshAlgorithm = GetPlaneGroup(groupNumber, numberOfPlanes, numberOfDimensions);
-                        foreach (var melody in incipits)
+                        foreach (var incipit in incipits)
                         {
-                            var position = GetIncipitVector(melody, numberOfDimensions);
+                            var score = plaineAndEasieService.Parse(incipit);
+                            
+                            var position = GetIncipitVector(score, numberOfDimensions);
                             dbContext.SpatialHashes.Add(new SpatialHash
                             {
                                 PlaneGroupNumber = groupNumber,
                                 NumberOfDimensions = numberOfDimensions,
                                 Hash = lshAlgorithm.ComputeHash(position),
-                                IncipitId = melody.Id
+                                IncipitId = incipit.Id
                             });
                         }
                         dbContext.SaveChanges();
@@ -52,14 +57,9 @@ namespace Manufaktura.RismCatalogue.Shared.Services
             }
         }
 
-        private Incipit[] GetIncipitsBatch(int skip, int take)
+        private static Vector<double> GetIncipitVector(Score score, int numberOfDimensions)
         {
-            return dbContext.Incipits.Where(m => m.MusicalNotation != null).OrderBy(m => m.Id).Skip(skip).Take(take).ToArray();
-        }
-
-        private Vector<double> GetIncipitVector(Incipit incipit, int numberOfDimensions)
-        {
-            var intervals = plaineAndEasieService.Parse(incipit).ToIntervals().Take(numberOfDimensions).Select(i => (double)i).ToList();
+            var intervals = score.ToIntervals().Take(numberOfDimensions).Select(i => (double)i).ToList();
             while (intervals.Count < numberOfDimensions) intervals.Add(0d);
 
             return new Vector<double>(intervals);
@@ -71,8 +71,10 @@ namespace Manufaktura.RismCatalogue.Shared.Services
             return plane[index];
         }
 
-        private List<Plane> planesCache = new List<Plane>();
-
+        private Incipit[] GetIncipitsBatch(int skip, int take)
+        {
+            return dbContext.Incipits.Where(m => m.MusicalNotation != null).OrderBy(m => m.Id).Skip(skip).Take(take).ToArray();
+        }
         private LSHAlgorithm GetPlaneGroup(int groupNumber, int numberOfPlanes, int numberOfDimensions)
         {
             LSHAlgorithm lshAlgorithm;

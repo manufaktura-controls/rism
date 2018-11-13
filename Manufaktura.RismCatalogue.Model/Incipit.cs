@@ -4,7 +4,7 @@ namespace Manufaktura.RismCatalogue.Model
 {
     [MarcDatafield("031")]
     public class Incipit : MusicalSourceField
-    { 
+    {
         [MarcSubfield("a")]
         public string NumberOfWork { get; set; }
 
@@ -64,5 +64,9 @@ namespace Manufaktura.RismCatalogue.Model
 
         [MarcSubfield("8")]
         public string FieldLinkAndSeqNumber { get; set; }
+
+        public string RhythmDigest { get; set; }
+
+        public string RhythmRelativeDigest { get; set; }
     }
 }

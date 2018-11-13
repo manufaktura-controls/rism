@@ -1,5 +1,7 @@
-﻿using Manufaktura.LibraryStandards.Marc;
+﻿using Manufaktura.Controls.Parser.Digest;
+using Manufaktura.LibraryStandards.Marc;
 using Manufaktura.RismCatalogue.Model;
+using Manufaktura.RismCatalogue.Shared.Services;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -14,10 +16,12 @@ namespace Manufaktura.RismCatalogue.Migration.Services
     public class MigrationService
     {
         private readonly RismDbContext dbContext;
+        private readonly PlaineAndEasieService plaineAndEasieService;
 
-        public MigrationService(RismDbContext dbContext)
+        public MigrationService(RismDbContext dbContext, PlaineAndEasieService plaineAndEasieService)
         {
             this.dbContext = dbContext;
+            this.plaineAndEasieService = plaineAndEasieService;
         }
 
         private static readonly Lazy<Dictionary<string, Func<MusicalSourceField>>> fieldFactories = new Lazy<Dictionary<string, Func<MusicalSourceField>>>(() =>
@@ -40,7 +44,7 @@ namespace Manufaktura.RismCatalogue.Migration.Services
         {
             //var path = @"C:\Databases\rismAllMARCXMLexample\rism_130616_example.xml";
             var path = @"C:\Databases\rismAllMARCXML\rism_170316.xml";
-            var maxRecords = 4000;
+            var maxRecords = 8000;
             var counter = 0;
 
             using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read))
@@ -107,7 +111,7 @@ namespace Manufaktura.RismCatalogue.Migration.Services
             return record;
         }
 
-        private static void ExtractDataFromSubfields(MusicalSource record, MusicalSourceField entity)
+        private void ExtractDataFromSubfields(MusicalSource record, MusicalSourceField entity)
         {
             var composer = entity as Person;
             if (composer != null)
@@ -123,6 +127,21 @@ namespace Manufaktura.RismCatalogue.Migration.Services
                 record.FormSubheading = uniformTitle.FormSubheading;
                 record.MediumOfPerformance = uniformTitle.MediumOfPerformance;
                 record.PartOrSectionNumber = uniformTitle.PartOrSectionNumber;
+            }
+
+            var incipit = entity as Incipit;
+            if (incipit != null)
+            {
+                var score = plaineAndEasieService.Parse(incipit);
+                if (score != null)
+                {
+                    try
+                    {
+                        incipit.RhythmDigest = new RhythmDigestParser().ParseBack(score);
+                        incipit.RhythmRelativeDigest = new RhythmRelativeDigestParser().ParseBack(score);
+                    }
+                    catch { }
+                }
             }
         }
     }
