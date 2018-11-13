@@ -50,13 +50,15 @@ namespace Manufaktura.RismCatalogue.Knockout.Controllers
                          select new SearchResultViewModel
                          {
                              Id = i.Id.ToString(),
+                             RecordId = ms.Id,
                              IncipitSvg = string.IsNullOrWhiteSpace(i.MusicalNotation) ? null : scoreRendererService.RenderScore(plaineAndEasieService.Parse(i)),
                              CaptionOrHeading = i.CaptionOrHeading,
                              TextIncipit = i.TextIncipit,
                              Voice = i.VoiceOrInstrument,
                              Title = ms.Title,
                              ComposerName = ms.ComposerName,
-                             Relevance = 1
+                             Relevance = 1,
+                             ShowRelevance = false
                          }).OrderBy(rm => rm.ComposerName);
             }
             else
@@ -89,6 +91,7 @@ namespace Manufaktura.RismCatalogue.Knockout.Controllers
                          select new SearchResultViewModel
                          {
                              Id = i.Id.ToString(),
+                             RecordId = ms.Id,
                              IncipitSvg = string.IsNullOrWhiteSpace(i.MusicalNotation) ? null : scoreRendererService.RenderScore(plaineAndEasieService.Parse(i)),
                              CaptionOrHeading = i.CaptionOrHeading,
                              TextIncipit = i.TextIncipit,
@@ -106,7 +109,8 @@ namespace Manufaktura.RismCatalogue.Knockout.Controllers
                                  (sh.PlaneGroupNumber == 8 && sh.Hash == queryDictionary[8]) ||
                                  (sh.PlaneGroupNumber == 9 && sh.Hash == queryDictionary[9]) ||
                                  (sh.PlaneGroupNumber == 10 && sh.Hash == queryDictionary[10])
-                                 )) / 10//(double)context.SpatialHashes.Count(sh => sh.IncipitId == i.Id && sh.NumberOfDimensions == numberOfDimensions)
+                                 )) / 10,
+                             ShowRelevance = true
                          }).OrderByDescending(rm => rm.Relevance);
             }
 

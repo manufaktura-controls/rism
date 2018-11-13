@@ -15,6 +15,10 @@
 
         public string Id { get; set; }
 
+        public string RecordId { get; set; }
+
         public double Relevance { get; set; }
+
+        public bool ShowRelevance { get; set; }
     }
 }

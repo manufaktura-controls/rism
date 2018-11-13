@@ -38,4 +38,12 @@
             console.info('Query finished in ' + response.queryTime + ' ms.');
         });
     }
+
+    this.getRismLink = function (id) {
+        return 'https://opac.rism.info/search?id=' + id + '&View=rism';
+    }
+
+    this.formatRelevance = function (relevance) {
+        return (relevance * 100) + " %";
+    }
 }

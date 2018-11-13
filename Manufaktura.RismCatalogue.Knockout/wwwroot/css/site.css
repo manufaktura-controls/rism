@@ -3,9 +3,34 @@
     src: url('/fonts/Polihymnia.ttf') format('truetype');
 }
 
+@font-face {
+    font-family: 'Lato';
+    src: url('/fonts/Lato-Regular.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Lato';
+    src: url('/fonts/Lato-Bold.ttf') format('truetype');
+    font-weight: bold;
+}
+
+@font-face {
+    font-family: 'Lato';
+    src: url('/fonts/Lato-Black.ttf') format('truetype');
+    font-weight: 900;
+}
+
+@font-face {
+    font-family: 'Lato';
+    src: url('/fonts/Lato-Light.ttf') format('truetype');
+    font-weight: 200;
+}
+
+
 body {
     padding-top: 50px;
     padding-bottom: 20px;
+    font-family:  Lato;
 }
 
 /* Wrapping element */
@@ -182,4 +207,17 @@ li.link-active a:focus {
 
 .note-selected {
     background-color: #fa8420 !important;
+}
+
+.relevance-badge {
+    margin-right: 10px;
+    font-size: 22px;
+    font-weight: 200;
+    /*background-color: #337ab7;
+            border-radius: 4px;
+            padding: 10px;
+        */
+    color: #337ab7;
+    width: 80px;
+    text-align: left;
 }
