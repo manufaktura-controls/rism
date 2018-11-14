@@ -76,18 +76,20 @@ namespace Manufaktura.RismCatalogue.Knockout.Controllers
 
                 query = (from i in basicQuery
                          join ms in context.MusicalSources on i.MusicalSourceId equals ms.Id
-                         where context.SpatialHashes.Any(sh => sh.IncipitId == i.Id && sh.NumberOfDimensions == numberOfDimensions && (
-                         (sh.PlaneGroupNumber == 1 && sh.Hash == queryDictionary[1]) ||
-                         (sh.PlaneGroupNumber == 2 && sh.Hash == queryDictionary[2]) ||
-                         (sh.PlaneGroupNumber == 3 && sh.Hash == queryDictionary[3]) ||
-                         (sh.PlaneGroupNumber == 4 && sh.Hash == queryDictionary[4]) ||
-                         (sh.PlaneGroupNumber == 5 && sh.Hash == queryDictionary[5]) ||
-                         (sh.PlaneGroupNumber == 6 && sh.Hash == queryDictionary[6]) ||
-                         (sh.PlaneGroupNumber == 7 && sh.Hash == queryDictionary[7]) ||
-                         (sh.PlaneGroupNumber == 8 && sh.Hash == queryDictionary[8]) ||
-                         (sh.PlaneGroupNumber == 9 && sh.Hash == queryDictionary[9]) ||
-                         (sh.PlaneGroupNumber == 10 && sh.Hash == queryDictionary[10])
-                         )) //TODO: Create this query dynamically
+                         join sh in (from s in context.SpatialHashes where s.NumberOfDimensions == numberOfDimensions && (
+                         (s.PlaneGroupNumber == 1 && s.Hash == queryDictionary[1]) ||
+                         (s.PlaneGroupNumber == 2 && s.Hash == queryDictionary[2]) ||
+                         (s.PlaneGroupNumber == 3 && s.Hash == queryDictionary[3]) ||
+                         (s.PlaneGroupNumber == 4 && s.Hash == queryDictionary[4]) ||
+                         (s.PlaneGroupNumber == 5 && s.Hash == queryDictionary[5]) ||
+                         (s.PlaneGroupNumber == 6 && s.Hash == queryDictionary[6]) ||
+                         (s.PlaneGroupNumber == 7 && s.Hash == queryDictionary[7]) ||
+                         (s.PlaneGroupNumber == 8 && s.Hash == queryDictionary[8]) ||
+                         (s.PlaneGroupNumber == 9 && s.Hash == queryDictionary[9]) ||
+                         (s.PlaneGroupNumber == 10 && s.Hash == queryDictionary[10]))
+                                     select new { IncipitId = s.IncipitId }) on i.Id equals sh.IncipitId into shh
+                         
+                          //TODO: Create this query dynamically
                          select new SearchResultViewModel
                          {
                              Id = i.Id.ToString(),
@@ -98,18 +100,7 @@ namespace Manufaktura.RismCatalogue.Knockout.Controllers
                              Voice = i.VoiceOrInstrument,
                              Title = ms.Title,
                              ComposerName = ms.ComposerName,
-                             Relevance = (double)context.SpatialHashes.Count(sh => sh.IncipitId == i.Id && sh.NumberOfDimensions == numberOfDimensions && (
-                                 (sh.PlaneGroupNumber == 1 && sh.Hash == queryDictionary[1]) ||
-                                 (sh.PlaneGroupNumber == 2 && sh.Hash == queryDictionary[2]) ||
-                                 (sh.PlaneGroupNumber == 3 && sh.Hash == queryDictionary[3]) ||
-                                 (sh.PlaneGroupNumber == 4 && sh.Hash == queryDictionary[4]) ||
-                                 (sh.PlaneGroupNumber == 5 && sh.Hash == queryDictionary[5]) ||
-                                 (sh.PlaneGroupNumber == 6 && sh.Hash == queryDictionary[6]) ||
-                                 (sh.PlaneGroupNumber == 7 && sh.Hash == queryDictionary[7]) ||
-                                 (sh.PlaneGroupNumber == 8 && sh.Hash == queryDictionary[8]) ||
-                                 (sh.PlaneGroupNumber == 9 && sh.Hash == queryDictionary[9]) ||
-                                 (sh.PlaneGroupNumber == 10 && sh.Hash == queryDictionary[10])
-                                 )) / 10,
+                             Relevance = (double)shh.Count() / 10,
                              ShowRelevance = true
                          }).OrderByDescending(rm => rm.Relevance);
             }
@@ -118,6 +109,7 @@ namespace Manufaktura.RismCatalogue.Knockout.Controllers
 
             var sql = query.ToSql();
             var incipits = query
+                .Distinct()
                 .Skip(searchQuery.Skip)
                 .Take(searchQuery.Take)
                 .ToArray();
