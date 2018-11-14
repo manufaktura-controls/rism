@@ -1,4 +1,5 @@
-﻿using Manufaktura.Controls.Parser.Digest;
+﻿using Manufaktura.Controls.Linq;
+using Manufaktura.Controls.Parser.Digest;
 using Manufaktura.LibraryStandards.Marc;
 using Manufaktura.RismCatalogue.Model;
 using Manufaktura.RismCatalogue.Shared.Services;
@@ -44,7 +45,7 @@ namespace Manufaktura.RismCatalogue.Migration.Services
         {
             //var path = @"C:\Databases\rismAllMARCXMLexample\rism_130616_example.xml";
             var path = @"C:\Databases\rismAllMARCXML\rism_170316.xml";
-            var maxRecords = 8000;
+            var maxRecords = 100000;
             var counter = 0;
 
             using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read))
@@ -139,6 +140,13 @@ namespace Manufaktura.RismCatalogue.Migration.Services
                     {
                         incipit.RhythmDigest = new RhythmDigestParser().ParseBack(score);
                         incipit.RhythmRelativeDigest = new RhythmRelativeDigestParser().ParseBack(score);
+
+                        var intervals = score.ToIntervals().Take(12).ToArray();
+                        var intervalNumber = 1;
+                        foreach (var interval in intervals)
+                        {
+                            typeof(Incipit).GetProperty($"Interval{intervalNumber++}").SetValue(incipit, interval);
+                        }
                     }
                     catch { }
                 }

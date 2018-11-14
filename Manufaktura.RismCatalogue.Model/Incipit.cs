@@ -68,5 +68,18 @@ namespace Manufaktura.RismCatalogue.Model
         public string RhythmDigest { get; set; }
 
         public string RhythmRelativeDigest { get; set; }
+
+        public int Interval1 { get; set; }
+        public int Interval2 { get; set; }
+        public int Interval3 { get; set; }
+        public int Interval4 { get; set; }
+        public int Interval5 { get; set; }
+        public int Interval6 { get; set; }
+        public int Interval7 { get; set; }
+        public int Interval8 { get; set; }
+        public int Interval9 { get; set; }
+        public int Interval10 { get; set; }
+        public int Interval11 { get; set; }
+        public int Interval12 { get; set; }
     }
 }
