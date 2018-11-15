@@ -25,11 +25,16 @@ namespace Manufaktura.RismCatalogue.Knockout.Services.Search
             for (var i = 1; i < 11; i++)
             {
                 var planes = context.Planes.Where(p => p.GroupNumber == i && p.NumberOfDimensions == numberOfDimensions).ToArray();
-                var lshAlgorithm = new LSHAlgorithm(planes.Select(p => new Vector<double>(new double[] {
+                var lshAlgorithm = new LSHAlgorithm(planes.Select(p => new TranslatedVector(new double[] {
                     p.Coordinate1, p.Coordinate2, p.Coordinate3, p.Coordinate4,
                     p.Coordinate5, p.Coordinate6, p.Coordinate7, p.Coordinate8,
-                    p.Coordinate9, p.Coordinate10, p.Coordinate11, p.Coordinate12}.Take(numberOfDimensions))).ToArray());
-                queryDictionary.Add(i, lshAlgorithm.ComputeHash(new Vector<double>(intervals)));
+                    p.Coordinate9, p.Coordinate10, p.Coordinate11, p.Coordinate12}.Take(numberOfDimensions).ToArray(),
+                    new double[] {
+                    p.Translation1, p.Translation2, p.Translation3, p.Translation4,
+                    p.Translation5, p.Translation6, p.Translation7, p.Translation8,
+                    p.Translation9, p.Translation10, p.Translation11, p.Translation12}.Take(numberOfDimensions).ToArray()
+                    )).ToArray());
+                queryDictionary.Add(i, lshAlgorithm.ComputeHash(new Vector(intervals)));
             }
 
             var query = (from i in basicQuery

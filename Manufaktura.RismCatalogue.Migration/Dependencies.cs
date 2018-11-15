@@ -25,6 +25,7 @@ namespace Manufaktura.RismCatalogue.Migration
             {
                 var context = new RismDbContext(new DbContextOptionsBuilder().UseMySql("server=localhost;database=manufaktura-rism;uid=admin;pwd=123123").Options);
                 context.ChangeTracker.AutoDetectChangesEnabled = false;
+                context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
                 return context;
             });
             Bind<MigrationService>().ToSelf().InSingletonScope();
