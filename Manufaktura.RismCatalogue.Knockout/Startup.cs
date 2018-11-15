@@ -7,6 +7,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using Manufaktura.RismCatalogue.Knockout.Services;
+using Manufaktura.RismCatalogue.Knockout.Services.Search;
+using System.Linq;
+using System.Diagnostics;
+using Microsoft.ApplicationInsights.Extensibility;
 
 namespace Manufaktura.RismCatalogue.Knockout
 {
@@ -27,11 +31,14 @@ namespace Manufaktura.RismCatalogue.Knockout
             services.AddSingleton<ISettingsService, ServerSideSettingsService>();
             services.AddSingleton<PlaineAndEasieService>();
             services.AddSingleton<ScoreRendererService>();
+            services.AddScoped<MelodicQueryStrategy, LSHMelodicQueryStrategy>();
+            services.AddScoped<MelodicQueryStrategy, DistanceMelodicQueryStrategy>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider serviceProvider)
         {
+            DisableApplicationInsightsOnDebug();
             if (env.IsDevelopment())
             {
                 app.UseBrowserLink();
@@ -54,6 +61,12 @@ namespace Manufaktura.RismCatalogue.Knockout
 
             var db = serviceProvider.GetRequiredService<RismDbContext>();
             db.Database.EnsureCreated();
+        }
+
+        [Conditional("DEBUG")]
+        private static void DisableApplicationInsightsOnDebug()
+        {
+            TelemetryConfiguration.Active.DisableTelemetry = true;
         }
     }
 }

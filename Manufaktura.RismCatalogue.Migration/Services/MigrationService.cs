@@ -41,11 +41,10 @@ namespace Manufaktura.RismCatalogue.Migration.Services
 
         public static Dictionary<string, Func<MusicalSourceField>> FieldFactories => fieldFactories.Value;
 
-        public void Migrate()
+        public void Migrate(int maxRecords)
         {
             //var path = @"C:\Databases\rismAllMARCXMLexample\rism_130616_example.xml";
             var path = @"C:\Databases\rismAllMARCXML\rism_170316.xml";
-            var maxRecords = 100000;
             var counter = 0;
 
             using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read))
