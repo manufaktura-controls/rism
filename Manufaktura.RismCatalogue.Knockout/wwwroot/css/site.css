@@ -86,6 +86,12 @@ li.link-active a:focus {
     z-index: 1;
 }
 
+
+.navbar-inverse {
+    background-color: gainsboro;
+    border-color: transparent;
+}
+
 @media (min-width: 768px) {
     /* On small screens, convert the nav menu to a vertical sidebar */
     .main-nav {
@@ -131,13 +137,14 @@ li.link-active a:focus {
         text-overflow: ellipsis;
     }
 
-    .navbar-inverse {
-        background-color: gainsboro;
-    }
 }
 
 .nopadding {
     padding:0px;
+}
+
+#searchPanel {
+    padding: 25px;
 }
 
 .list-item {
@@ -202,12 +209,31 @@ li.link-active a:focus {
 }
 
 .btn-note {
-    width: 14.2%!important;
+    width: 14.2% !important;
+    display: block;
+    float: left;
+    height: 45px;
+}
+
+.btn-remove {
+    width: 28.4% !important;
+    display: block;
+    float: left;
+    height: 45px;
 }
 
 .note-selected {
     background-color: #fa8420 !important;
 }
+
+.nomargin-right {
+    margin-right: 0px;
+}
+
+.nomargin-left {
+    margin-left: 0px;
+}
+
 
 .relevance-badge {
     margin-right: 10px;

@@ -12,6 +12,8 @@
 <Keyboard StartingMidiPitch="55" NumberOfKeys="39" WhiteKeyClass="btn-key btn-key-large" BlackKeyClass="btn-key btn-key-small" KeyGapClass="btn-key-none"
           RhythmicDurationChanged="@(d => { CurrentRhythmicDuration = d; StateHasChanged(); })"
           CurrentRhythmicDuration=@CurrentRhythmicDuration
+          AddBarline=@AddBarline
+          AddDot=@AddDot
           NumberOfKeys=@NumberOfKeys
           AddRest="@AddRest"
           RemoveSymbol="@RemoveLastSymbol" />
@@ -37,7 +39,7 @@
     RhythmicDuration CurrentRhythmicDuration { get; set; } = RhythmicDuration.Quarter;
 
     [Parameter]
-    int NumberOfKeys { get; set; } = 20;
+    int NumberOfKeys { get; set; } = 30;
 
     private bool includeRhythm = true;
     private bool isRhythmRelative;
@@ -58,6 +60,19 @@
         }
 
         JSRuntime.Current.InvokeAsync<object>("startNewSearch", searchQuery);
+    }
+
+    public void AddBarline()
+    {
+        score.FirstStaff.Elements.Add(new Barline());
+        StateHasChanged();
+    }
+
+    public void AddDot ()
+    {
+        var lastNoteOrRest = score.FirstStaff.Elements.OfType<NoteOrRest>().FirstOrDefault();
+        if (lastNoteOrRest != null) lastNoteOrRest.NumberOfDots++;
+        StateHasChanged();
     }
 
     public void AddRest(RhythmicDuration duration)
