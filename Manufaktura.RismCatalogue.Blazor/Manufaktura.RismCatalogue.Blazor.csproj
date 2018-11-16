@@ -5,6 +5,7 @@
     <RunCommand>dotnet</RunCommand>
     <RunArguments>blazor serve</RunArguments>
     <LangVersion>7.3</LangVersion>
+    <UserSecretsId>431ab756-9d3c-4d03-92f8-ba52e45c725e</UserSecretsId>
   </PropertyGroup>
 
   <!--<PropertyGroup>
@@ -12,7 +13,8 @@
   </PropertyGroup>-->
   
   <ItemGroup>
-    <PackageReference Include="Manufaktura.Controls" Version="1.4.0" />
+    <PackageReference Include="Manufaktura.Controls" Version="1.4.1" />
+    <PackageReference Include="Manufaktura.Core" Version="1.0.1" />
     <PackageReference Include="Manufaktura.Music" Version="1.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Blazor.Browser" Version="0.6.0" />
     <PackageReference Include="Microsoft.AspNetCore.Blazor.Build" Version="0.6.0" PrivateAssets="all" />
