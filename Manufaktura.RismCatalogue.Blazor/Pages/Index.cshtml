@@ -5,6 +5,7 @@
 @using Manufaktura.Music.Model.MajorAndMinor
 @using Manufaktura.Controls.Linq;
 @using Manufaktura.RismCatalogue.Shared.ViewModels;
+@using Manufaktura.RismCatalogue.Shared.Services;
 
 @page "/"
 
@@ -21,11 +22,16 @@
     <div>
         <label><input type="checkbox" bind="@includeIntervals" />Include intervals</label>
     </div>
+    @if(IsMaxDimensionsExceeded) {
+        <div class="alert alert-info">
+            Maximum number of intervals in query is @Constants.MaxNumberOfDimensions because only @Constants.MaxNumberOfDimensions-dimensional spatial hashes were generated. Spatial hashes take large amount of disk space and that requires higher hosting fees. If you want me to generate higher-dimensional spaces please support me on Patreon. :)
+        </div>
+    }
     <div>
         <label><input type="checkbox" bind="@includeRhythm" />Include rhythm</label>
     </div>
     <div>
-        <label><input type="checkbox" bind="@isRhythmRelative" />Include augmentations and diminutions</label>
+        <label><input type="checkbox" bind="@isRhythmRelative" disabled="@(!includeRhythm)" />Include augmentations and diminutions</label>
     </div>
     <div>
         <button class="btn btn-primary" onclick="@Search">Search</button>
@@ -35,84 +41,86 @@
 
 @functions {
 
-    [Parameter]
-    RhythmicDuration CurrentRhythmicDuration { get; set; } = RhythmicDuration.Quarter;
+[Parameter]
+RhythmicDuration CurrentRhythmicDuration { get; set; } = RhythmicDuration.Quarter;
 
-    [Parameter]
-    int NumberOfKeys { get; set; } = 30;
+[Parameter]
+int NumberOfKeys { get; set; } = 30;
 
-    private bool includeRhythm = true;
-    private bool isRhythmRelative;
-    private bool includeIntervals = true;
+private bool includeRhythm = true;
+private bool isRhythmRelative;
+private bool includeIntervals = true;
 
-    public void Search()
+public bool IsMaxDimensionsExceeded => score.FirstStaff.Elements.OfType<Note>().Count() > Constants.MaxNumberOfDimensions;
+
+public void Search()
+{
+    var intervals = score.ToIntervals();
+    var searchQuery = new SearchQuery
     {
-        var intervals = score.ToIntervals();
-        var searchQuery = new SearchQuery
-        {
-            Intervals = includeIntervals ? intervals : new int[0]
-        };
-        if (includeRhythm)
-        {
-            var rhythmParser = isRhythmRelative ? (ScoreParser<string>)new RhythmRelativeDigestParser() : new RhythmDigestParser();
-            searchQuery.Rhythm = rhythmParser.ParseBack(score);
-            searchQuery.IsRhythmRelative = isRhythmRelative;
-        }
-
-        JSRuntime.Current.InvokeAsync<object>("startNewSearch", searchQuery);
+        Intervals = includeIntervals ? intervals : new int[0]
+    };
+    if (includeRhythm)
+    {
+        var rhythmParser = isRhythmRelative ? (ScoreParser<string>)new RhythmRelativeDigestParser() : new RhythmDigestParser();
+        searchQuery.Rhythm = rhythmParser.ParseBack(score);
+        searchQuery.IsRhythmRelative = isRhythmRelative;
     }
 
-    public void AddBarline()
+    JSRuntime.Current.InvokeAsync<object>("startNewSearch", searchQuery);
+}
+
+public void AddBarline()
+{
+    score.FirstStaff.Elements.Add(new Barline());
+    StateHasChanged();
+}
+
+public void AddDot()
+{
+    var lastNoteOrRest = score.FirstStaff.Elements.OfType<NoteOrRest>().LastOrDefault();
+    if (lastNoteOrRest != null) lastNoteOrRest.NumberOfDots++;
+    StateHasChanged();
+}
+
+public void AddRest(RhythmicDuration duration)
+{
+    score.FirstStaff.Add(new Rest(duration));
+    StateHasChanged();
+}
+
+public void RemoveLastSymbol()
+{
+    var lastSymbol = score.FirstStaff.Elements.LastOrDefault(e => !(e is Key) && !(e is Clef) && !(e is TimeSignature));
+    if (lastSymbol != null)
     {
-        score.FirstStaff.Elements.Add(new Barline());
+        score.FirstStaff.Elements.Remove(lastSymbol);
         StateHasChanged();
     }
+}
 
-    public void AddDot ()
+[JSInvokable]
+public void OnWindowResize(double size)
+{
+    var numberOfKeys = DetermineNumberOfKeys(size);
+    if (numberOfKeys != NumberOfKeys)
     {
-        var lastNoteOrRest = score.FirstStaff.Elements.OfType<NoteOrRest>().FirstOrDefault();
-        if (lastNoteOrRest != null) lastNoteOrRest.NumberOfDots++;
+        NumberOfKeys = numberOfKeys < 4 ? 3 : numberOfKeys;
         StateHasChanged();
     }
+}
 
-    public void AddRest(RhythmicDuration duration)
-    {
-        score.FirstStaff.Add(new Rest(duration));
-        StateHasChanged();
-    }
-
-    public void RemoveLastSymbol()
-    {
-        var lastSymbol = score.FirstStaff.Elements.LastOrDefault(e => !(e is Key) && !(e is Clef) && !(e is TimeSignature));
-        if (lastSymbol != null)
-        {
-            score.FirstStaff.Elements.Remove(lastSymbol);
-            StateHasChanged();
-        }
-    }
-
-    [JSInvokable]
-    public void OnWindowResize(double size)
-    {
-        var numberOfKeys = DetermineNumberOfKeys(size);
-        if (numberOfKeys != NumberOfKeys)
-        {
-            NumberOfKeys = numberOfKeys < 4 ? 3 : numberOfKeys;
-            StateHasChanged();
-        }
-    }
-
-    private int DetermineNumberOfKeys(double size)
-    {
-        return (int)(size / 12);
-    }
+private int DetermineNumberOfKeys(double size)
+{
+    return (int)(size / 12);
+}
 
 
-    protected override async Task OnAfterRenderAsync()
-    {
-        await JSRuntime.Current.InvokeAsync<object>("registerKeyboard", new DotNetObjectRef(this));
-    }
+protected override async Task OnAfterRenderAsync()
+{
+    await JSRuntime.Current.InvokeAsync<object>("registerKeyboard", new DotNetObjectRef(this));
+}
 
-    Score score = Score.CreateOneStaffScore(Clef.Treble, MajorScale.C);
+Score score = Score.CreateOneStaffScore(Clef.Treble, MajorScale.C);
 
 }
