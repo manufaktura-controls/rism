@@ -17,15 +17,22 @@
         function colorBlack(elements) {
             for (var i in elements) {
                 var e = elements[i];
-                if (e.tagName === "line" || e.tagName === "path") e.style.stroke = "#000";
-                else e.style.fill = "#000";
+                if (e.tagName === "line" || e.tagName === "path") e.style.stroke = $(e).attr("previousColor") || "#000";
+                else e.style.fill = $(e).attr("previousColor") || "#000";
             }
         }
         function colorRed(elements) {
             for (var i in elements) {
                 var e = elements[i];
-                if (e.tagName === "line" || e.tagName === "path") e.style.stroke = "#c34853";
-                else e.style.fill = "#c34853";
+                
+                if (e.tagName === "line" || e.tagName === "path") {
+                    $(e).attr("previousColor", e.style.stroke);
+                    e.style.stroke = "#c34853";
+                }
+                else {
+                    $(e).attr("previousColor", e.style.fill);
+                    e.style.fill = "#c34853";
+                }
             }
         }
 
