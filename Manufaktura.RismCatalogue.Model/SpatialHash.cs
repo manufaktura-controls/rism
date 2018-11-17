@@ -5,6 +5,8 @@
         public long IncipitId { get; set; }
         public long Hash { get; set; }
 
+        public string HashIndex { get; set; }
+
         public int PlaneGroupNumber { get; set; }
 
         public int NumberOfDimensions { get; set; }

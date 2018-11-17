@@ -43,11 +43,13 @@ namespace Manufaktura.RismCatalogue.Migration.Services
                             var score = plaineAndEasieService.Parse(incipit);
 
                             var position = GetIncipitVector(score, numberOfDimensions);
+                            var hash = lshAlgorithm.ComputeHash(position);
                             dbContext.SpatialHashes.Add(new SpatialHash
                             {
                                 PlaneGroupNumber = groupNumber,
                                 NumberOfDimensions = numberOfDimensions,
-                                Hash = lshAlgorithm.ComputeHash(position),
+                                Hash = hash,
+                                HashIndex = $"{numberOfDimensions}:{groupNumber}:{hash}",
                                 IncipitId = incipit.Id
                             });
                         }
