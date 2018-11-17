@@ -1,6 +1,6 @@
 ﻿var SearchViewModel = function () {
     var self = this;
-    this.pageSize = 30;
+    this.pageSize = 100;
     this.results = ko.observableArray([]);
     this.player = new PlaybackManager();
     this.isLoading = ko.observable(false);

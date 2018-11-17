@@ -8,18 +8,23 @@ namespace Manufaktura.RismCatalogue.Shared.Services
 {
     public class PlaineAndEasieService
     {
-        public Score Parse(Incipit incipit)
+        public Score Parse(Incipit incipit) => Parse(incipit.MusicalNotation, incipit.Clef, incipit.KeySignature, incipit.TimeSignature);
+
+        public Score Parse(string musicalNotation, string clef, string keySignature, string timeSignature)
         {
-            if (string.IsNullOrWhiteSpace(incipit.MusicalNotation)) return null;
+            if (string.IsNullOrWhiteSpace(musicalNotation)) return null;
 
             var parser = new PlaineAndEasie2ScoreParser();
-            var score = parser.Parse(incipit.Clef, incipit.KeySignature, incipit.TimeSignature, incipit.MusicalNotation);
+            var score = parser.Parse(clef, keySignature, timeSignature, musicalNotation);
             return score;
         }
 
-        public Score ParseAndColorMatchingIntervals(Incipit incipit, int[] intervals)
+        public Score ParseAndColorMatchingIntervals(Incipit incipit, int[] intervals) =>
+            ParseAndColorMatchingIntervals(incipit.MusicalNotation, incipit.Clef, incipit.KeySignature, incipit.TimeSignature, intervals);
+
+        public Score ParseAndColorMatchingIntervals(string musicalNotation, string clef, string keySignature, string timeSignature, int[] intervals)
         {
-            var score = Parse(incipit);
+            var score = Parse(musicalNotation, clef, keySignature, timeSignature);
             var notes = score.FirstStaff.Elements.OfType<Note>().Take(intervals.Length + 1).ToArray();
             if (notes.Length < 2) return score;
 

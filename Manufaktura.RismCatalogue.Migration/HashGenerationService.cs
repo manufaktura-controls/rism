@@ -2,20 +2,22 @@
 using Manufaktura.Controls.Model;
 using Manufaktura.RismCatalogue.Model;
 using Manufaktura.RismCatalogue.Shared.Algorithms;
+using Manufaktura.RismCatalogue.Shared.Services;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Manufaktura.RismCatalogue.Shared.Services
+namespace Manufaktura.RismCatalogue.Migration.Services
 {
-    public class LSHService
+    public class HashGenerationService
     {
-        private readonly RismDbContext dbContext;
+        private RismDbContext dbContext;
         private readonly PlaineAndEasieService plaineAndEasieService;
 
         private List<Plane> planesCache = new List<Plane>();
 
-        public LSHService(RismDbContext dbContext, PlaineAndEasieService plaineAndEasieService)
+        public HashGenerationService(RismDbContext dbContext, PlaineAndEasieService plaineAndEasieService)
         {
             this.dbContext = dbContext;
             this.plaineAndEasieService = plaineAndEasieService;
@@ -27,6 +29,7 @@ namespace Manufaktura.RismCatalogue.Shared.Services
             var skip = 0;
             while (true)
             {
+                dbContext = new RismDbContext(new DbContextOptionsBuilder().UseMySql("server=localhost;database=manufaktura-rism;uid=admin;pwd=123123").Options);  //Recreate
                 var incipits = GetIncipitsBatch(skip, pageSize);
 
                 for (var numberOfDimensions = 1; numberOfDimensions <= Constants.MaxNumberOfDimensions; numberOfDimensions++)
@@ -38,7 +41,7 @@ namespace Manufaktura.RismCatalogue.Shared.Services
                         foreach (var incipit in incipits)
                         {
                             var score = plaineAndEasieService.Parse(incipit);
-                            
+
                             var position = GetIncipitVector(score, numberOfDimensions);
                             dbContext.SpatialHashes.Add(new SpatialHash
                             {
@@ -84,6 +87,7 @@ namespace Manufaktura.RismCatalogue.Shared.Services
         {
             return dbContext.Incipits.Where(m => m.MusicalNotation != null).OrderBy(m => m.Id).Skip(skip).Take(take).ToArray();
         }
+
         private LSHAlgorithm GetPlaneGroup(int groupNumber, int numberOfPlanes, int numberOfDimensions)
         {
             LSHAlgorithm lshAlgorithm;

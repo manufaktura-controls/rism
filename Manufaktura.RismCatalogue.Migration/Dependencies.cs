@@ -30,7 +30,7 @@ namespace Manufaktura.RismCatalogue.Migration
             });
             Bind<MigrationService>().ToSelf().InSingletonScope();
             Bind<PlaineAndEasieService>().ToSelf().InSingletonScope();
-            Bind<LSHService>().ToSelf().InSingletonScope();
+            Bind<HashGenerationService>().ToSelf().InSingletonScope();
         }
     }
 }
