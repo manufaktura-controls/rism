@@ -34,28 +34,30 @@ namespace Manufaktura.RismCatalogue.Migration.Services
 
                 for (var numberOfDimensions = 1; numberOfDimensions <= Constants.MaxNumberOfDimensions; numberOfDimensions++)
                 {
-                    foreach (var groupNumber in Enumerable.Range(1, numberOfGroups))
+                    Console.WriteLine($"Processing {numberOfDimensions}-dimensional hashes for incipits {skip}-{skip + pageSize}.");
+                    foreach (var incipit in incipits)
                     {
-                        Console.WriteLine($"Processing {numberOfDimensions}-dimensional hashes in group {groupNumber} for incipits {skip}-{skip + pageSize}.");
-                        var lshAlgorithm = GetPlaneGroup(groupNumber, numberOfPlanes, numberOfDimensions);
-                        foreach (var incipit in incipits)
+                        var hashes = new List<int>();
+                        var score = plaineAndEasieService.Parse(incipit);
+                        var position = GetIncipitVector(score, numberOfDimensions);
+                        foreach (var groupNumber in Enumerable.Range(1, numberOfGroups))
                         {
-                            var score = plaineAndEasieService.Parse(incipit);
-
-                            var position = GetIncipitVector(score, numberOfDimensions);
+                            var lshAlgorithm = GetPlaneGroup(groupNumber, numberOfPlanes, numberOfDimensions);
                             var hash = lshAlgorithm.ComputeHash(position);
-                            dbContext.SpatialHashes.Add(new SpatialHash
-                            {
-                                PlaneGroupNumber = groupNumber,
-                                NumberOfDimensions = numberOfDimensions,
-                                Hash = hash,
-                                HashIndex = $"{numberOfDimensions}:{groupNumber}:{hash}",
-                                IncipitId = incipit.Id
-                            });
+                            hashes.Add(hash);
                         }
-                        dbContext.SaveChanges();
+
+                        dbContext.SpatialHashes.Add(new SpatialHash
+                        {
+                            NumberOfDimensions = numberOfDimensions,
+                            Hash1 = hashes[0],
+                            Hash2 = hashes[1],
+                            Hash3 = hashes[2],
+                            IncipitId = incipit.Id
+                        });
                     }
                 }
+                dbContext.SaveChanges();
 
                 skip += incipits.Length;
                 if (incipits.Length < pageSize) break;

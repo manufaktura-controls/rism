@@ -103,22 +103,14 @@ namespace Manufaktura.RismCatalogue.Knockout.Controllers
             }
 
             var sb = new StringBuilder();
-            sb.Append($"SELECT DISTINCT i.{nameof(Incipit.MusicalNotation)}, i.{nameof(Incipit.Clef)}, i.{nameof(Incipit.KeySignature)}, i.{nameof(Incipit.TimeSignature)}, " +
+            sb.Append($"SELECT i.{nameof(Incipit.MusicalNotation)}, i.{nameof(Incipit.Clef)}, i.{nameof(Incipit.KeySignature)}, i.{nameof(Incipit.TimeSignature)}, " +
                 $"i.{nameof(Incipit.CaptionOrHeading)}, ms.{nameof(MusicalSource.ComposerName)}, ms.{nameof(MusicalSource.Id)}, i.{nameof(Incipit.TextIncipit)}, " +
                 $"ms.{nameof(MusicalSource.Title)}, i.{nameof(Incipit.VoiceOrInstrument)}, ");
             sb.Append(GetRelevanceExpression(intervals));
             sb.Append(" from incipits i inner join musicalsources ms on ms.id = i.MusicalSourceId ");
-            for (var groupNumber = 1; groupNumber <= hashGroupsToInclude; groupNumber++)
-            {
-                sb.Append($" left join spatialhashes sh{groupNumber} on sh{groupNumber}.IncipitId = i.Id and sh1.NumberOfDimensions = {intervals.Length} " +
-                    $"and sh{groupNumber}.PlaneGroupNumber = {groupNumber}  and sh{groupNumber}.hash = {queryDictionary[groupNumber]}");
-            }
-            sb.Append(" WHERE ");
-            for (var groupNumber = 1; groupNumber <= hashGroupsToInclude; groupNumber++)
-            {
-                if (groupNumber > 1) sb.Append(" OR ");
-                sb.Append($"sh{groupNumber}.Id IS NOT NULL");
-            }
+            sb.Append($" inner join spatialhashes sh on sh.IncipitId = i.Id and sh.NumberOfDimensions = {intervals.Length} " +
+                $"and (sh.Hash1 = {queryDictionary[1]} or sh.Hash2 = {queryDictionary[2]} or sh.Hash3 = {queryDictionary[3]})");
+
             sb.Append($" order by Relevance desc LIMIT {searchQuery.Take} OFFSET {searchQuery.Skip}");
 
             var sql = sb.ToString();
