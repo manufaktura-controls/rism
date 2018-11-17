@@ -1,5 +1,4 @@
 ﻿using Manufaktura.RismCatalogue.Knockout.Extensions;
-using Manufaktura.RismCatalogue.Knockout.Services.Search;
 using Manufaktura.RismCatalogue.Model;
 using Manufaktura.RismCatalogue.Shared.Algorithms;
 using Manufaktura.RismCatalogue.Shared.Services;
@@ -18,14 +17,12 @@ namespace Manufaktura.RismCatalogue.Knockout.Controllers
         private readonly RismDbContext context;
         private readonly PlaineAndEasieService plaineAndEasieService;
         private readonly ScoreRendererService scoreRendererService;
-        private readonly MelodicQueryStrategy[] melodicQueryStrategies;
 
-        public SearchController([FromServices] RismDbContext context, PlaineAndEasieService plaineAndEasieService, ScoreRendererService scoreRendererService, IEnumerable<MelodicQueryStrategy> melodicQueryStrategies)
+        public SearchController([FromServices] RismDbContext context, PlaineAndEasieService plaineAndEasieService, ScoreRendererService scoreRendererService)
         {
             this.context = context;
             this.scoreRendererService = scoreRendererService;
             this.plaineAndEasieService = plaineAndEasieService;
-            this.melodicQueryStrategies = melodicQueryStrategies.ToArray();
         }
 
         private string GetRelevanceExpression(int[] intervals)
@@ -103,13 +100,13 @@ namespace Manufaktura.RismCatalogue.Knockout.Controllers
             }
 
             var sb = new StringBuilder();
-            sb.Append($"SELECT i.{nameof(Incipit.MusicalNotation)}, i.{nameof(Incipit.Clef)}, i.{nameof(Incipit.KeySignature)}, i.{nameof(Incipit.TimeSignature)}, " +
+            sb.Append($"SELECT i.{nameof(Incipit.Id)}, i.{nameof(Incipit.MusicalNotation)}, i.{nameof(Incipit.Clef)}, i.{nameof(Incipit.KeySignature)}, i.{nameof(Incipit.TimeSignature)}, " +
                 $"i.{nameof(Incipit.CaptionOrHeading)}, ms.{nameof(MusicalSource.ComposerName)}, ms.{nameof(MusicalSource.Id)}, i.{nameof(Incipit.TextIncipit)}, " +
                 $"ms.{nameof(MusicalSource.Title)}, i.{nameof(Incipit.VoiceOrInstrument)}, ");
             sb.Append(GetRelevanceExpression(intervals));
             sb.Append(" from incipits i inner join musicalsources ms on ms.id = i.MusicalSourceId ");
-            sb.Append($" inner join spatialhashes sh on sh.IncipitId = i.Id and sh.NumberOfDimensions = {intervals.Length} " +
-                $"and (sh.Hash1 = {queryDictionary[1]} or sh.Hash2 = {queryDictionary[2]} or sh.Hash3 = {queryDictionary[3]})");
+            //sb.Append($" inner join spatialhashes sh on sh.IncipitId = i.Id and sh.NumberOfDimensions = {intervals.Length} " +
+            //    $"and (sh.Hash1 = {queryDictionary[1]} or sh.Hash2 = {queryDictionary[2]} or sh.Hash3 = {queryDictionary[3]})");
 
             sb.Append($" order by Relevance desc LIMIT {searchQuery.Take} OFFSET {searchQuery.Skip}");
 
@@ -117,14 +114,15 @@ namespace Manufaktura.RismCatalogue.Knockout.Controllers
             var incipits = context.RawSqlQuery(sql);
             var results = incipits.Select(r => new SearchResultViewModel
             {
-                IncipitSvg = scoreRendererService.RenderScore(plaineAndEasieService.ParseAndColorMatchingIntervals(r[0] as string, r[1] as string, r[2] as string, r[3] as string, intervals)),
-                CaptionOrHeading = r[4] as string,
-                ComposerName = r[5] as string,
-                RecordId = r[6] as string,
-                TextIncipit = r[7] as string,
-                Title = r[8] as string,
-                Voice = r[9] as string,
-                Relevance = (double)r[10],
+                Id = r[0].ToString(),
+                IncipitSvg = scoreRendererService.RenderScore(plaineAndEasieService.ParseAndColorMatchingIntervals(r[1] as string, r[2] as string, r[3] as string, r[4] as string, intervals)),
+                CaptionOrHeading = r[5] as string,
+                ComposerName = r[6] as string,
+                RecordId = r[7] as string,
+                TextIncipit = r[8] as string,
+                Title = r[9] as string,
+                Voice = r[10] as string,
+                Relevance = (double)r[11],
                 ShowRelevance = true
             }).ToArray();
 

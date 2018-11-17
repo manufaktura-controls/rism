@@ -1,6 +1,6 @@
 ﻿var SearchViewModel = function () {
     var self = this;
-    this.pageSize = 100;
+    this.pageSize = 30;
     this.results = ko.observableArray([]);
     this.player = new PlaybackManager();
     this.isLoading = ko.observable(false);
@@ -44,6 +44,6 @@
     }
 
     this.formatRelevance = function (relevance) {
-        return (relevance * 100) + " %";
+        return relevance + " %";
     }
 }
