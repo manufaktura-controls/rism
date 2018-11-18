@@ -69,7 +69,7 @@ namespace Manufaktura.RismCatalogue.Knockout.Controllers
                                  ComposerName = ms.ComposerName,
                                  Relevance = 1,
                                  ShowRelevance = false
-                             }).OrderBy(rm => rm.ComposerName);
+                             }).OrderBy(rm => rm.Id);
 
                 var res = query
                     .Skip(searchQuery.Skip)
@@ -80,8 +80,10 @@ namespace Manufaktura.RismCatalogue.Knockout.Controllers
                 return new SearchResultsViewModel { Results = res, QueryTime = stopwatch.ElapsedMilliseconds };
             }
 
-            var intervals = searchQuery.Intervals.Take(Constants.MaxNumberOfDimensions).ToArray();
-            var numberOfDimensions = intervals.Length;
+            var intervals = searchQuery.Intervals.Take(12)
+                //.Take(Constants.MaxNumberOfDimensions)
+                .ToArray();
+            /*var numberOfDimensions = intervals.Length;
 
             var queryDictionary = new Dictionary<int, int>();
             for (var groupNumber = 1; groupNumber <= hashGroupsToInclude; groupNumber++)
@@ -97,7 +99,7 @@ namespace Manufaktura.RismCatalogue.Knockout.Controllers
                     p.Translation9, p.Translation10, p.Translation11, p.Translation12}.Take(numberOfDimensions).ToArray()
                     )).ToArray());
                 queryDictionary.Add(groupNumber, lshAlgorithm.ComputeHash(new Vector(intervals.Select(ii => (double)ii).ToArray())));
-            }
+            }*/
 
             var sb = new StringBuilder();
             sb.Append($"SELECT i.{nameof(Incipit.Id)}, i.{nameof(Incipit.MusicalNotation)}, i.{nameof(Incipit.Clef)}, i.{nameof(Incipit.KeySignature)}, i.{nameof(Incipit.TimeSignature)}, " +

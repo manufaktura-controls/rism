@@ -3,6 +3,7 @@ using Manufaktura.Controls.Parser.Digest;
 using Manufaktura.LibraryStandards.Marc;
 using Manufaktura.RismCatalogue.Model;
 using Manufaktura.RismCatalogue.Shared.Services;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,7 +17,7 @@ namespace Manufaktura.RismCatalogue.Migration.Services
 {
     public class MigrationService
     {
-        private readonly RismDbContext dbContext;
+        private RismDbContext dbContext;
         private readonly PlaineAndEasieService plaineAndEasieService;
 
         public MigrationService(RismDbContext dbContext, PlaineAndEasieService plaineAndEasieService)
@@ -65,6 +66,7 @@ namespace Manufaktura.RismCatalogue.Migration.Services
                         counter++;
                         Console.WriteLine($"Record {counter} ({dbRecord.Title} - {dbRecord.ComposerName}) added.");
                         if (counter % 100 == 0) dbContext.SaveChanges();
+                        if (counter % 1000 == 0) dbContext = new RismDbContext(new DbContextOptionsBuilder().UseMySql("server=localhost;database=manufaktura-rism;uid=admin;pwd=123123").Options);  //Recreate
                     }
                     dbContext.SaveChanges();
                 }

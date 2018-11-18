@@ -41,86 +41,86 @@
 
 @functions {
 
-[Parameter]
-RhythmicDuration CurrentRhythmicDuration { get; set; } = RhythmicDuration.Quarter;
+    [Parameter]
+    RhythmicDuration CurrentRhythmicDuration { get; set; } = RhythmicDuration.Quarter;
 
-[Parameter]
-int NumberOfKeys { get; set; } = 30;
+    [Parameter]
+    int NumberOfKeys { get; set; } = 30;
 
-private bool includeRhythm = true;
-private bool isRhythmRelative;
-private bool includeIntervals = true;
+    private bool includeRhythm = true;
+    private bool isRhythmRelative;
+    private bool includeIntervals = true;
 
-public bool IsMaxDimensionsExceeded => score.FirstStaff.Elements.OfType<Note>().Count() > Constants.MaxNumberOfDimensions;
+    public bool IsMaxDimensionsExceeded => false;// score.FirstStaff.Elements.OfType<Note>().Count() > Constants.MaxNumberOfDimensions;
 
 public void Search()
-{
-    var intervals = score.ToIntervals();
-    var searchQuery = new SearchQuery
     {
-        Intervals = includeIntervals ? intervals : new int[0]
-    };
-    if (includeRhythm)
-    {
-        var rhythmParser = isRhythmRelative ? (ScoreParser<string>)new RhythmRelativeDigestParser() : new RhythmDigestParser();
-        searchQuery.Rhythm = rhythmParser.ParseBack(score);
-        searchQuery.IsRhythmRelative = isRhythmRelative;
+        var intervals = score.ToIntervals();
+        var searchQuery = new SearchQuery
+        {
+            Intervals = includeIntervals ? intervals : new int[0]
+        };
+        if (includeRhythm)
+        {
+            var rhythmParser = isRhythmRelative ? (ScoreParser<string>)new RhythmRelativeDigestParser() : new RhythmDigestParser();
+            searchQuery.Rhythm = rhythmParser.ParseBack(score);
+            searchQuery.IsRhythmRelative = isRhythmRelative;
+        }
+
+        JSRuntime.Current.InvokeAsync<object>("startNewSearch", searchQuery);
     }
 
-    JSRuntime.Current.InvokeAsync<object>("startNewSearch", searchQuery);
-}
-
-public void AddBarline()
-{
-    score.FirstStaff.Elements.Add(new Barline());
-    StateHasChanged();
-}
-
-public void AddDot()
-{
-    var lastNoteOrRest = score.FirstStaff.Elements.OfType<NoteOrRest>().LastOrDefault();
-    if (lastNoteOrRest != null) lastNoteOrRest.NumberOfDots++;
-    StateHasChanged();
-}
-
-public void AddRest(RhythmicDuration duration)
-{
-    score.FirstStaff.Add(new Rest(duration));
-    StateHasChanged();
-}
-
-public void RemoveLastSymbol()
-{
-    var lastSymbol = score.FirstStaff.Elements.LastOrDefault(e => !(e is Key) && !(e is Clef) && !(e is TimeSignature));
-    if (lastSymbol != null)
+    public void AddBarline()
     {
-        score.FirstStaff.Elements.Remove(lastSymbol);
+        score.FirstStaff.Elements.Add(new Barline());
         StateHasChanged();
     }
-}
 
-[JSInvokable]
-public void OnWindowResize(double size)
-{
-    var numberOfKeys = DetermineNumberOfKeys(size);
-    if (numberOfKeys != NumberOfKeys)
+    public void AddDot()
     {
-        NumberOfKeys = numberOfKeys < 4 ? 3 : numberOfKeys;
+        var lastNoteOrRest = score.FirstStaff.Elements.OfType<NoteOrRest>().LastOrDefault();
+        if (lastNoteOrRest != null) lastNoteOrRest.NumberOfDots++;
         StateHasChanged();
     }
-}
 
-private int DetermineNumberOfKeys(double size)
-{
-    return (int)(size / 12);
-}
+    public void AddRest(RhythmicDuration duration)
+    {
+        score.FirstStaff.Add(new Rest(duration));
+        StateHasChanged();
+    }
+
+    public void RemoveLastSymbol()
+    {
+        var lastSymbol = score.FirstStaff.Elements.LastOrDefault(e => !(e is Key) && !(e is Clef) && !(e is TimeSignature));
+        if (lastSymbol != null)
+        {
+            score.FirstStaff.Elements.Remove(lastSymbol);
+            StateHasChanged();
+        }
+    }
+
+    [JSInvokable]
+    public void OnWindowResize(double size)
+    {
+        var numberOfKeys = DetermineNumberOfKeys(size);
+        if (numberOfKeys != NumberOfKeys)
+        {
+            NumberOfKeys = numberOfKeys < 4 ? 3 : numberOfKeys;
+            StateHasChanged();
+        }
+    }
+
+    private int DetermineNumberOfKeys(double size)
+    {
+        return (int)(size / 12);
+    }
 
 
-protected override async Task OnAfterRenderAsync()
-{
-    await JSRuntime.Current.InvokeAsync<object>("registerKeyboard", new DotNetObjectRef(this));
-}
+    protected override async Task OnAfterRenderAsync()
+    {
+        await JSRuntime.Current.InvokeAsync<object>("registerKeyboard", new DotNetObjectRef(this));
+    }
 
-Score score = Score.CreateOneStaffScore(Clef.Treble, MajorScale.C);
+    Score score = Score.CreateOneStaffScore(Clef.Treble, MajorScale.C);
 
 }
