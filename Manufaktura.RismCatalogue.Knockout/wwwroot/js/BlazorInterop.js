@@ -21,6 +21,16 @@ function startNewSearch(searchQuery) {
     window.viewModel.startNewSearch(searchQuery);
 }
 
+function playNote(note) {
+    setTimeout(function () {
+        MIDI.noteOn(0, note, 127, 0);
+    }, 0);
+
+    setTimeout(function () {
+        MIDI.noteOff(0, note, 0);
+    }, 500);
+}
+
 $(window).resize(function () {
     if (!window.incipitKeyboard) return;
     window.incipitKeyboard.invokeMethod('OnWindowResize', $("#searchPanel").width());

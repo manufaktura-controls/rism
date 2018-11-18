@@ -24,6 +24,8 @@
         var note = Note.FromMidiPitch(midiPitch, CurrentRhythmicDuration);
         Score.FirstStaff.Add(note);
         StateHasChanged();
+
+        JSRuntime.Current.InvokeAsync<object>("playNote", midiPitch);
     }
 
     public string RenderScore() => scoreRendererService.RenderScore(Score);

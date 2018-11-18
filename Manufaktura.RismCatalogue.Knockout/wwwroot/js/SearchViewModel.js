@@ -44,6 +44,7 @@
     }
 
     this.formatRelevance = function (relevance) {
-        return relevance + " %";
+        if (relevance < 0) return "0 %";
+        return parseFloat(relevance).toFixed(0) + " %";
     }
 }

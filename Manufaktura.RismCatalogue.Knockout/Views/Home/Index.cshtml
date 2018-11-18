@@ -29,7 +29,8 @@
                     <div class='clearfix'></div>
                     <div class='navbar-collapse collapse'>
                         <div id="searchPanel">
-                            <div id="logo"><img src="~/images/ManufakturaSmaller.png" /></div>
+                            <!--<div id="logo"><img src="~/images/ManufakturaSmaller.png" /></div>-->
+                            <h1>Incipit Search</h1>
                             <blazorhost><i class="fa fa-spinner fa-spin" style="font-size: 30px;"></i></blazorhost>
                             <ul class='nav navbar-nav'></ul>
                         </div>
@@ -38,7 +39,9 @@
             </div>
         </div>
         <div class="col-sm-9 nopadding">
-
+            <div data-bind="if: !isLoading() && results().length == 0">
+                <h1>No Results.</h1>
+            </div>
             <div id="resultList" data-bind="foreach: results">
                 <div class="list-item">
                     <div>
