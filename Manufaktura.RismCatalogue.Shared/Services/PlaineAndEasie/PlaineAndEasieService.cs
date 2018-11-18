@@ -25,6 +25,8 @@ namespace Manufaktura.RismCatalogue.Shared.Services
         public Score ParseAndColorMatchingIntervals(string musicalNotation, string clef, string keySignature, string timeSignature, int[] intervals)
         {
             var score = Parse(musicalNotation, clef, keySignature, timeSignature);
+            if (score == null) return null;
+
             var notes = score.FirstStaff.Elements.OfType<Note>().Take(intervals.Length + 1).ToArray();
             if (notes.Length < 2) return score;
 
