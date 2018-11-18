@@ -226,21 +226,19 @@
 }
 
 .website-title1 {
-    font-family: Oranienbaum, serif;
     font-size: 66px;
     position: relative;
     top: 8px;
-    display: inline-block;
+    display: block;
     color: #000;
     white-space: nowrap;
 }
 
 .website-title2 {
-    font-family: Oranienbaum, serif;
     font-size: 32px;
     position: relative;
     top: 0px;
-    display: inline-block;
+    display: block;
     font-weight: lighter;
     color: #000;
     white-space: nowrap;
@@ -250,15 +248,15 @@
     max-height: 550px;
 }
 
-#MainBarKolbergLogo {
+#MainBarLogo {
     max-height: 75px;
 }
 
-#MainBarKolbergLogoWrapper {
+#MainBarLogoWrapper {
     margin-top: 60px;
 }
 
-#FooterKolbergLogo {
+#FooterLogo {
     height: 75px;
 }
 
@@ -299,17 +297,17 @@
         margin-right: 0px;
     }
 
-    #MainBarKolbergLogo {
+    #MainBarLogo {
         max-height: 65px;
     }
 }
 
 @media (max-width: 575px) {
-    #MainBarKolbergLogo {
+    #MainBarLogo {
         max-height: 55px;
     }
 
-    #FooterKolbergLogo {
+    #FooterLogo {
         height: 55px;
     }
 
@@ -342,9 +340,10 @@
 
     .website-title2 {
         font-size: 18px;
+        font-weight: lighter;
     }
 
-    #MainBarKolbergLogoWrapper {
+    #MainBarLogoWrapper {
         margin-top: 40px;
     }
 }
