@@ -1,0 +1,378 @@
+﻿@font-face {
+    font-family: 'Polihymnia';
+    src: url('/fonts/Polihymnia.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Lato';
+    src: url('/fonts/Lato-Regular.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Lato';
+    src: url('/fonts/Lato-Bold.ttf') format('truetype');
+    font-weight: bold;
+}
+
+@font-face {
+    font-family: 'Lato';
+    src: url('/fonts/Lato-Black.ttf') format('truetype');
+    font-weight: 900;
+}
+
+@font-face {
+    font-family: 'Lato';
+    src: url('/fonts/Lato-Light.ttf') format('truetype');
+    font-weight: 200;
+}
+
+
+.articleText {
+    margin-top: 30px;
+    margin-bottom: 30px;
+    text-align: justify;
+    font-size: 18px;
+}
+
+    .articleText h3 {
+        font-size: 26px;
+    }
+
+.articleRight {
+    background: rgba(255,255,255,0.8);
+    height: 100%;
+    padding-top: 0px;
+    padding-left: 60px !important;
+    padding-right: 60px !important;
+    padding-top: 40px !important;
+    padding-bottom: 40px !important;
+    text-align: justify;
+    font-size: 16px;
+}
+
+#HeaderShadow {
+    background: url(/Images/header-shadow.png) no-repeat center top;
+    top: -1px;
+    height: 50px;
+    position: absolute;
+    width: 100%;
+}
+
+
+.extraMarginTop {
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+.extra-space {
+    margin-bottom: 10px;
+}
+
+.extra-space-right {
+    margin-right: 10px;
+}
+
+.adminPanel {
+    background-color: #fff;
+    padding: 10px;
+}
+
+.fullwidth {
+    width: 100%;
+}
+
+.title img {
+    margin-right: 10px;
+    height: 40px;
+    margin-bottom: 4px;
+}
+
+.menu-language {
+    background-color: #7b0000;
+    color: white !important;
+    height: 30px;
+    width: 80px;
+}
+
+.searchbar {
+    background-color: transparent;
+    min-height: 125px;
+    margin-top: 20px;
+}
+
+    .searchbar button {
+        background-color: transparent;
+        color: #000;
+        margin-bottom: 14px;
+        margin-top: 14px;
+    }
+
+.searchbar-container {
+    position: absolute;
+    bottom: 80px;
+    left: 50%;
+    width: 100%;
+}
+
+.searchbar-main button {
+    background-color: transparent;
+    color: #ccc;
+    border: 1px solid #ccc;
+    margin-bottom: 14px;
+    margin-top: 4px;
+    font-size: 18px;
+}
+
+
+
+.align-right {
+    text-align: right;
+}
+
+
+.searchbar input[type=text] {
+    width: 100%;
+    font-size: 16px;
+    color: #000;
+}
+
+.searchbar input[type=text] {
+    border: 2px solid #000;
+}
+
+.searchbar input[type=checkbox] {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    opacity: 0;
+}
+
+
+    .searchbar input[type=checkbox] + label:before {
+        display: inline-block;
+        width: 30px;
+        height: 30px;
+        margin-right: 4px;
+        background-color: transparent;
+        border: 2px solid #000;
+        content: " ";
+        vertical-align: top;
+    }
+
+.searchbar-main input[type=checkbox] + label:before {
+    border: 2px solid #fff;
+}
+
+.searchbar input[type=checkbox]:checked + label:before {
+    content: "\2714"; /* Tick */
+    color: #000;
+    text-align: center;
+    line-height: 25px;
+    text-shadow: 0px 0px 3px #eee;
+}
+
+.inline {
+    display: inline-block;
+}
+
+
+.songkinds {
+    text-align: left;
+}
+
+#mainbar {
+    padding: 30px;
+}
+
+.btn .fa {
+    margin-right: 8px;
+}
+
+#mainbar .btn {
+    background-color: #7b0000 !important;
+    border-color: #c25c67 !important;
+    color: #fff !important;
+    border-radius: 0px;
+    opacity: 0.8;
+    color: #fff;
+    border-width: 2px;
+    font-size: 22px;
+    font-weight: lighter;
+    padding: 15px;
+    border-width: 2px;
+    margin: 10px;
+}
+
+    #mainbar .btn:hover, .searchbar .btn:hover, #melodyContainer .btn:hover {
+        background-color: #9b2020 !important;
+    }
+
+.searchbar .btn, #melodyContainer .btn {
+    background-color: #7b0000 !important;
+    color: #fff !important;
+    border-radius: 0px;
+    opacity: 0.8;
+    color: #fff;
+    border-width: 2px;
+    font-size: 18px;
+    font-weight: lighter;
+    padding: 15px;
+    border-width: 2px;
+}
+
+.website-title1 {
+    font-family: Oranienbaum, serif;
+    font-size: 66px;
+    position: relative;
+    top: 8px;
+    display: inline-block;
+    color: #000;
+    white-space: nowrap;
+}
+
+.website-title2 {
+    font-family: Oranienbaum, serif;
+    font-size: 32px;
+    position: relative;
+    top: 0px;
+    display: inline-block;
+    font-weight: lighter;
+    color: #000;
+    white-space: nowrap;
+}
+
+#MainBarCharacter {
+    max-height: 550px;
+}
+
+#MainBarKolbergLogo {
+    max-height: 75px;
+}
+
+#MainBarKolbergLogoWrapper {
+    margin-top: 60px;
+}
+
+#FooterKolbergLogo {
+    height: 75px;
+}
+
+@media (max-width: 1199px) {
+    .website-title1 {
+        font-size: 60px;
+    }
+
+    .website-title2 {
+        font-size: 28px;
+    }
+
+    #MainBarCharacter {
+        max-height: 450px;
+    }
+}
+
+.row {
+    margin-left: -15px;
+    margin-right: -15px;
+}
+
+@media (max-width: 991px) {
+    .website-title1 {
+        font-size: 54px;
+    }
+
+    .website-title2 {
+        font-size: 24px;
+    }
+
+    #MainBarCharacter {
+        display: none;
+    }
+
+    .row {
+        margin-left: 0px;
+        margin-right: 0px;
+    }
+
+    #MainBarKolbergLogo {
+        max-height: 65px;
+    }
+}
+
+@media (max-width: 575px) {
+    #MainBarKolbergLogo {
+        max-height: 55px;
+    }
+
+    #FooterKolbergLogo {
+        height: 55px;
+    }
+
+
+    div {
+        font-size: 15px;
+    }
+
+    .articleText {
+        font-size: 15px;
+    }
+
+        .articleText h3 {
+            font-size: 22px;
+        }
+
+    #mainbar {
+        padding-left: 0px;
+        padding-right: 0px;
+    }
+
+        #mainbar .btn, #searchbar .btn {
+            font-size: 16px;
+        }
+
+    .website-title1 {
+        font-size: 32px;
+        margin-bottom: 8px;
+    }
+
+    .website-title2 {
+        font-size: 18px;
+    }
+
+    #MainBarKolbergLogoWrapper {
+        margin-top: 40px;
+    }
+}
+
+
+.mainbarbuttons {
+    margin-top: 20px;
+    margin-bottom: 0px;
+    margin-left: -10px;
+}
+
+.fixed {
+    position: fixed;
+    top: 20px;
+}
+
+.red {
+    color: #c25c67
+}
+
+.songkinds {
+    display: table;
+    width: 100%;
+}
+
+.songkind {
+    display: inline-block;
+    width: 44%;
+    min-width: 120px;
+    white-space: nowrap;
+}

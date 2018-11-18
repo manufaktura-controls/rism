@@ -1,0 +1,71 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content=".NET controls for rendering music scores. Libraries for WPF, ASP.NET MVC, WinForms, Silverlight, Windows Phone and Universal Aps.">
+    <meta name="keywords" content=".NET,WPF,ASP.NET MVC,WinForms,C#">
+    <meta name="author" content="Jacek Salamon">
+    <title>RISM catalogue</title>
+
+    <environment include="Development">
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+        <link rel="stylesheet" href="~/css/welcome.css" />
+    </environment>
+    <environment exclude="Development">
+        <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/css/bootstrap.min.css"
+              asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
+              asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
+        <link rel="stylesheet" href="~/css/welcome.min.css" asp-append-version="true" />
+    </environment>
+
+    <link rel="stylesheet" href="~/lib/fontawesome/css/fontawesome-all.min.css" asp-append-version="true" />
+
+    @RenderSection("Scripts", required: false)
+   
+
+</head>
+<body>
+    <script type="text/javascript">
+        var style_mobile_path = '/Content/';
+    </script>
+    <header class="menubackground">
+        <div class="container">
+            <div class="row">
+                <div id="Logo">
+                    <div class="navbar-collapse collapse">
+                        <div class=" pull-right">
+
+
+                        </div>
+                        <div>
+
+
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+        <div>
+            @RenderSection("LeadText", false)
+        </div>
+
+
+    </header>
+
+    <div id="ContentArea">
+        <div id="bt-content">
+            <div class="container" style="margin-bottom:5px;">
+                <div class="row">
+                    <div class="col-md-12" id="Content">@RenderBody()</div>
+                </div>
+            </div>
+        </div>
+        <div id="Breadcrumb"></div>
+    </div>
+
+ 
+</body>
+</html>

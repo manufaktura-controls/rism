@@ -11,6 +11,13 @@ namespace Manufaktura.RismCatalogue.Knockout.Controllers
             return View();
         }
 
+        [Route("Catalogue")]
+        public IActionResult Catalogue()
+        {
+            return View();
+        }
+
+
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
