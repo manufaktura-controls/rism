@@ -26,6 +26,9 @@
     font-weight: 200;
 }
 
+body {
+    font-family: Lato;
+}
 
 .articleText {
     margin-top: 30px;
@@ -239,13 +242,13 @@
     position: relative;
     top: 0px;
     display: block;
-    font-weight: lighter;
+    /*font-weight: lighter;*/
     color: #000;
     white-space: nowrap;
 }
 
 #MainBarCharacter {
-    max-height: 550px;
+    max-height: 450px;
 }
 
 #MainBarLogo {
@@ -340,7 +343,6 @@
 
     .website-title2 {
         font-size: 18px;
-        font-weight: lighter;
     }
 
     #MainBarLogoWrapper {

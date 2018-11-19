@@ -14,7 +14,7 @@
   
 
             <div class="website-title1">Incipit search engine</div>
-            <div class="website-title2">for RISM catalogue</div>
+            <div class="website-title2">for Répertoire International des Sources Musicales</div>
 
             <div class="clearfix mainbarbuttons">
 
@@ -32,8 +32,34 @@
 
 </div>
 <div class="row articleText">
-    <h1>FAQ</h1>
-    <h3>Question 1</h3>
-    fesfsefse
+    <div class="col-md-8">
+        <h1>FAQ</h1>
+        <h3>What is this project?</h3>
+        This is an incipit search engine that operates on data from RISM (Répertoire International des Sources Musicales) database.
+
+        <h3>How does it work?</h3>
+        All melodies are understood as series of intervals and imagined as vectors in n-dimentional space where n is the number of intervals. The search
+        is performed by comparing distances between these vectors. There is also a rhythmic search but it's quite straightforward.
+
+        <h3>What's the deal with Locality-sensitive hashing?</h3>
+        As I mentioned earlier this engine searches incipits by traversing the whole database and calculating similarity factor. This consumes a lot of time and resources.
+        One of the preliminary assumptions of this project was to implement a hashing algorithm to partition the interval space to smaller chunks. Unfortunately
+        for 100.000 records queries with this optimization took 3 times more time to compute than queries without optimization. Such algorithms make sense for much
+        larger amount of data and I didn't want to compute spatial hashes for all (more than 1 million) records in RISM catalogue because it would take days to generate
+        and a huge amount of disk space. I decided that the performance of queries without spatial hashing is decent enough even for more than 1 million records so I So I 
+        hang up the experiment for later time.
+
+        <h3>Are there other incipit search engines?</h3>
+        fesfsefse
+
+        <h3>How is it compared to Monochord engine?</h3>
+        fesfsefse
+
+
+
+    </div>
+    <div class="col-md-4">
+        <h2>Melody of the day</h2>
+    </div>
 </div>
 
