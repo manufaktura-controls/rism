@@ -9,7 +9,10 @@
 
 @page "/Catalogue"
 
+<div id="melody-query">
 <NoteViewer Score=@score CurrentRhythmicDuration=@CurrentRhythmicDuration />
+</div>
+<button class="btn btn-primary extra-space-bottom" onclick="@PlayQuery"><i class="fa fa-play-circle"></i> Play query</button>
 <Keyboard StartingMidiPitch="55" NumberOfKeys="39" WhiteKeyClass="btn-key btn-key-large" BlackKeyClass="btn-key btn-key-small" KeyGapClass="btn-key-none"
           RhythmicDurationChanged="@(d => { CurrentRhythmicDuration = d; StateHasChanged(); })"
           CurrentRhythmicDuration=@CurrentRhythmicDuration
@@ -22,7 +25,8 @@
     <div>
         <label><input type="checkbox" bind="@includeIntervals" />Include intervals</label>
     </div>
-    @if(IsMaxDimensionsExceeded) {
+    @if (IsMaxDimensionsExceeded)
+    {
         <div class="alert alert-info">
             Maximum number of intervals in query is @Constants.MaxNumberOfDimensions because only @Constants.MaxNumberOfDimensions-dimensional spatial hashes were generated. Spatial hashes take large amount of disk space and that requires higher hosting fees. If you want me to generate higher-dimensional spaces please support me on Patreon. :)
         </div>
@@ -53,7 +57,7 @@
 
     public bool IsMaxDimensionsExceeded => false;// score.FirstStaff.Elements.OfType<Note>().Count() > Constants.MaxNumberOfDimensions;
 
-public void Search()
+    public void Search()
     {
         var intervals = score.ToIntervals();
         var searchQuery = new SearchQuery
@@ -97,6 +101,11 @@ public void Search()
             score.FirstStaff.Elements.Remove(lastSymbol);
             StateHasChanged();
         }
+    }
+
+    public void PlayQuery ()
+    {
+        JSRuntime.Current.InvokeAsync<object>("playQuery");
     }
 
     [JSInvokable]

@@ -213,17 +213,21 @@ li.link-active a:focus {
 }
 
 .btn-note {
-    width: 14.2% !important;
+    width: 12.5% !important;
     display: block;
     float: left;
     height: 45px;
+    padding-left: 0px;
+    padding-right: 0px;
 }
 
 .btn-remove {
-    width: 28.4% !important;
+    width: 25% !important;
     display: block;
     float: left;
     height: 45px;
+    padding-left: 0px;
+    padding-right: 0px;
 }
 
 .note-selected {
@@ -250,4 +254,8 @@ li.link-active a:focus {
     color: #337ab7;
     width: 80px;
     text-align: left;
+}
+
+.extra-space-bottom {
+    margin-bottom: 10px;
 }

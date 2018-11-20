@@ -1,26 +1,30 @@
 ﻿@using Manufaktura.Music.Extensions
 @using Manufaktura.Music.Model
+@using Manufaktura.Controls.Model.Fonts
 @using System.Text
 
 <div>
     @((MarkupString)RenderKeyboard())
 </div>
 <div class="row">
+
     <div class="col-lg-12 col-md-12 nomargin-right">
-        <a class="btn btn-default btn-note @(CurrentRhythmicDuration == RhythmicDuration.Whole ? "note-selected" : "")" note="w" onclick=@(() => RhythmicDurationChanged?.Invoke(RhythmicDuration.Whole))><span class="note">w</span></a>
-        <a class="btn btn-default btn-note @(CurrentRhythmicDuration == RhythmicDuration.Half ? "note-selected" : "")" note="h" onclick=@(() => RhythmicDurationChanged?.Invoke(RhythmicDuration.Half))><span class="note">h</span></a>
-        <a class="btn btn-default btn-note @(CurrentRhythmicDuration == RhythmicDuration.Quarter ? "note-selected" : "")" note="q" onclick=@(() => RhythmicDurationChanged?.Invoke(RhythmicDuration.Quarter))><span class="note">q</span></a>
-        <a class="btn btn-default btn-note @(CurrentRhythmicDuration == RhythmicDuration.Eighth ? "note-selected" : "")" note="e" onclick=@(() => RhythmicDurationChanged?.Invoke(RhythmicDuration.Eighth))><span class="note">e</span></a>
-        <a class="btn btn-default btn-note @(CurrentRhythmicDuration == RhythmicDuration.Sixteenth ? "note-selected" : "")" note="s" onclick=@(() => RhythmicDurationChanged?.Invoke(RhythmicDuration.Sixteenth))><span class="note">s</span></a>
+        <a class="btn btn-default btn-note @(CurrentRhythmicDuration == RhythmicDuration.Whole ? "note-selected" : "")" note="@musicFont.NoteWhole" onclick=@(() => RhythmicDurationChanged?.Invoke(RhythmicDuration.Whole))><span class="note">w</span></a>
+        <a class="btn btn-default btn-note @(CurrentRhythmicDuration == RhythmicDuration.Half ? "note-selected" : "")" note="@musicFont.NoteHalf" onclick=@(() => RhythmicDurationChanged?.Invoke(RhythmicDuration.Half))><span class="note">h</span></a>
+        <a class="btn btn-default btn-note @(CurrentRhythmicDuration == RhythmicDuration.Quarter ? "note-selected" : "")" note="@musicFont.NoteQuarter" onclick=@(() => RhythmicDurationChanged?.Invoke(RhythmicDuration.Quarter))><span class="note">q</span></a>
+        <a class="btn btn-default btn-note @(CurrentRhythmicDuration == RhythmicDuration.Eighth ? "note-selected" : "")" note="@musicFont.NoteEighth" onclick=@(() => RhythmicDurationChanged?.Invoke(RhythmicDuration.Eighth))><span class="note">e</span></a>
+        <a class="btn btn-default btn-note @(CurrentRhythmicDuration == RhythmicDuration.Sixteenth ? "note-selected" : "")" note="@musicFont.NoteSixteenth" onclick=@(() => RhythmicDurationChanged?.Invoke(RhythmicDuration.Sixteenth))><span class="note">s</span></a>
+        <a class="btn btn-default btn-note @(CurrentRhythmicDuration == RhythmicDuration.D32nd ? "note-selected" : "")" note="@musicFont.NoteSixteenth" onclick=@(() => RhythmicDurationChanged?.Invoke(RhythmicDuration.D32nd))><span class="note">s</span></a>
         <a class="btn btn-default btn-note" note="|" onclick=@(() => AddBarline?.Invoke())><span class="note">|</span></a>
         <a class="btn btn-default btn-note" note="." onclick=@(() => AddDot?.Invoke())><span class="note">.</span></a>
     </div>
     <div class="col-lg-12 col-md-12 nomargin-left">
-        <a class="btn btn-default btn-note" note="W" onclick=@(() => AddRest?.Invoke(RhythmicDuration.Whole))><span class="note">W</span></a>
-        <a class="btn btn-default btn-note" note="H" onclick=@(() => AddRest?.Invoke(RhythmicDuration.Half))><span class="note">H</span></a>
-        <a class="btn btn-default btn-note" note="Q" onclick=@(() => AddRest?.Invoke(RhythmicDuration.Quarter))><span class="note">Q</span></a>
-        <a class="btn btn-default btn-note" note="E" onclick=@(() => AddRest?.Invoke(RhythmicDuration.Eighth))><span class="note">E</span></a>
-        <a class="btn btn-default btn-note" note="S" onclick=@(() => AddRest?.Invoke(RhythmicDuration.Sixteenth))><span class="note">S</span></a>
+        <a class="btn btn-default btn-note" note="W" onclick=@(() => AddRest?.Invoke(RhythmicDuration.Whole))><span class="note">@musicFont.RestWhole</span></a>
+        <a class="btn btn-default btn-note" note="H" onclick=@(() => AddRest?.Invoke(RhythmicDuration.Half))><span class="note">@musicFont.RestHalf</span></a>
+        <a class="btn btn-default btn-note" note="Q" onclick=@(() => AddRest?.Invoke(RhythmicDuration.Quarter))><span class="note">@musicFont.RestQuarter</span></a>
+        <a class="btn btn-default btn-note" note="E" onclick=@(() => AddRest?.Invoke(RhythmicDuration.Eighth))><span class="note">@musicFont.RestEighth</span></a>
+        <a class="btn btn-default btn-note" note="S" onclick=@(() => AddRest?.Invoke(RhythmicDuration.Sixteenth))><span class="note">@musicFont.RestSixteenth</span></a>
+        <a class="btn btn-default btn-note" note="S" onclick=@(() => AddRest?.Invoke(RhythmicDuration.D32nd))><span class="note">@musicFont.Rest32nd</span></a>
         <a class="btn btn-default btn-remove" onclick=@(() => RemoveSymbol?.Invoke())>Delete</a>
     </div>
 </div>
@@ -60,7 +64,7 @@
     [Parameter]
     string KeyGapClass { get; set; }
 
-
+    IMusicFont musicFont = new PolihymniaFont();
 
     public string RenderKeyboard()
     {

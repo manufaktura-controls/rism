@@ -31,6 +31,10 @@ function playNote(note) {
     }, 500);
 }
 
+function playQuery(note) {
+    window.viewModel.player.play("query");
+}
+
 $(window).resize(function () {
     if (!window.incipitKeyboard) return;
     window.incipitKeyboard.invokeMethod('OnWindowResize', $("#searchPanel").width());
