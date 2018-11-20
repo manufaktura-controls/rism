@@ -33,6 +33,20 @@ body {
     font-family:  Lato;
 }
 
+a {
+    color: #925024;
+}
+
+.btn-primary {
+    background-color: #b27044;
+    border-color: #774226;
+}
+
+.btn-primary:hover {
+    background-color: #d29064;
+    border-color: #774226;
+}
+
 /* Wrapping element */
 /* Set some basic padding to keep content from hitting the edges */
 .body-content {
@@ -247,11 +261,7 @@ li.link-active a:focus {
     margin-right: 10px;
     font-size: 22px;
     font-weight: 200;
-    /*background-color: #337ab7;
-            border-radius: 4px;
-            padding: 10px;
-        */
-    color: #337ab7;
+    color: #c28054;
     width: 80px;
     text-align: left;
 }

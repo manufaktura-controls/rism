@@ -197,8 +197,8 @@ body {
 }
 
 #mainbar .btn {
-    background-color: #7b0000 !important;
-    border-color: #c25c67 !important;
+    background-color: #925024 !important;
+    border-color: #774226 !important;
     color: #fff !important;
     border-radius: 0px;
     opacity: 0.8;
@@ -212,8 +212,12 @@ body {
 }
 
     #mainbar .btn:hover, .searchbar .btn:hover, #melodyContainer .btn:hover {
-        background-color: #9b2020 !important;
+        background-color: #c28054 !important;
     }
+
+a {
+    color: #a26034;
+}
 
 .searchbar .btn, #melodyContainer .btn {
     background-color: #7b0000 !important;

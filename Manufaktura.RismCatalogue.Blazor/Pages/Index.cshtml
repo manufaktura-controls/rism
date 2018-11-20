@@ -12,7 +12,7 @@
 <div id="melody-query">
 <NoteViewer Score=@score CurrentRhythmicDuration=@CurrentRhythmicDuration />
 </div>
-<button class="btn btn-primary extra-space-bottom" onclick="@PlayQuery"><i class="fa fa-play-circle"></i> Play query</button>
+<button class="btn extra-space-bottom" onclick="@PlayQuery"><i class="fa fa-play-circle"></i> Play query</button>
 <Keyboard StartingMidiPitch="55" NumberOfKeys="39" WhiteKeyClass="btn-key btn-key-large" BlackKeyClass="btn-key btn-key-small" KeyGapClass="btn-key-none"
           RhythmicDurationChanged="@(d => { CurrentRhythmicDuration = d; StateHasChanged(); })"
           CurrentRhythmicDuration=@CurrentRhythmicDuration
