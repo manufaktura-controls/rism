@@ -32,5 +32,11 @@
     "inputFiles": [
       "wwwroot/js/InfiniteScrollManager.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/css/welcome.min.css",
+    "inputFiles": [
+      "wwwroot/css/welcome.css"
+    ]
   }
 ]
