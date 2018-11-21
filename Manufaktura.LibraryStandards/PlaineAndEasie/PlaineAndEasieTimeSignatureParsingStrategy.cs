@@ -25,7 +25,8 @@ namespace Manufaktura.LibraryStandards.PlaineAndEasie
 
             if (parts.Length != 2)
             {
-                parser.AddTimeSignature(substring, 0, 0);
+                if (substring.Trim() == "3") parser.AddTimeSignature(substring, 3, 4);  //Case when 3/4 is written as '3'
+                else parser.AddTimeSignature(substring, 0, 0);
             }
             else
             {
