@@ -25,7 +25,7 @@ namespace Manufaktura.RismCatalogue.Knockout
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
-            services.AddDbContext<RismDbContext>(c => c.UseMySql("server=localhost;database=manufaktura-rism;uid=admin;pwd=123123"));
+            services.AddDbContext<RismDbContext>(c => c.UseMySql(Configuration.GetConnectionString($"RismDbContext")));
             services.AddSingleton<ISettingsService, ServerSideSettingsService>();
             services.AddSingleton<PlaineAndEasieService>();
             services.AddSingleton<ScoreRendererService>();
@@ -52,7 +52,6 @@ namespace Manufaktura.RismCatalogue.Knockout
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
-
             });
             app.UseBlazor<Blazor.Startup>();
 
