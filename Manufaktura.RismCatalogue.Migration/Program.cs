@@ -16,8 +16,8 @@ namespace Manufaktura.RismCatalogue.Migration
             var db = Dependencies.Instance.Get<RismDbContext>();
             db.Database.EnsureCreated();
 
-            Dependencies.Instance.Get<MigrationService>().Migrate(int.MaxValue);
-            //Dependencies.Instance.Get<HashGenerationService>().GenerateHashes(3, 15);
+            //Dependencies.Instance.Get<MigrationService>().Migrate(int.MaxValue);
+            Dependencies.Instance.Get<HashGenerationService>().GenerateHashes(3, 15);
 
             sw.Stop();
             Console.WriteLine($"Finished in {sw.Elapsed}.");

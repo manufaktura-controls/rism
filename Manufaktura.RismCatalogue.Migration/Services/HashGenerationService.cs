@@ -39,6 +39,8 @@ namespace Manufaktura.RismCatalogue.Migration.Services
                     {
                         var hashes = new List<int>();
                         var score = plaineAndEasieService.Parse(incipit);
+                        if (score == null) continue;
+
                         var position = GetIncipitVector(score, numberOfDimensions);
                         foreach (var groupNumber in Enumerable.Range(1, numberOfGroups))
                         {
