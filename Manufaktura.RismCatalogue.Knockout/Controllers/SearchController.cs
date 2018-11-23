@@ -39,7 +39,7 @@ namespace Manufaktura.RismCatalogue.Knockout.Controllers
             return sb.ToString();
         }
 
-        private const int hashGroupsToInclude = 3;
+        private const int hashGroupsToInclude = 2;
 
         [HttpPost("[action]")]
         public SearchResultsViewModel Search([FromBody] SearchQuery searchQuery)
@@ -49,7 +49,7 @@ namespace Manufaktura.RismCatalogue.Knockout.Controllers
 
             var intervals = searchQuery.Intervals.Take(12).ToArray();
             var intervalsForLsh = searchQuery.Intervals.Take(Constants.MaxNumberOfDimensionsForLsh).ToArray();
-            var lshQueryDictionary = new Dictionary<int, int>();
+            var lshQueryDictionary = new Dictionary<int, long>();
 
             if (searchQuery.UseSpatialHashes && intervals.Any())
             {
@@ -78,7 +78,7 @@ namespace Manufaktura.RismCatalogue.Knockout.Controllers
             if (searchQuery.UseSpatialHashes && intervals.Any())
             {
                 sb.Append($" inner join spatialhashes sh on sh.IncipitId = i.Id and sh.NumberOfDimensions = {intervals.Length} " +
-                          $"and (sh.Hash1 = {lshQueryDictionary[1]} or sh.Hash2 = {lshQueryDictionary[2]} or sh.Hash3 = {lshQueryDictionary[3]})");
+                          $"and (sh.Hash1 = {lshQueryDictionary[1]} or sh.Hash2 = {lshQueryDictionary[2]})");// or sh.Hash3 = {lshQueryDictionary[3]})");
             }
 
             var parameters = new List<object>();

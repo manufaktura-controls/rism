@@ -23,7 +23,7 @@ namespace Manufaktura.RismCatalogue.Migration.Services
             this.plaineAndEasieService = plaineAndEasieService;
         }
 
-        public void GenerateHashes(int numberOfGroups, int numberOfPlanes)
+        public void GenerateHashes(int numberOfGroups)
         {
             var pageSize = 500;
             var skip = 0;
@@ -34,10 +34,13 @@ namespace Manufaktura.RismCatalogue.Migration.Services
 
                 for (var numberOfDimensions = 1; numberOfDimensions <= Constants.MaxNumberOfDimensionsForLsh; numberOfDimensions++)
                 {
+                    var numberOfPlanes = (int)Math.Pow(2, numberOfDimensions);
+                    if (numberOfPlanes > 62) numberOfPlanes = 62;
+                    if (numberOfPlanes < 8) numberOfPlanes = 8;  
                     Console.WriteLine($"Processing {numberOfDimensions}-dimensional hashes for incipits {skip}-{skip + pageSize}.");
                     foreach (var incipit in incipits)
                     {
-                        var hashes = new List<int>();
+                        var hashes = new List<long>();
                         var score = plaineAndEasieService.Parse(incipit);
                         if (score == null) continue;
 
@@ -53,8 +56,8 @@ namespace Manufaktura.RismCatalogue.Migration.Services
                         {
                             NumberOfDimensions = numberOfDimensions,
                             Hash1 = hashes[0],
-                            Hash2 = hashes[1],
-                            Hash3 = hashes[2],
+                            Hash2 = hashes.Count > 1 ? hashes[1] : 0,
+                            Hash3 = hashes.Count > 2 ? hashes[2] : 0,
                             IncipitId = incipit.Id
                         });
                     }
@@ -107,7 +110,7 @@ namespace Manufaktura.RismCatalogue.Migration.Services
 
             if (!planes.Any())
             {
-                lshAlgorithm = new LSHAlgorithm(numberOfDimensions, numberOfPlanes, -12, 12);
+                lshAlgorithm = new LSHAlgorithm(numberOfDimensions, numberOfPlanes, -12, 12, -12, 12);
                 foreach (var plane in lshAlgorithm.Planes)
                 {
                     var newPlane = new Plane

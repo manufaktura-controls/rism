@@ -13,21 +13,20 @@ namespace Manufaktura.RismCatalogue.Shared.Algorithms
             Planes = planes;
         }
 
-        public LSHAlgorithm(int numberOfDimensions, int numberOfPlanes, double minValue, double maxValue)
+        public LSHAlgorithm(int numberOfDimensions, int numberOfPlanes, double minValue, double maxValue, double minTransValue, double maxTransValue)
         {
-            Planes = GeneratePlanes(numberOfDimensions, numberOfPlanes, minValue, maxValue);
+            Planes = GeneratePlanes(numberOfDimensions, numberOfPlanes, minValue, maxValue, minTransValue, maxTransValue);
         }
 
         public Vector[] Planes { get; private set; }
 
-        public int ComputeHash(Vector point)
+        public long ComputeHash(Vector point)
         {
-            int hash = 0;
-            int orderOfMagnitude = 1;
+            long hash = 0;
+            long orderOfMagnitude = 1;
             foreach (var plane in Planes)
             {
-                var translatedPlane = plane as TranslatedVector;
-                if (translatedPlane != null) point = point.Translate(new Vector(translatedPlane.Translation).Invert());
+                if (plane is TranslatedVector translatedPlane) point = point.Translate(new Vector(translatedPlane.Translation).Invert());
 
                 hash += (GetSideOfAPlane(point, plane) ? 1 : 0) * orderOfMagnitude;
                 orderOfMagnitude *= 2;
@@ -35,7 +34,7 @@ namespace Manufaktura.RismCatalogue.Shared.Algorithms
             return hash;
         }
 
-        private Vector[] GeneratePlanes(int numberOfDimensions, int numberOfPlanes, double minValue, double maxValue)
+        private Vector[] GeneratePlanes(int numberOfDimensions, int numberOfPlanes, double minValue, double maxValue, double minTransValue, double maxTransValue)
         {
             var planes = new List<Vector>();
             var random = new Random();
@@ -50,7 +49,8 @@ namespace Manufaktura.RismCatalogue.Shared.Algorithms
                 var translation = new List<double>();
                 for (var dim = 0; dim < numberOfDimensions; dim++)
                 {
-                    translation.Add(minValue + random.NextDouble() * (maxValue - minValue));
+                    //translation.Add(0);
+                    translation.Add(minValue + random.NextDouble() * (maxTransValue - minTransValue));
                 }
 
                 planes.Add(new TranslatedVector(plane, translation));
