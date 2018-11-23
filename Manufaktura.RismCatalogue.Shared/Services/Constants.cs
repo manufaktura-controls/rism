@@ -2,6 +2,6 @@
 {
     public static class Constants
     {
-        public const int MaxNumberOfDimensions = 6;
+        public const int MaxNumberOfDimensionsForLsh = 6;
     }
 }

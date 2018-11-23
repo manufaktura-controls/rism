@@ -13,5 +13,7 @@
         public int Take { get; set; } = 100;
 
         public MelodicQueryMode Mode { get; set; }
+
+        public bool UseSpatialHashes { get; set; } = true;
     }
 }

@@ -28,7 +28,7 @@
     @if (IsMaxDimensionsExceeded)
     {
         <div class="alert alert-info">
-            Maximum number of intervals in query is @Constants.MaxNumberOfDimensions because only @Constants.MaxNumberOfDimensions-dimensional spatial hashes were generated. Spatial hashes take large amount of disk space and that requires higher hosting fees. If you want me to generate higher-dimensional spaces please support me on Patreon. :)
+            Maximum number of intervals in query is @Constants.MaxNumberOfDimensionsForLsh because only @Constants.MaxNumberOfDimensionsForLsh-dimensional spatial hashes were generated. Spatial hashes take large amount of disk space and that requires higher hosting fees. If you want me to generate higher-dimensional spaces please support me on Patreon. :)
         </div>
     }
     <div>
@@ -36,6 +36,9 @@
     </div>
     <div>
         <label><input type="checkbox" bind="@isRhythmRelative" disabled="@(!includeRhythm)" />Include augmentations and diminutions</label>
+    </div>
+    <div>
+        <label><input type="checkbox" bind="@useSpatialHashes" />Use spatial hashes</label>
     </div>
     <div>
         <button class="btn btn-primary" onclick="@Search">Search</button>
@@ -52,6 +55,7 @@
     int NumberOfKeys { get; set; } = 30;
 
     private bool includeRhythm = true;
+    private bool useSpatialHashes = true;
     private bool isRhythmRelative;
     private bool includeIntervals = true;
 
@@ -70,6 +74,7 @@
             searchQuery.Rhythm = rhythmParser.ParseBack(score);
             searchQuery.IsRhythmRelative = isRhythmRelative;
         }
+        searchQuery.UseSpatialHashes = useSpatialHashes;
 
         JSRuntime.Current.InvokeAsync<object>("startNewSearch", searchQuery);
     }

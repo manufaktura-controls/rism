@@ -32,7 +32,7 @@ namespace Manufaktura.RismCatalogue.Migration.Services
                 dbContext = new RismDbContext(new DbContextOptionsBuilder().UseMySql("server=localhost;database=manufaktura-rism;uid=admin;pwd=123123").Options);  //Recreate
                 var incipits = GetIncipitsBatch(skip, pageSize);
 
-                for (var numberOfDimensions = 1; numberOfDimensions <= Constants.MaxNumberOfDimensions; numberOfDimensions++)
+                for (var numberOfDimensions = 1; numberOfDimensions <= Constants.MaxNumberOfDimensionsForLsh; numberOfDimensions++)
                 {
                     Console.WriteLine($"Processing {numberOfDimensions}-dimensional hashes for incipits {skip}-{skip + pageSize}.");
                     foreach (var incipit in incipits)

@@ -1,5 +1,6 @@
 ﻿using Manufaktura.RismCatalogue.Knockout.Extensions;
 using Manufaktura.RismCatalogue.Model;
+using Manufaktura.RismCatalogue.Shared.Algorithms;
 using Manufaktura.RismCatalogue.Shared.Services;
 using Manufaktura.RismCatalogue.Shared.ViewModels;
 using Microsoft.AspNetCore.Mvc;
@@ -47,6 +48,26 @@ namespace Manufaktura.RismCatalogue.Knockout.Controllers
             stopwatch.Start();
 
             var intervals = searchQuery.Intervals.Take(12).ToArray();
+            var intervalsForLsh = searchQuery.Intervals.Take(Constants.MaxNumberOfDimensionsForLsh).ToArray();
+            var lshQueryDictionary = new Dictionary<int, int>();
+
+            if (searchQuery.UseSpatialHashes && intervals.Any())
+            {
+                for (var groupNumber = 1; groupNumber <= hashGroupsToInclude; groupNumber++)
+                {
+                    var planes = context.Planes.Where(p => p.GroupNumber == groupNumber && p.NumberOfDimensions == intervalsForLsh.Length).ToArray();
+                    var lshAlgorithm = new LSHAlgorithm(planes.Select(p => new TranslatedVector(new double[] {
+                    p.Coordinate1, p.Coordinate2, p.Coordinate3, p.Coordinate4,
+                    p.Coordinate5, p.Coordinate6, p.Coordinate7, p.Coordinate8,
+                    p.Coordinate9, p.Coordinate10, p.Coordinate11, p.Coordinate12}.Take(intervalsForLsh.Length).ToArray(),
+                        new double[] {
+                    p.Translation1, p.Translation2, p.Translation3, p.Translation4,
+                    p.Translation5, p.Translation6, p.Translation7, p.Translation8,
+                    p.Translation9, p.Translation10, p.Translation11, p.Translation12}.Take(intervalsForLsh.Length).ToArray()
+                        )).ToArray());
+                    lshQueryDictionary.Add(groupNumber, lshAlgorithm.ComputeHash(new Vector(intervals.Select(ii => (double)ii).ToArray())));
+                }
+            }
 
             var sb = new StringBuilder();
             sb.Append($"SELECT i.{nameof(Incipit.Id)}, i.{nameof(Incipit.MusicalNotation)}, i.{nameof(Incipit.Clef)}, i.{nameof(Incipit.KeySignature)}, i.{nameof(Incipit.TimeSignature)}, " +
@@ -54,6 +75,11 @@ namespace Manufaktura.RismCatalogue.Knockout.Controllers
                 $"ms.{nameof(MusicalSource.Title)}, i.{nameof(Incipit.VoiceOrInstrument)}, ");
             sb.Append(GetRelevanceExpression(intervals));
             sb.Append(" from incipits i inner join musicalsources ms on ms.id = i.MusicalSourceId ");
+            if (searchQuery.UseSpatialHashes && intervals.Any())
+            {
+                sb.Append($" inner join spatialhashes sh on sh.IncipitId = i.Id and sh.NumberOfDimensions = {intervals.Length} " +
+                          $"and (sh.Hash1 = {lshQueryDictionary[1]} or sh.Hash2 = {lshQueryDictionary[2]} or sh.Hash3 = {lshQueryDictionary[3]})");
+            }
 
             var parameters = new List<object>();
             if (!string.IsNullOrWhiteSpace(searchQuery.Rhythm))
