@@ -29,7 +29,7 @@ namespace Manufaktura.RismCatalogue.Migration.Services
             var skip = 0;
             while (true)
             {
-                dbContext = new RismDbContext(new DbContextOptionsBuilder().UseMySql("server=localhost;database=manufaktura-rism;uid=admin;pwd=123123").Options);  //Recreate
+                dbContext = Dependencies.CreateContext();  //Recreate
                 var incipits = GetIncipitsBatch(skip, pageSize);
 
                 for (var numberOfDimensions = 1; numberOfDimensions <= Constants.MaxNumberOfDimensionsForLsh; numberOfDimensions++)
@@ -59,10 +59,10 @@ namespace Manufaktura.RismCatalogue.Migration.Services
                             Hash1 = hashes[0],
                             Hash2 = hashes.Count > 1 ? hashes[1] : 0,
                             Hash3 = hashes.Count > 2 ? hashes[2] : 0,
-                            IncipitId = incipit.Id
+                            //IncipitId = incipit.Id
                         };
                         dbContext.SpatialHashes.Add(spatialHash);
-                        //dbContext.SpatialHashIncipits.Add(new SpatialHashIncipit { SpatialHash = spatialHash, IncipitId = incipit.Id });
+                        dbContext.SpatialHashIncipits.Add(new SpatialHashIncipit { SpatialHash = spatialHash, IncipitId = incipit.Id });
                     }
                 }
                 dbContext.SaveChanges();

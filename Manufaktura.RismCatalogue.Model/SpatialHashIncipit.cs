@@ -1,6 +1,6 @@
 ﻿namespace Manufaktura.RismCatalogue.Model
 {
-    public class SpatialHashIncipit
+    public class SpatialHashIncipit : Entity
     {
         public SpatialHash SpatialHash { get; set; }
         public long SpatialHashId { get; set; }

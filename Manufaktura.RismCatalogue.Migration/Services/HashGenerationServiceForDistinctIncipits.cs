@@ -4,13 +4,14 @@ using Manufaktura.RismCatalogue.Knockout.Extensions;
 using Manufaktura.RismCatalogue.Model;
 using Manufaktura.RismCatalogue.Shared.Algorithms;
 using Manufaktura.RismCatalogue.Shared.Services;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
 namespace Manufaktura.RismCatalogue.Migration.Services
-{/*
+{
     public class HashGenerationServiceForDistinctIncipits
     {
         private RismDbContext dbContext;
@@ -37,7 +38,7 @@ namespace Manufaktura.RismCatalogue.Migration.Services
         private long[] GetIncipitIdsByIntervalPattern(int[] pattern)
         {
             var queryBuilder = new StringBuilder("select i.Id from incipits i where ");
-            queryBuilder.Append(string.Join(" AND ", pattern.Select(i => $"i.Interval{i + 1} = {pattern[i]}")));
+            queryBuilder.Append(string.Join(" AND ", Enumerable.Range(0, pattern.Length).Select(i => $"i.Interval{i + 1} = {pattern[i]}")));
             var query = queryBuilder.ToString();
             var results = dbContext.RawSqlQuery(query);
             return results.Select(row => row.Cast<long>().Single()).ToArray();
@@ -47,13 +48,22 @@ namespace Manufaktura.RismCatalogue.Migration.Services
         {
             for (var numberOfDimensions = 1; numberOfDimensions <= Constants.MaxNumberOfDimensionsForLsh; numberOfDimensions++)
             {
+                dbContext = Dependencies.CreateContext();  //Recreate
+                Console.WriteLine($"Searching distinct melodies for {numberOfDimensions} dimensions...");
                 var distinctMelodies = GetDistinctMelodies(numberOfDimensions);
+                Console.WriteLine($"Found {distinctMelodies.Length} distinct melodies for {numberOfDimensions} dimensions.");
 
+                var patternNumber = 1;
                 foreach (var distinctIntervalPattern in distinctMelodies)
                 {
+                    Console.WriteLine($"Generating {numberOfDimensions}-dimensional hashes for pattern {string.Join(" ", distinctIntervalPattern)} ({patternNumber++} of {distinctMelodies.Length}).");
                     var hashes = new List<long>();
 
-                    var position = GetIncipitVector(score, numberOfDimensions);
+                    var position = GetIncipitVector(distinctIntervalPattern);
+                    var numberOfPlanes = (int)Math.Pow(2, numberOfDimensions - 1);
+                    if (numberOfPlanes < 8) numberOfPlanes = 8;
+                    if (numberOfPlanes > 63) numberOfPlanes = 63;
+
                     foreach (var groupNumber in Enumerable.Range(1, numberOfGroups))
                     {
                         var lshAlgorithm = GetPlaneGroup(groupNumber, numberOfPlanes, numberOfDimensions);
@@ -61,14 +71,45 @@ namespace Manufaktura.RismCatalogue.Migration.Services
                         hashes.Add(hash);
                     }
 
+                    var spatialHash = new SpatialHash
+                    {
+                        NumberOfDimensions = numberOfDimensions,
+                        Hash1 = hashes[0],
+                        Hash2 = hashes.Count > 1 ? hashes[1] : 0,
+                        Hash3 = hashes.Count > 2 ? hashes[2] : 0,
+                    };
+                    dbContext.SpatialHashes.Add(spatialHash);
+                    dbContext.SaveChanges();
+
+                    Console.WriteLine($"Searching incipit ids for pattern {string.Join(" ", distinctIntervalPattern)}...");
                     var allIncipitIdsForThisPattern = GetIncipitIdsByIntervalPattern(distinctIntervalPattern);
+
+                    var skip = 0;
+                    var pageSize = 300;
+                    while (true)
+                    {
+                        Console.WriteLine($"Adding incipit ids for pattern {string.Join(" ", distinctIntervalPattern)} ({skip}/{allIncipitIdsForThisPattern.Length})...");
+                        var page = allIncipitIdsForThisPattern.Skip(skip).Take(pageSize).ToArray();
+                        foreach (var incipitId in page)
+                        {
+                            dbContext.SpatialHashIncipits.Add(new SpatialHashIncipit { SpatialHashId = spatialHash.Id, IncipitId = incipitId });
+                        }
+                        dbContext.SaveChanges();
+
+                        if (page.Length < pageSize) break;
+                        skip += page.Length;
+                    }
+                    dbContext.SaveChanges();
+                    dbContext = Dependencies.CreateContext();  //Recreate
+
                 }
+                dbContext.SaveChanges();
             }
         }
 
-        private static Vector GetIncipitVector(int[] intervals, int numberOfDimensions)
+        private static Vector GetIncipitVector(int[] intervals)
         {
-            return new Vector(intervals.Select);
+            return new Vector(intervals.Select(i => (double)i));
         }
 
         private static double TryGetPlaneCoordinate(Vector plane, int index)
@@ -148,5 +189,5 @@ namespace Manufaktura.RismCatalogue.Migration.Services
 
             return lshAlgorithm;
         }
-    }*/
+    }
 }

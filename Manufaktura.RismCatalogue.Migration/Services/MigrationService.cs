@@ -66,7 +66,7 @@ namespace Manufaktura.RismCatalogue.Migration.Services
                         counter++;
                         Console.WriteLine($"Record {counter} ({dbRecord.Title} - {dbRecord.ComposerName}) added.");
                         if (counter % 100 == 0) dbContext.SaveChanges();
-                        if (counter % 600 == 0) dbContext = new RismDbContext(new DbContextOptionsBuilder().UseMySql("server=localhost;database=manufaktura-rism;uid=admin;pwd=123123").Options);  //Recreate
+                        if (counter % 600 == 0) dbContext = Dependencies.CreateContext();  //Recreate
                     }
                     dbContext.SaveChanges();
                 }

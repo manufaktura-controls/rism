@@ -19,18 +19,21 @@ namespace Manufaktura.RismCatalogue.Migration
 
         public static StandardKernel Instance => kernel.Value;
 
+        public static RismDbContext CreateContext()
+        {
+            var context = new RismDbContext(new DbContextOptionsBuilder().UseMySql("server=localhost;database=manufaktura-rism;uid=admin;pwd=123123").Options);
+            context.ChangeTracker.AutoDetectChangesEnabled = false;
+            context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+            return context;
+        }
+
         public override void Load()
         {
-            Bind<RismDbContext>().ToMethod(a =>
-            {
-                var context = new RismDbContext(new DbContextOptionsBuilder().UseMySql("server=localhost;database=manufaktura-rism;uid=admin;pwd=123123").Options);
-                context.ChangeTracker.AutoDetectChangesEnabled = false;
-                context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
-                return context;
-            });
+            Bind<RismDbContext>().ToMethod(a => CreateContext());
             Bind<MigrationService>().ToSelf().InSingletonScope();
             Bind<PlaineAndEasieService>().ToSelf().InSingletonScope();
             Bind<HashGenerationService>().ToSelf().InSingletonScope();
+            Bind<HashGenerationServiceForDistinctIncipits>().ToSelf().InSingletonScope();
         }
     }
 }
