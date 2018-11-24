@@ -1,10 +1,7 @@
-﻿using Manufaktura.Controls.Linq;
-using Manufaktura.Controls.Model;
-using Manufaktura.RismCatalogue.Knockout.Extensions;
+﻿using Manufaktura.RismCatalogue.Knockout.Extensions;
 using Manufaktura.RismCatalogue.Model;
 using Manufaktura.RismCatalogue.Shared.Algorithms;
 using Manufaktura.RismCatalogue.Shared.Services;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,19 +32,59 @@ namespace Manufaktura.RismCatalogue.Migration.Services
             return results.Select(row => row.Cast<int>().ToArray()).ToArray();
         }
 
-        private long[] GetIncipitIdsByIntervalPattern(int[] pattern)
+        private Incipit[] GetIncipitsByIntervalPatternFromCache(int[] pattern, List<Incipit> cache)
         {
-            var queryBuilder = new StringBuilder("select i.Id from incipits i where ");
+            var query = cache.AsEnumerable();
+            if (pattern.Length > 0) query = query.Where(i => i.Interval1 == pattern[0]);
+            if (pattern.Length > 1) query = query.Where(i => i.Interval2 == pattern[1]);
+            if (pattern.Length > 2) query = query.Where(i => i.Interval3 == pattern[2]);
+            if (pattern.Length > 3) query = query.Where(i => i.Interval4 == pattern[3]);
+            if (pattern.Length > 4) query = query.Where(i => i.Interval5 == pattern[4]);
+            if (pattern.Length > 5) query = query.Where(i => i.Interval6 == pattern[5]);
+            if (pattern.Length > 6) query = query.Where(i => i.Interval7 == pattern[6]);
+            if (pattern.Length > 7) query = query.Where(i => i.Interval8 == pattern[7]);
+            if (pattern.Length > 8) query = query.Where(i => i.Interval9 == pattern[8]);
+            if (pattern.Length > 9) query = query.Where(i => i.Interval10 == pattern[9]);
+            if (pattern.Length > 10) query = query.Where(i => i.Interval11 == pattern[10]);
+            if (pattern.Length > 11) query = query.Where(i => i.Interval12 == pattern[11]);
+            return query.ToArray();
+        }
+
+        private Incipit[] GetIncipitsByIntervalPatternFromDb(int[] pattern, List<Incipit> incipitCache)
+        {
+            var queryBuilder = new StringBuilder("select i.Id, ");
+            queryBuilder.Append(string.Join(", ", Enumerable.Range(1, 12).Select(i => $"i.Interval{i}")));
+            queryBuilder.Append(" from incipits i where ");
             queryBuilder.Append(string.Join(" AND ", Enumerable.Range(0, pattern.Length).Select(i => $"i.Interval{i + 1} = {pattern[i]}")));
             var query = queryBuilder.ToString();
             var results = dbContext.RawSqlQuery(query);
-            return results.Select(row => row.Cast<long>().Single()).ToArray();
+            var typedResults = results.Select(row => new Incipit
+            {
+                Id = (long)row[0],
+                Interval1 = (int)row[1],
+                Interval2 = (int)row[2],
+                Interval3 = (int)row[3],
+                Interval4 = (int)row[4],
+                Interval5 = (int)row[5],
+                Interval6 = (int)row[6],
+                Interval7 = (int)row[7],
+                Interval8 = (int)row[8],
+                Interval9 = (int)row[9],
+                Interval10 = (int)row[10],
+                Interval11 = (int)row[11],
+                Interval12 = (int)row[12],
+            }).ToArray();
+            incipitCache.AddRange(typedResults);
+            return typedResults;
         }
 
         public void GenerateHashes(int numberOfGroups)
         {
+            var incipitCache = new List<Incipit>();
             for (var numberOfDimensions = 1; numberOfDimensions <= Constants.MaxNumberOfDimensionsForLsh; numberOfDimensions++)
             {
+                var hashCache = new List<SpatialHash>();
+
                 dbContext = Dependencies.CreateContext();  //Recreate
                 Console.WriteLine($"Searching distinct melodies for {numberOfDimensions} dimensions...");
                 var distinctMelodies = GetDistinctMelodies(numberOfDimensions);
@@ -57,51 +94,48 @@ namespace Manufaktura.RismCatalogue.Migration.Services
                 foreach (var distinctIntervalPattern in distinctMelodies)
                 {
                     Console.WriteLine($"Generating {numberOfDimensions}-dimensional hashes for pattern {string.Join(" ", distinctIntervalPattern)} ({patternNumber++} of {distinctMelodies.Length}).");
-                    var hashes = new List<long>();
 
                     var position = GetIncipitVector(distinctIntervalPattern);
-                    var numberOfPlanes = (int)Math.Pow(2, numberOfDimensions - 1);
-                    if (numberOfPlanes < 8) numberOfPlanes = 8;
-                    if (numberOfPlanes > 63) numberOfPlanes = 63;
+                    var numberOfPlanes = 15;    //There's no use to increase number of planes according to number of dimensions. Planes always divide space in two.
+
+                    Console.WriteLine($"Searching incipit ids for pattern {string.Join(" ", distinctIntervalPattern)}...");
+                    var allIncipitsForThisPattern = numberOfDimensions == 1 ? GetIncipitsByIntervalPatternFromDb(distinctIntervalPattern, incipitCache)
+                        : GetIncipitsByIntervalPatternFromCache(distinctIntervalPattern, incipitCache);
 
                     foreach (var groupNumber in Enumerable.Range(1, numberOfGroups))
                     {
                         var lshAlgorithm = GetPlaneGroup(groupNumber, numberOfPlanes, numberOfDimensions);
                         var hash = lshAlgorithm.ComputeHash(position);
-                        hashes.Add(hash);
-                    }
 
-                    var spatialHash = new SpatialHash
-                    {
-                        NumberOfDimensions = numberOfDimensions,
-                        Hash1 = hashes[0],
-                        Hash2 = hashes.Count > 1 ? hashes[1] : 0,
-                        Hash3 = hashes.Count > 2 ? hashes[2] : 0,
-                    };
-                    dbContext.SpatialHashes.Add(spatialHash);
-                    dbContext.SaveChanges();
-
-                    Console.WriteLine($"Searching incipit ids for pattern {string.Join(" ", distinctIntervalPattern)}...");
-                    var allIncipitIdsForThisPattern = GetIncipitIdsByIntervalPattern(distinctIntervalPattern);
-
-                    var skip = 0;
-                    var pageSize = 300;
-                    while (true)
-                    {
-                        Console.WriteLine($"Adding incipit ids for pattern {string.Join(" ", distinctIntervalPattern)} ({skip}/{allIncipitIdsForThisPattern.Length})...");
-                        var page = allIncipitIdsForThisPattern.Skip(skip).Take(pageSize).ToArray();
-                        foreach (var incipitId in page)
+                        var spatialHash = new SpatialHash { Id = $"{numberOfDimensions}-{groupNumber}-{hash}" };
+                        var existingHash = hashCache.FirstOrDefault(h => h.Id == spatialHash.Id);
+                        if (existingHash == null)
                         {
-                            dbContext.SpatialHashIncipits.Add(new SpatialHashIncipit { SpatialHashId = spatialHash.Id, IncipitId = incipitId });
+                            dbContext.SpatialHashes.Add(spatialHash);
+                            dbContext.SaveChanges();
+                            hashCache.Add(spatialHash);
                         }
-                        dbContext.SaveChanges();
+                        else spatialHash = existingHash;
 
-                        if (page.Length < pageSize) break;
-                        skip += page.Length;
+                        var skip = 0;
+                        var pageSize = 300;
+                        while (true)
+                        {
+                            Console.WriteLine($"Adding incipit ids for pattern {string.Join(" ", distinctIntervalPattern)} ({skip}/{allIncipitsForThisPattern.Length})...");
+                            var page = allIncipitsForThisPattern.Skip(skip).Take(pageSize).ToArray();
+                            foreach (var incipit in page)
+                            {
+                                dbContext.SpatialHashIncipits.Add(new SpatialHashIncipit { SpatialHashId = spatialHash.Id, IncipitId = incipit.Id });
+                            }
+                            dbContext.SaveChanges();
+
+                            if (page.Length < pageSize) break;
+                            skip += page.Length;
+                        }
                     }
+
                     dbContext.SaveChanges();
                     dbContext = Dependencies.CreateContext();  //Recreate
-
                 }
                 dbContext.SaveChanges();
             }

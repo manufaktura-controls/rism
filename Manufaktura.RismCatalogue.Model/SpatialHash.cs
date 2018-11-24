@@ -1,12 +1,7 @@
 ﻿namespace Manufaktura.RismCatalogue.Model
 {
-    public class SpatialHash : Entity
+    public class SpatialHash
     {
-        public long Hash1 { get; set; }
-        public long Hash2 { get; set; }
-        public long Hash3 { get; set; }
-
-        public int NumberOfDimensions { get; set; }
-
+        public string Id { get; set; }
     }
 }

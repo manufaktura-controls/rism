@@ -105,7 +105,7 @@ namespace Manufaktura.RismCatalogue.Migration.Services
                 entity.MusicalSource = record;
                 ExtractDataFromSubfields(record, entity);
 
-                dbContext.Attach(entity);
+                if (entity.GetType() == typeof(Incipit)) dbContext.Attach(entity);
             }
 
             dbContext.MusicalSources.Add(record);

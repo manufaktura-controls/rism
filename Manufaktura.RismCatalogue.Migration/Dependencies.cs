@@ -32,7 +32,7 @@ namespace Manufaktura.RismCatalogue.Migration
             Bind<RismDbContext>().ToMethod(a => CreateContext());
             Bind<MigrationService>().ToSelf().InSingletonScope();
             Bind<PlaineAndEasieService>().ToSelf().InSingletonScope();
-            Bind<HashGenerationService>().ToSelf().InSingletonScope();
+            //Bind<HashGenerationService>().ToSelf().InSingletonScope();
             Bind<HashGenerationServiceForDistinctIncipits>().ToSelf().InSingletonScope();
         }
     }

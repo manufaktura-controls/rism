@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace Manufaktura.RismCatalogue.Migration.Services
 {
-    public class HashGenerationService
+   /* public class HashGenerationService
     {
         private RismDbContext dbContext;
         private readonly PlaineAndEasieService plaineAndEasieService;
@@ -162,5 +162,5 @@ namespace Manufaktura.RismCatalogue.Migration.Services
 
             return lshAlgorithm;
         }
-    }
+    }*/
 }
