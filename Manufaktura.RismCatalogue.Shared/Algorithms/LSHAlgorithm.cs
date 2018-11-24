@@ -24,11 +24,13 @@ namespace Manufaktura.RismCatalogue.Shared.Algorithms
         {
             long hash = 0;
             long orderOfMagnitude = 1;
+            
             foreach (var plane in Planes)
             {
-                if (plane is TranslatedVector translatedPlane) point = point.Translate(new Vector(translatedPlane.Translation).Invert());
+                var pointCopy = point.Clone();
+                if (plane is TranslatedVector translatedPlane) pointCopy = pointCopy.Translate(new Vector(translatedPlane.Translation).Invert());
 
-                hash += (GetSideOfAPlane(point, plane) ? 1 : 0) * orderOfMagnitude;
+                hash += (GetSideOfAPlane(pointCopy, plane) ? 1 : 0) * orderOfMagnitude;
                 orderOfMagnitude *= 2;
             }
             return hash;

@@ -46,6 +46,8 @@ namespace Manufaktura.RismCatalogue.Shared.Algorithms
 
         public double[] ToArray() => Coordinates;
 
+        public Vector Clone() => new Vector(Coordinates.ToArray());
+
         public Vector Translate(Vector translation)
         {
             if (Length != translation.Length) throw new ArgumentException("Lengths do not match.");

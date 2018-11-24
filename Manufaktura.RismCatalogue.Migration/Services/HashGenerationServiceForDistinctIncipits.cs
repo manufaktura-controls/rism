@@ -1,83 +1,74 @@
 ﻿using Manufaktura.Controls.Linq;
 using Manufaktura.Controls.Model;
+using Manufaktura.RismCatalogue.Knockout.Extensions;
 using Manufaktura.RismCatalogue.Model;
 using Manufaktura.RismCatalogue.Shared.Algorithms;
 using Manufaktura.RismCatalogue.Shared.Services;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace Manufaktura.RismCatalogue.Migration.Services
-{
-    public class HashGenerationService
+{/*
+    public class HashGenerationServiceForDistinctIncipits
     {
         private RismDbContext dbContext;
         private readonly PlaineAndEasieService plaineAndEasieService;
 
         private List<Plane> planesCache = new List<Plane>();
 
-        public HashGenerationService(RismDbContext dbContext, PlaineAndEasieService plaineAndEasieService)
+        public HashGenerationServiceForDistinctIncipits(RismDbContext dbContext, PlaineAndEasieService plaineAndEasieService)
         {
             this.dbContext = dbContext;
             this.plaineAndEasieService = plaineAndEasieService;
         }
 
+        private int[][] GetDistinctMelodies(int numberOfDimensions)
+        {
+            var queryBuilder = new StringBuilder("select distinct ");
+            queryBuilder.Append(string.Join(", ", Enumerable.Range(1, numberOfDimensions).Select(i => $"i.Interval{i}")));
+            queryBuilder.Append(" from incipits i");
+            var query = queryBuilder.ToString();
+            var results = dbContext.RawSqlQuery(query);
+            return results.Select(row => row.Cast<int>().ToArray()).ToArray();
+        }
+
+        private long[] GetIncipitIdsByIntervalPattern(int[] pattern)
+        {
+            var queryBuilder = new StringBuilder("select i.Id from incipits i where ");
+            queryBuilder.Append(string.Join(" AND ", pattern.Select(i => $"i.Interval{i + 1} = {pattern[i]}")));
+            var query = queryBuilder.ToString();
+            var results = dbContext.RawSqlQuery(query);
+            return results.Select(row => row.Cast<long>().Single()).ToArray();
+        }
+
         public void GenerateHashes(int numberOfGroups)
         {
-            var pageSize = 500;
-            var skip = 0;
-            while (true)
+            for (var numberOfDimensions = 1; numberOfDimensions <= Constants.MaxNumberOfDimensionsForLsh; numberOfDimensions++)
             {
-                dbContext = new RismDbContext(new DbContextOptionsBuilder().UseMySql("server=localhost;database=manufaktura-rism;uid=admin;pwd=123123").Options);  //Recreate
-                var incipits = GetIncipitsBatch(skip, pageSize);
+                var distinctMelodies = GetDistinctMelodies(numberOfDimensions);
 
-                for (var numberOfDimensions = 1; numberOfDimensions <= Constants.MaxNumberOfDimensionsForLsh; numberOfDimensions++)
+                foreach (var distinctIntervalPattern in distinctMelodies)
                 {
-                    var numberOfPlanes = (int)Math.Pow(2, numberOfDimensions - 1);
-                    if (numberOfPlanes < 8) numberOfPlanes = 8;
-                    if (numberOfPlanes > 63) numberOfPlanes = 63;
+                    var hashes = new List<long>();
 
-                    Console.WriteLine($"Processing {numberOfDimensions}-dimensional hashes for incipits {skip}-{skip + pageSize}.");
-                    foreach (var incipit in incipits)
+                    var position = GetIncipitVector(score, numberOfDimensions);
+                    foreach (var groupNumber in Enumerable.Range(1, numberOfGroups))
                     {
-                        var hashes = new List<long>();
-                        var score = plaineAndEasieService.Parse(incipit);
-                        if (score == null) continue;
-
-                        var position = GetIncipitVector(score, numberOfDimensions);
-                        foreach (var groupNumber in Enumerable.Range(1, numberOfGroups))
-                        {
-                            var lshAlgorithm = GetPlaneGroup(groupNumber, numberOfPlanes, numberOfDimensions);
-                            var hash = lshAlgorithm.ComputeHash(position);
-                            hashes.Add(hash);
-                        }
-
-                        var spatialHash = new SpatialHash
-                        {
-                            NumberOfDimensions = numberOfDimensions,
-                            Hash1 = hashes[0],
-                            Hash2 = hashes.Count > 1 ? hashes[1] : 0,
-                            Hash3 = hashes.Count > 2 ? hashes[2] : 0,
-                            IncipitId = incipit.Id
-                        };
-                        dbContext.SpatialHashes.Add(spatialHash);
-                        //dbContext.SpatialHashIncipits.Add(new SpatialHashIncipit { SpatialHash = spatialHash, IncipitId = incipit.Id });
+                        var lshAlgorithm = GetPlaneGroup(groupNumber, numberOfPlanes, numberOfDimensions);
+                        var hash = lshAlgorithm.ComputeHash(position);
+                        hashes.Add(hash);
                     }
-                }
-                dbContext.SaveChanges();
 
-                skip += incipits.Length;
-                if (incipits.Length < pageSize) break;
+                    var allIncipitIdsForThisPattern = GetIncipitIdsByIntervalPattern(distinctIntervalPattern);
+                }
             }
         }
 
-        private static Vector GetIncipitVector(Score score, int numberOfDimensions)
+        private static Vector GetIncipitVector(int[] intervals, int numberOfDimensions)
         {
-            var intervals = score.ToIntervals().Take(numberOfDimensions).Select(i => (double)i).ToList();
-            while (intervals.Count < numberOfDimensions) intervals.Add(0d);
-
-            return new Vector(intervals);
+            return new Vector(intervals.Select);
         }
 
         private static double TryGetPlaneCoordinate(Vector plane, int index)
@@ -95,11 +86,6 @@ namespace Manufaktura.RismCatalogue.Migration.Services
             return translatedVector.Translation[index];
         }
 
-        private Incipit[] GetIncipitsBatch(int skip, int take)
-        {
-            return dbContext.Incipits.Where(m => m.MusicalNotation != null).OrderBy(m => m.Id).Skip(skip).Take(take).ToArray();
-        }
-
         private LSHAlgorithm GetPlaneGroup(int groupNumber, int numberOfPlanes, int numberOfDimensions)
         {
             LSHAlgorithm lshAlgorithm;
@@ -113,7 +99,7 @@ namespace Manufaktura.RismCatalogue.Migration.Services
 
             if (!planes.Any())
             {
-                lshAlgorithm = new LSHAlgorithm(numberOfDimensions, numberOfPlanes, -12, 12, 0, 0);
+                lshAlgorithm = new LSHAlgorithm(numberOfDimensions, numberOfPlanes, -12, 12, -12, 12);
                 foreach (var plane in lshAlgorithm.Planes)
                 {
                     var newPlane = new Plane
@@ -162,5 +148,5 @@ namespace Manufaktura.RismCatalogue.Migration.Services
 
             return lshAlgorithm;
         }
-    }
+    }*/
 }
