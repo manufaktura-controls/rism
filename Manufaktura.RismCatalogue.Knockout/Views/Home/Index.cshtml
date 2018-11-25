@@ -19,6 +19,7 @@
             <div class="clearfix mainbarbuttons">
                 <a class="btn btn-primary" href="/Catalogue">Browse catalogue</a>
                 <a class="btn" href="https://github.com/manufaktura-controls/rism">Get source code</a>
+                <a class="btn" href="http://musicengravingcontrols.com/">My website</a>
             </div>
 
 
@@ -39,28 +40,24 @@
         which can be searched by melodic and rhythmic criteria.
 
         <h3>How does it work?</h3>
-        All melodies are understood as series of intervals and imagined as vectors in n-dimentional space where n is the number of intervals. The search
-        is performed by comparing distances between these vectors. There is also a rhythmic search but it's quite straightforward. I will be presenting more information soon.
-
-        <h3>What's the deal with Locality-sensitive hashing?</h3>
-        As I mentioned earlier, this engine searches incipits by traversing the whole database and calculating similarity factor. This consumes a lot of time and resources.
-        One of the preliminary assumptions of this project was to implement a hashing algorithm to partition the interval space to smaller chunks. Unfortunately,
-        for 100,000 test samples, queries with this optimization took 3 times more time to compute than queries without optimization. Such algorithms make sense for much
-        larger amount of data. I didn't want to compute spatial hashes for all (more than 1 million) records because it would take days to generate
-        and a huge amount of disk space. I decided that the performance of queries without spatial hashing is decent enough even for more than 1 million records so I
-        hang up the experiment for later time. In the future I plan to develop new search algorithms and maybe I'll return to hashing idea.
+        All melodies are understood as series of intervals and imagined as vectors in n-dimentional space where n is the number of intervals.
+        Searching is performed by comparing distances between these vectors. The main advantage of the project, which distinguishes it from similar search engines,
+        is the implementation of <a href="https://en.wikipedia.org/wiki/Locality-sensitive_hashing">locality-sensitive hashing (LSH)</a> algorithm which
+        vastly improves performance for most queries. There is also a rhythmic search but it's quite straightforward. I will soon publish an article which describes the methods that I use.
 
         <h3>Are there other incipit search engines for RISM data?</h3>
         There is a simple <a href="https://opac.rism.info/metaopac/start.do?View=rism&SearchType=2&Language=en">search engine</a> provided by RISM official website.
         There is also a powerful tool named <a href="https://www.projects.science.uu.nl/monochord/risma2/my-melodies">Monochord Project</a> created by Utrecht University
         which allows you to search melodic variants by similarity. This is exactly what my project tries to achieve but I'm doing it different way.
+        The third project by Akademie der Wissenschaften und der Literatur in Mainz combines data from RISM and two other sources and can be found <a href="https://incipitsearch.adwmainz.net/">here</a>.
 
         <h3>How is your project compared to Monochord engine?</h3>
+        I compare my project with the Monochord project because both projects are equally ambitious and use specific mathematical assumptions.
         The principles of the Monochord project are based on sequence alignment. My project depends on calculating distances in metrical space. The main disadvantage
         of my project is that it allows you to search only in the beginning of incipits and it is limited to maximum of 12 intervals. Monochord allows you to search
-        also in the middle of incipits without limitations of query length and provides various rating algorithms. The advantage of my project, however, is performance. 
-        Monochord runs on a 32-core system that processes data in parallel and uses its own data storage engine. My system can be deployed on a potato and still 
-        maintain decent performance. :) Currently it works on a virtual server with 1 core and 2GB of RAM.<br />
+        also in the middle of incipits without limitations of query length and provides various rating algorithms. The advantage of my project, however, is performance.
+        Monochord runs on a 32-core system that processes data in parallel - such a powerful system is necessary because all records are processed in every query. 
+        My system can be deployed on a potato and still maintain decent performance beause data is pre-filtered by spatial hashes. Currently it works on a virtual server with 1 core and 2GB of RAM.<br />
         Besides, my project uses a slightly more recent snapshot of RISM data, containing more incipits.
 
         <h3>What technology do you use?</h3>

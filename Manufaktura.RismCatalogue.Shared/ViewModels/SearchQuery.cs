@@ -10,7 +10,7 @@
 
         public int Skip { get; set; }
 
-        public int Take { get; set; } = 100;
+        public int Take { get; set; } = 50;
 
         public MelodicQueryMode Mode { get; set; }
 

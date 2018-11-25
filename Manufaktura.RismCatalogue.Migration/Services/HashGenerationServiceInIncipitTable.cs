@@ -5,6 +5,7 @@ using Manufaktura.RismCatalogue.Shared.Services;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace Manufaktura.RismCatalogue.Migration.Services
@@ -20,17 +21,21 @@ namespace Manufaktura.RismCatalogue.Migration.Services
             this.dbContext = dbContext;
         }
 
+       
         public void GenerateHashes()
         {
             var pageSize = 2000;
             var processedincipits = 0;
             while (true)
             {
+                var sw = new Stopwatch();
+                sw.Start();
+
                 if (processedincipits % 10000 == 0) dbContext = Dependencies.CreateContext();  //Recreate
                 Console.WriteLine($"Searching for incipits...");
                 var incipits = GetIncipitsBatch(pageSize);
 
-                var numberOfPlanes = 20;
+                var numberOfPlanes = 40;
 
                 Console.WriteLine($"Processing hashes for incipits...");
                 foreach (var incipit in incipits)
@@ -67,7 +72,13 @@ namespace Manufaktura.RismCatalogue.Migration.Services
                 dbContext.SaveChanges();
 
                 processedincipits += incipits.Length;
-                Console.WriteLine($"Completed {processedincipits} incipits.");
+
+                sw.Stop();
+                var timeRemaining = TimeSpan.FromSeconds(((1775885 - processedincipits) / pageSize) * sw.Elapsed.TotalSeconds);
+
+                Console.WriteLine($"Completed {processedincipits} incipits. Time remaining: {timeRemaining}.");
+
+                
 
                 if (incipits.Length < pageSize) break;
             }

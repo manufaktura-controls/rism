@@ -92,6 +92,7 @@ namespace Manufaktura.RismCatalogue.Knockout.Controllers
                     sb.AppendLine($" {(isWhereBlockStarted ? "AND" : "WHERE")} i.RhythmDigest LIKE @p0 ");
             }
             if (intervals.Any()) sb.Append($" order by Relevance desc");
+            else sb.Append($" order by i.Id asc");
 
             sb.AppendLine($" LIMIT {searchQuery.Take} OFFSET {searchQuery.Skip}");
 
