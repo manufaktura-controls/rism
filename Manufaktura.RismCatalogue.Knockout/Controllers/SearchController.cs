@@ -65,7 +65,7 @@ namespace Manufaktura.RismCatalogue.Knockout.Controllers
                     p.Translation5, p.Translation6, p.Translation7, p.Translation8,
                     p.Translation9, p.Translation10, p.Translation11, p.Translation12}.Take(intervalsForLsh.Length).ToArray()
                         )).ToArray());
-                    lshQueryDictionary.Add(groupNumber, lshAlgorithm.ComputeHash(new Vector(intervals.Select(ii => (double)ii).ToArray())));
+                    lshQueryDictionary.Add(groupNumber, lshAlgorithm.ComputeHash(new Vector(intervalsForLsh.Select(ii => (double)ii).ToArray())));
                 }
             }
 
@@ -77,8 +77,9 @@ namespace Manufaktura.RismCatalogue.Knockout.Controllers
             sb.Append(" from incipits i inner join musicalsources ms on ms.id = i.MusicalSourceId ");
             if (searchQuery.UseSpatialHashes && intervals.Any())
             {
-                sb.Append($" inner join spatialhashes sh on sh.IncipitId = i.Id and sh.NumberOfDimensions = {intervals.Length} " +
-                          $"and (sh.Hash1 = {lshQueryDictionary[1]} or sh.Hash2 = {lshQueryDictionary[2]})");// or sh.Hash3 = {lshQueryDictionary[3]})");
+                sb.Append(" inner join spatialhashincipits shi on shi.incipitId = i.id");
+                sb.Append($" inner join spatialhashes sh on shi.SpatialHashId = sh.Id " +
+                          $"and (sh.Id = '{intervalsForLsh.Length}-1-{lshQueryDictionary[1]}' or sh.Id = '{intervalsForLsh.Length}-2-{lshQueryDictionary[2]}')");
             }
 
             var parameters = new List<object>();
