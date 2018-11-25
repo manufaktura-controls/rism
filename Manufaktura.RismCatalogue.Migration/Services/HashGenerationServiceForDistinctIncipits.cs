@@ -121,7 +121,7 @@ namespace Manufaktura.RismCatalogue.Migration.Services
                         var pageSize = 300;
                         while (true)
                         {
-                            Console.WriteLine($"Adding incipit ids for pattern {string.Join(" ", distinctIntervalPattern)} ({skip}/{allIncipitsForThisPattern.Length})...");
+                            Console.WriteLine($"Adding incipit ids for pattern {string.Join(" ", distinctIntervalPattern)} - group {groupNumber} ({skip}/{allIncipitsForThisPattern.Length})...");
                             var page = allIncipitsForThisPattern.Skip(skip).Take(pageSize).ToArray();
                             foreach (var incipit in page)
                             {
