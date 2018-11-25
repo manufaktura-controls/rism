@@ -22,25 +22,17 @@ namespace Manufaktura.RismCatalogue.Migration.Services
 
         public void GenerateHashes()
         {
-            var countQuery = dbContext.Incipits.Where(m => m.Hash1d == null);
-
-            var sql = countQuery.ToSql();
-            var count = countQuery.Count();
-            Console.WriteLine($"{count} incipits without hashes left.");
-
-            
-
-            var pageSize = 500;
-            var skip = 0;
+            var pageSize = 2000;
+            var processedincipits = 0;
             while (true)
             {
-                //dbContext = Dependencies.CreateContext();  //Recreate
-                Console.WriteLine($"Searching for incipits {skip}-{skip + pageSize}...");
-                var incipits = GetIncipitsBatch(skip, pageSize);
+                if (processedincipits % 10000 == 0) dbContext = Dependencies.CreateContext();  //Recreate
+                Console.WriteLine($"Searching for incipits...");
+                var incipits = GetIncipitsBatch(pageSize);
 
-                var numberOfPlanes = 10;
+                var numberOfPlanes = 20;
 
-                Console.WriteLine($"Processing hashes for incipits {skip}-{skip + pageSize}...");
+                Console.WriteLine($"Processing hashes for incipits...");
                 foreach (var incipit in incipits)
                 {
                     for (var numberOfDimensions = 1; numberOfDimensions <= Constants.MaxNumberOfDimensionsForLsh; numberOfDimensions++)
@@ -74,7 +66,9 @@ namespace Manufaktura.RismCatalogue.Migration.Services
                 }
                 dbContext.SaveChanges();
 
-                skip += incipits.Length;
+                processedincipits += incipits.Length;
+                Console.WriteLine($"Completed {processedincipits} incipits.");
+
                 if (incipits.Length < pageSize) break;
             }
         }
@@ -99,9 +93,10 @@ namespace Manufaktura.RismCatalogue.Migration.Services
             return translatedVector.Translation[index];
         }
 
-        private Incipit[] GetIncipitsBatch(int skip, int take)
+        private Incipit[] GetIncipitsBatch(int take)
         {
-            return dbContext.Incipits.Where(m => m.Hash1d == null).OrderBy(i => i.Id).Skip(skip).Take(take).ToArray();
+            return dbContext.Incipits.Where(m => m.Hash1d == null)
+                .OrderBy(i => i.Id).Take(take).ToArray();
         }
 
         private LSHAlgorithm GetPlaneGroup(int groupNumber, int numberOfPlanes, int numberOfDimensions)

@@ -70,16 +70,16 @@ namespace Manufaktura.RismCatalogue.Knockout.Controllers
             }
 
             var sb = new StringBuilder();
-            sb.Append($"SELECT i.{nameof(Incipit.Id)}, i.{nameof(Incipit.MusicalNotation)}, i.{nameof(Incipit.Clef)}, i.{nameof(Incipit.KeySignature)}, i.{nameof(Incipit.TimeSignature)}, " +
+            sb.AppendLine($"SELECT i.{nameof(Incipit.Id)}, i.{nameof(Incipit.MusicalNotation)}, i.{nameof(Incipit.Clef)}, i.{nameof(Incipit.KeySignature)}, i.{nameof(Incipit.TimeSignature)}, " +
                 $"i.{nameof(Incipit.CaptionOrHeading)}, ms.{nameof(MusicalSource.ComposerName)}, ms.{nameof(MusicalSource.Id)}, i.{nameof(Incipit.TextIncipit)}, " +
                 $"ms.{nameof(MusicalSource.Title)}, i.{nameof(Incipit.VoiceOrInstrument)}, ");
-            sb.Append(GetRelevanceExpression(intervals));
-            sb.Append(" from incipits i inner join musicalsources ms on ms.id = i.MusicalSourceId ");
+            sb.AppendLine(GetRelevanceExpression(intervals));
+            sb.AppendLine(" from incipits i inner join musicalsources ms on ms.id = i.MusicalSourceId ");
             var isWhereBlockStarted = false;
             if (searchQuery.UseSpatialHashes && intervals.Any())
             {
                 isWhereBlockStarted = true;
-                sb.Append($" WHERE i.Hash{intervalsForLsh.Length}d = {lshQueryDictionary[1]} ");
+                sb.AppendLine($" WHERE i.Hash{intervalsForLsh.Length}d = {lshQueryDictionary[1]} ");
             }
 
             var parameters = new List<object>();
@@ -87,15 +87,16 @@ namespace Manufaktura.RismCatalogue.Knockout.Controllers
             {
                 parameters.Add(searchQuery.Rhythm + "%");
                 if (searchQuery.IsRhythmRelative)
-                    sb.Append($" {(isWhereBlockStarted ? "AND" : "WHERE")} i.RhythmRelativeDigest LIKE @p0 ");
+                    sb.AppendLine($" {(isWhereBlockStarted ? "AND" : "WHERE")} i.RhythmRelativeDigest LIKE @p0 ");
                 else
-                    sb.Append($" {(isWhereBlockStarted ? "AND" : "WHERE")} i.RhythmDigest LIKE @p0 ");
+                    sb.AppendLine($" {(isWhereBlockStarted ? "AND" : "WHERE")} i.RhythmDigest LIKE @p0 ");
             }
             if (intervals.Any()) sb.Append($" order by Relevance desc");
 
-            sb.Append($" LIMIT {searchQuery.Take} OFFSET {searchQuery.Skip}");
+            sb.AppendLine($" LIMIT {searchQuery.Take} OFFSET {searchQuery.Skip}");
 
             var sql = sb.ToString();
+            Debug.WriteLine(sql);
             var incipits = context.RawSqlQuery(sql, parameters.ToArray());
             var results = incipits.Select(r =>
             {
