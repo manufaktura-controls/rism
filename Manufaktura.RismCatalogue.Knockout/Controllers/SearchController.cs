@@ -39,7 +39,7 @@ namespace Manufaktura.RismCatalogue.Knockout.Controllers
             return sb.ToString();
         }
 
-        private const int hashGroupsToInclude = 2;
+        private const int hashGroupsToInclude = 1;
 
         [HttpPost("[action]")]
         public SearchResultsViewModel Search([FromBody] SearchQuery searchQuery)
@@ -75,11 +75,11 @@ namespace Manufaktura.RismCatalogue.Knockout.Controllers
                 $"ms.{nameof(MusicalSource.Title)}, i.{nameof(Incipit.VoiceOrInstrument)}, ");
             sb.Append(GetRelevanceExpression(intervals));
             sb.Append(" from incipits i inner join musicalsources ms on ms.id = i.MusicalSourceId ");
+            var isWhereBlockStarted = false;
             if (searchQuery.UseSpatialHashes && intervals.Any())
             {
-                sb.Append(" inner join spatialhashincipits shi on shi.incipitId = i.id");
-                sb.Append($" inner join spatialhashes sh on shi.SpatialHashId = sh.Id " +
-                          $"and (sh.Id = '{intervalsForLsh.Length}-1-{lshQueryDictionary[1]}' or sh.Id = '{intervalsForLsh.Length}-2-{lshQueryDictionary[2]}')");
+                isWhereBlockStarted = true;
+                sb.Append($" WHERE i.Hash{intervalsForLsh.Length}d = {lshQueryDictionary[1]} ");
             }
 
             var parameters = new List<object>();
@@ -87,9 +87,9 @@ namespace Manufaktura.RismCatalogue.Knockout.Controllers
             {
                 parameters.Add(searchQuery.Rhythm + "%");
                 if (searchQuery.IsRhythmRelative)
-                    sb.Append(" WHERE i.RhythmRelativeDigest LIKE @p0 ");
+                    sb.Append($" {(isWhereBlockStarted ? "AND" : "WHERE")} i.RhythmRelativeDigest LIKE @p0 ");
                 else
-                    sb.Append(" WHERE i.RhythmDigest LIKE @p0 ");
+                    sb.Append($" {(isWhereBlockStarted ? "AND" : "WHERE")} i.RhythmDigest LIKE @p0 ");
             }
             if (intervals.Any()) sb.Append($" order by Relevance desc");
 

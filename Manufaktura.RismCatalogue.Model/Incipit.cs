@@ -81,5 +81,12 @@ namespace Manufaktura.RismCatalogue.Model
         public int Interval10 { get; set; }
         public int Interval11 { get; set; }
         public int Interval12 { get; set; }
+
+        public long? Hash1d { get; set; }
+        public long? Hash2d { get; set; }
+        public long? Hash3d { get; set; }
+        public long? Hash4d { get; set; }
+        public long? Hash5d { get; set; }
+        public long? Hash6d { get; set; }
     }
 }

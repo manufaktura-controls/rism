@@ -33,7 +33,8 @@ namespace Manufaktura.RismCatalogue.Migration
             Bind<MigrationService>().ToSelf().InSingletonScope();
             Bind<PlaineAndEasieService>().ToSelf().InSingletonScope();
             //Bind<HashGenerationService>().ToSelf().InSingletonScope();
-            Bind<HashGenerationServiceForDistinctIncipits>().ToSelf().InSingletonScope();
+            //Bind<HashGenerationServiceForDistinctIncipits>().ToSelf().InSingletonScope();
+            Bind<HashGenerationServiceInIncipitTable>().ToSelf().InSingletonScope();
         }
     }
 }
