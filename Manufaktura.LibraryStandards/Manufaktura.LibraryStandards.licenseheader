@@ -1,4 +1,6 @@
-﻿/*BSD 3-Clause License
+﻿extensions: designer.cs generated.cs
+extensions: .cs .cpp .h
+/*BSD 3-Clause License
 
 Copyright (c) 2019, Manufaktura programów Jacek Salamon
 All rights reserved.
@@ -27,36 +29,3 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.*/
-namespace Manufaktura.LibraryStandards.PlaineAndEasie
-{
-    public class PlaineAndEasieKeyParsingStrategy : PlaineAndEasieParsingStrategy
-    {
-        private readonly char[] Flats = new char[] { 'B', 'E', 'A', 'D', 'G', 'C', 'F' };
-
-        private readonly char[] Sharps = new char[] { 'F', 'C', 'G', 'D', 'A', 'E', 'B' };
-
-        public override int ControlSignLength => 1;
-
-        public override bool IsRelevant(string s) => s[0] == '$';
-        public override int Parse(PlaineAndEasieParser parser, string s)
-        {
-            if (string.IsNullOrWhiteSpace(s) || s.Length <= 1)
-            {
-                parser.AddKey(0);
-                return s?.Length ?? 0;
-            }
-
-            var modifier = s.StartsWith("b") ? -1 : 1;
-            var fifths = 0;
-            for (var i = 1; i < 7 && i < s.Length; i++)
-            {
-                if (s[i] != (modifier == 1 ? Sharps : Flats)[i - 1]) break;
-                fifths++;
-            }
-
-            parser.AddKey(fifths * modifier);
-
-            return fifths + 1;
-        }
-    }
-}
