@@ -2,6 +2,15 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.1</TargetFramework>
+    <Description>Support for MARC library standards for Manufaktura music libraries.</Description>
+    <Copyright>Manufaktura programów 2019</Copyright>
+    <PackageLicenseUrl>https://github.com/manufaktura-controls/rism/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>http://musicengravingcontrols.com/</PackageProjectUrl>
+    <PackageIconUrl>http://manufaktura-programow.pl/Images/ManufakturaSmaller.png</PackageIconUrl>
+    <RepositoryUrl>https://github.com/manufaktura-controls/rism</RepositoryUrl>
+    <RepositoryType>GIT</RepositoryType>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
 </Project>
