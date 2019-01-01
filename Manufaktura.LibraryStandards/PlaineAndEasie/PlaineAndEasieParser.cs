@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Reflection;
 
 namespace Manufaktura.LibraryStandards.PlaineAndEasie
 {
@@ -49,9 +50,9 @@ namespace Manufaktura.LibraryStandards.PlaineAndEasie
 
         protected PlaineAndEasieParser()
         {
-            strategies = new Lazy<PlaineAndEasieParsingStrategy[]>(() => typeof(PlaineAndEasieParsingStrategy).Assembly.GetTypes()
+            strategies = new Lazy<PlaineAndEasieParsingStrategy[]>(() => typeof(PlaineAndEasieParsingStrategy).GetTypeInfo().Assembly.DefinedTypes
                     .Where(t => !t.IsAbstract && t.IsSubclassOf(typeof(PlaineAndEasieParsingStrategy)))
-                    .Select(t => Activator.CreateInstance(t))
+                    .Select(t => Activator.CreateInstance(t.AsType()))
                     .Cast<PlaineAndEasieParsingStrategy>()
                     .ToArray());
             output = CreateOutputObject();
