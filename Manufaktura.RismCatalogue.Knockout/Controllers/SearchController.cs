@@ -14,6 +14,8 @@ namespace Manufaktura.RismCatalogue.Knockout.Controllers
     [Route("api/[controller]")]
     public class SearchController
     {
+        private const bool isAdminMode = false;
+
         private readonly RismDbContext context;
         private readonly PlaineAndEasieService plaineAndEasieService;
         private readonly ScoreRendererService scoreRendererService;
@@ -113,7 +115,8 @@ namespace Manufaktura.RismCatalogue.Knockout.Controllers
                     Title = r[9] as string,
                     Voice = r[10] as string,
                     Relevance = r[11] is double ? (double)r[11] : (long)r[11],
-                    ShowRelevance = intervals.Any()
+                    ShowRelevance = intervals.Any(),
+                    PlaineAndEasieCode = isAdminMode ? $"{r[1]};{r[2]};{r[3]};{r[4]}" : ""
                 };
             }).ToArray();
 

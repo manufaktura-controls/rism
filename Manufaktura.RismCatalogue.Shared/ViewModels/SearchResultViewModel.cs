@@ -20,5 +20,7 @@
         public double Relevance { get; set; }
 
         public bool ShowRelevance { get; set; }
+
+        public string PlaineAndEasieCode { get; set; }
     }
 }
