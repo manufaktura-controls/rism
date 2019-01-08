@@ -53,7 +53,7 @@ namespace Manufaktura.RismCatalogue.Knockout.Services
             {
                 var profile = SMuFLMusicFont.CreateFromJsonString(fontMetadata);
                 profile.FontSizes[MusicFontStyles.MusicFont] = 20;
-                profile.FontSizes[MusicFontStyles.TimeSignatureFont] = 20;
+                profile.FontSizes[MusicFontStyles.TimeSignatureFont] = 18;
                 profile.FontSizes[MusicFontStyles.StaffFont] = 20;
                 settings.SetMusicFont(profile, musicFontName, musicFontUris);
             }
