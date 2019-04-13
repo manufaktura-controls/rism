@@ -13,9 +13,9 @@
   </PropertyGroup>-->
   
   <ItemGroup>
-    <PackageReference Include="Manufaktura.Core" Version="1.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Blazor.Browser" Version="0.6.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Blazor.Build" Version="0.6.0" PrivateAssets="all" />
+    <PackageReference Include="Manufaktura.Core" Version="1.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Blazor.Browser" Version="0.7.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Blazor.Build" Version="0.7.0" PrivateAssets="all" />
 
     <DotNetCliToolReference Include="Microsoft.AspNetCore.Blazor.Cli" Version="0.6.0" />
   </ItemGroup>
