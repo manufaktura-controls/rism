@@ -10,6 +10,10 @@
         });
         $(element).attr("initialized", true);
     });
+
+    window.setTimeout(function () {
+        window.incipitKeyboard.invokeMethod('OnWindowResize', $("#searchPanel").width());
+    }, 500);
 }
 
 function registerNoteViewer(noteViewer) {
